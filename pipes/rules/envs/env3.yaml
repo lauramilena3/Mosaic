@@ -1,0 +1,11 @@
+channels:
+  - bioconda
+  - biobuilds
+  - conda-forge
+dependencies: 
+  - porechop =0.2.3
+  - circlator =1.5.5
+  - quast =5.0.2
+  - pip:
+    - nanoQC # python 3.6.5
+    - nanofilt

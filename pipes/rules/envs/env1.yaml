@@ -1,0 +1,16 @@
+channels:
+  - agbiome
+  - bioconda
+  - biobuilds
+  - conda-forge
+#  - g2554711/label/bioconda 
+dependencies:
+  - trimmomatic =0.39
+  - java-jdk =8.0.112
+  - python = 3.7.3
+  - porechop =0.2.3
+  - entrez-direct =11.0
+  - bbmap =38.22
+#  - nanofilt =2.2.0 #unsatisfiable with snakemake
+#  - spades =3.13.0
+#  - r-virfinder =1.1

@@ -1,0 +1,29 @@
+forward_tag: "R1"
+reverse_tag: "R2"
+nanopore_tag: "nanopore"
+
+trimmomatic_leading: "15"
+trimmomatic_trailing: "15"
+trimmomatic_window_size: "4"
+trimmomatic_window_quality: "15"
+trimmomatic_minlen: "50"
+
+#bbnorm
+min_norm: "2" 
+max_norm: "100"
+#Spades and canu assembly
+min_len: "1000"
+min_cov: "2"
+
+contaminants_list: "GCF_000819615.1"
+adapters_file: "NexteraPE-PE.fa"
+basecalled_dir: "data/basecalled/"
+
+virSorter_db: "db/virSorter/virsorter-data"
+kraken_db: "db/NCBI-bacteria-01.04.2019"
+canu_dir: "tools/canu-1.8/Linux-amd64/bin"
+quast_dir: "tools/quast-5.0.2"
+virSorter_dir: "tools/virSorter"
+
+
+

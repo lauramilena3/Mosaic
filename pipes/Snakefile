@@ -1,0 +1,57 @@
+import os
+import re
+#import pandas as pd
+#======================================================
+# Config files
+#======================================================
+configfile: "config.yaml"
+
+#======================================================
+# Global variables
+#======================================================
+RULES_DIR = 'rules'
+SAMPLES,=glob_wildcards("data/00_RAW_DATA/{sample}_R1.fastq")
+READ_TYPES=["R1", "R2"]
+CONTAMINANTS=config['contaminants_list']
+#CONTAMINANTS_LIST= config[contaminants_list]
+
+dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR","MAPPING_DIR", "PROFILE_DIR", "MERGE_DIR"]
+dir_names = ["rules", "../envs", "db/adapters", "db/contaminants" ,"data/00_RAW_DATA", "data/01_QC", "data/02_CLEAN_DATA","data/03_CONTIGS", "data/04_vOTUs", "data/05_MAPPING", "05_ANVIO_PROFILE", "06_MERGED"]
+dirs_dict = dict(zip(dir_list, dir_names))
+
+########################################
+# Helper functions
+########################################
+
+
+#======================================================
+# Rules
+#======================================================
+ 
+rule all:
+	input:
+		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.txt", sample=SAMPLES),
+		expand(dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv",sample=SAMPLES)
+		#expand(dirs_dict["vOUT_DIR"] + "/{sample}_circlator",sample=SAMPLES)
+
+
+
+include: os.path.join(RULES_DIR, 'qualityControl.smk')
+include: os.path.join(RULES_DIR, 'assembly.smk')
+include: os.path.join(RULES_DIR, 'vOTUclustering.smk')
+include: os.path.join(RULES_DIR, 'viralFiltering.smk')
+
+
+#00_Raw_data	(raw_data_dir)
+#	Illumina
+#	Nanopore
+#
+#01_Quality_control (qc_dir)
+#	fastQC
+#	QC_data
+
+#wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
+#gunzip hg38.fa.gz
+
+
