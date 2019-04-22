@@ -12,10 +12,7 @@ dependencies:
   - perl-parallel-forkmanager =2.02
   - perl-list-moreutils =0.428
   - diamond =0.9.14
-  - nanofilt =2.2.0
-  - pilon =1.22
-  - kallisto=0.45.0
-  - samtools =1.9
-  - pip:
-    - git+https://github.com/simroux/VirSorter.git
-    - git+https://github.com/saima-tithi/FastViromeExplorer.git
+  - metagene_annotator =1.0
+#  - kallisto=0.45.0
+  #  - r-virfinder =1.1
+

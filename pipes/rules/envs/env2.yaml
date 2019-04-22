@@ -1,9 +1,0 @@
-channels:
-  - bioconda
-  - biobuilds
-  - conda-forge
-dependencies:
-  - multiqc =1.6 
-#  - quast =5.0.2
-  - fastqc =0.11.8
-#  - ncbi-genome-download =0.2.9
