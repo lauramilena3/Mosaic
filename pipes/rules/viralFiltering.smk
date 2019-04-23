@@ -38,14 +38,14 @@ rule virSorter:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
 	shell:
-	"""
-	{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
-		--db 2 \
-		--wdir {params.out_folder} \
-		--ncpu {threads} \
-		--data-dir {params.virSorter_db}   
-		--virome  
-    """
+		"""
+		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
+			--db 2 \
+			--wdir {params.out_folder} \
+			--ncpu {threads} \
+			--data-dir {params.virSorter_db}   
+			--virome  
+		"""
 
 #rule virFinder:
 #	input:
