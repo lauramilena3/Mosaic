@@ -13,6 +13,7 @@ dependencies:
   - perl-list-moreutils =0.428
   - diamond =0.9.14
   - metagene_annotator =1.0
+  - libcurl =7.64.1
 #  - kallisto=0.45.0
   #  - r-virfinder =1.1
 
