@@ -1,35 +1,44 @@
-rule virSorter:
-	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna"
+rule downloadVirsorter:
 	output:
-		pvalues=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
-	params:
-		out_folder=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter",
-		virSorter_dir=config['virSorter_dir'],
-		virSorter_db=config['virSorter_db']
+		virSorter_db=config['virSorter_dir'],
+		virSorter_dir=config['virSorter_db']
 	message:
-		"Classifing contigs with VirSorter"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+		"Downloading required VirSorter files"
 	threads: 1
 	shell:
 		"""
-		if [ ! -f {params.virSorter_db} ]
+		if [ ! -f {output.virSorter_db} ]
 		then
 			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
 			mkdir db/virSorter
 			tar -xvzf virsorter-data-v2.tar.gz -C db/virSorter
 			rm virsorter-data-v2.tar.gz
 		fi
-		if [ ! -f {params.virSorter_dir} ]
+		if [ ! -f {output.virSorter_dir} ]
 		then
 			mkdir -p tools
 			git clone https://github.com/simroux/VirSorter.git tools
 			cd /tools/VirSorter/Scripts 
 			make clean
 			make
-			cd ../../../ 
 		fi
+    	"""
+rule virSorter:
+	input:
+		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
+		virSorter_dir=config['virSorter_dir'],
+		virSorter_db=config['virSorter_db']
+	output:
+		pvalues=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
+	params:
+		out_folder=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter",
+	message:
+		"Classifing contigs with VirSorter"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 1
+	shell:
+	""
 		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
 		--db 2 \
 		--wdir {params.out_folder} \
