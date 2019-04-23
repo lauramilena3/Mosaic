@@ -40,11 +40,11 @@ rule virSorter:
 	shell:
 	"""
 	{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
-	--db 2 \
-	--wdir {params.out_folder} \
-	--ncpu {threads} \
-	--data-dir {params.virSorter_db}   
-	--virome  
+		--db 2 \
+		--wdir {params.out_folder} \
+		--ncpu {threads} \
+		--data-dir {params.virSorter_db}   
+		--virome  
     """
 
 #rule virFinder:
