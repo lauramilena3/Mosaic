@@ -34,7 +34,7 @@ rule virSorter:
 		--db 2 \
 		--wdir {params.out_folder} \
 		--ncpu {threads} \
-		--data-dir {params.db}   
+		--data-dir {params.virSorter_db}   
 		--virome  
     """
 
