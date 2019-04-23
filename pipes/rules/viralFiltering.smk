@@ -6,9 +6,9 @@ rule virSorter:
 	params:
 		out_folder=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter",
 		virSorter_dir=config['virSorter_dir'],
-		virSorter_dbdb=config['virSorter_db']
+		virSorter_db=config['virSorter_db']
 	message:
-		"Scoring virus VirFinder"
+		"Classifing contigs with VirSorter"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
@@ -23,10 +23,12 @@ rule virSorter:
 		fi
 		if [ -f {params.virSorter_dir} ]
 		then
+			mkdir -p tools
 			git clone https://github.com/simroux/VirSorter.git tools
 			cd /tools/VirSorter/Scripts 
 			make clean
 			make
+			cd ../../../ 
 		fi
 		{config['virSorter_dir']}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
 		--db 2 \
