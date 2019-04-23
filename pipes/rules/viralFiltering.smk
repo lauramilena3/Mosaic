@@ -30,7 +30,7 @@ rule virSorter:
 			make
 			cd ../../../ 
 		fi
-		{config['virSorter_dir']}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
+		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
 		--db 2 \
 		--wdir {output.out_folder} \
 		--ncpu {threads} \
