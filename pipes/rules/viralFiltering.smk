@@ -14,14 +14,14 @@ rule virSorter:
 	threads: 1
 	shell:
 		"""
-		if [ -f {params.virSorter_db} ]
+		if [ ! -f {params.virSorter_db} ]
 		then
 			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
 			mkdir db/virSorter
 			tar -xvzf virsorter-data-v2.tar.gz -C db/virSorter
 			rm virsorter-data-v2.tar.gz
 		fi
-		if [ -f {params.virSorter_dir} ]
+		if [ ! -f {params.virSorter_dir} ]
 		then
 			mkdir -p tools
 			git clone https://github.com/simroux/VirSorter.git tools
