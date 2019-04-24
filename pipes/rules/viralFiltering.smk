@@ -12,7 +12,8 @@ rule downloadVirsorter:
 		if [ ! -f {output.virSorter_dir} ]
 		then
 			mkdir -p tools
-			git clone https://github.com/simroux/VirSorter.git tools
+			git clone https://github.com/simroux/VirSorter.git 
+			mv VirSorter tools
 			cd tools/VirSorter/Scripts 
 			make clean
 			make
