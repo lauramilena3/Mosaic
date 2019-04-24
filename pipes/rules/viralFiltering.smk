@@ -5,22 +5,25 @@ rule downloadVirsorter:
 	message:
 		"Downloading required VirSorter files"
 	threads: 1
+	params:
+		virSorter_db="db/virSorter"
 	shell:
 		"""
-		if [ ! -f {output.virSorter_db} ]
-		then
-			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
-			mkdir db/virSorter
-			tar -xvzf virsorter-data-v2.tar.gz -C db/virSorter
-			rm virsorter-data-v2.tar.gz
-		fi
 		if [ ! -f {output.virSorter_dir} ]
 		then
 			mkdir -p tools
 			git clone https://github.com/simroux/VirSorter.git tools
-			cd /tools/VirSorter/Scripts 
+			cd tools/VirSorter/Scripts 
 			make clean
 			make
+			cd ../../../
+		fi
+		if [ ! -f {output.virSorter_db} ]
+		then
+			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
+			mkdir -p {params.virSorter_db}
+			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
+			rm virsorter-data-v2.tar.gz
 		fi
     	"""
 rule virSorter:
