@@ -81,7 +81,7 @@ rule virFinder:
 	threads: 1
 	shell:
 		"""
-		./{params.virFinder_script} {input.scaffolds} {output.pvalues} 
+		Rscript {params.virFinder_script} {input.scaffolds} {output.pvalues} 
 		"""
 
 rule getViralTable:
