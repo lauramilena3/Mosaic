@@ -73,7 +73,7 @@ rule virFinder:
 	output:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/{sample}_virFinder_pvalues.txt"
 	params:
-		virFinder_script="scripts/virfinder_wrapper.R'"
+		virFinder_script="scripts/virfinder_wrapper.R"
 	message: 
 		"Scoring virus VirFinder"
 	conda:
@@ -81,7 +81,7 @@ rule virFinder:
 	threads: 1
 	shell:
 		"""
-		Rscript {params.virFinder_script} {input.scaffolds} {output.pvalues} 
+		Rscript {params.virFinder_script} {input.scaffolds} {output.pvalues}
 		"""
 
 rule getViralTable:
