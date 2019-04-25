@@ -32,10 +32,10 @@ rule all:
 	input:
 		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.txt", sample=SAMPLES),
-		expand(dirs_dict["VIRAL_DIR"]+ "High_confidence_circular_list.txt",
-		expand(dirs_dict["VIRAL_DIR"]+ "Low_confidence_circular_list.txt",
-		expand(dirs_dict["VIRAL_DIR"]+ "High_confidence_non_circular_list.txt",
-		expand(dirs_dict["VIRAL_DIR"]+ "Low_confidence_non_circular_list.txt"
+		dirs_dict["VIRAL_DIR"]+ "High_confidence_circular_list.txt",
+		dirs_dict["VIRAL_DIR"]+ "Low_confidence_circular_list.txt",
+		dirs_dict["VIRAL_DIR"]+ "High_confidence_non_circular_list.txt",
+		dirs_dict["VIRAL_DIR"]+ "Low_confidence_non_circular_list.txt"
 		#expand(dirs_dict["vOUT_DIR"] + "/{sample}_circlator",sample=SAMPLES)
 
 
