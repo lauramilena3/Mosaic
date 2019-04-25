@@ -10,7 +10,7 @@ rule downloadViralFiles:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		if [ ! -d {output.virSorter_dir}/ ]
+		if [ ! -d {config[virSorter_dir]}/ ]
 		then
 			echo "no existe"
 			mkdir -p tools
@@ -21,14 +21,14 @@ rule downloadViralFiles:
 			make
 			cd ../../../
 		fi
-		if [ ! -d {output.virSorter_db} ]
+		if [ ! -d {config[virSorter_db]} ]
 		then
 			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
 			mkdir -p {params.virSorter_db}
 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
 			rm virsorter-data-v2.tar.gz
 		fi
-   		if [ ! -d {output.virFinder_dir} ]
+   		if [ ! -d {config[virFinder_dir]} ]
 		then
 			if [ ! {config[operating_system]} == "linux" ] 
 			then
