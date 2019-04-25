@@ -71,7 +71,7 @@ rule virFinder:
 	output:
 		pvalues = "{indir}/virfinder/{name}.pvalues.tsv"	
 	params:
-		virFinder_script="scripts/virfinder_wrapper.R'"
+		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
 	message: 
 		"Scoring virus VirFinder"
