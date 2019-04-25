@@ -10,7 +10,7 @@ rule downloadViralFiles:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		if [ ! -d {config[virSorter_dir]}/ ]
+		if [ ! -d {config[virSorter_dir]} ]
 		then
 			echo "no existe"
 			mkdir -p tools
