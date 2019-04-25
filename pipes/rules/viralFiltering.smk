@@ -104,7 +104,7 @@ rule getViralTable:
 		results = pd.DataFrame(columns=('lenght', 'circular','VS_cat', 'VF_score', 'VF_pval', 'pCAT'))
 
 		#VirSorter
-		VS = {input.categories}+""
+		VS = str({input.categories})
 		with open(VS) as fp:  
 		    line = fp.readline()
 		    cnt = 1
