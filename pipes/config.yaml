@@ -1,3 +1,5 @@
+
+operating_system: "linux"
 forward_tag: "R1"
 reverse_tag: "R2"
 nanopore_tag: "nanopore"
@@ -21,9 +23,9 @@ basecalled_dir: "data/basecalled/"
 
 virSorter_db: "db/virSorter/virsorter-data"
 kraken_db: "db/NCBI-bacteria-01.04.2019"
-canu_dir: "tools/canu-1.8/Linux-amd64/bin"
+canu_dir: "tools/canu-1.8/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
-virSorter_dir: "tools/virSorter"
-
+virSorter_dir: "tools/VirSorter"
+virFinder_dir: "tools/VirFinder"
 
 

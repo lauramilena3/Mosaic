@@ -1,12 +1,13 @@
-rule downloadVirsorter:
+rule downloadViralFiles:
 	output:
-		virSorter_db=config['virSorter_dir'],
-		virSorter_dir=config['virSorter_db']
+		virSorter_db=config['virSorter_db'],
+		virSorter_dir=config['virSorter_dir'],
+		virFinder_dir=config['virFinder_dir']
 	message:
-		"Downloading required VirSorter files"
+		"Downloading required VirSorter and VirFinder data"
 	threads: 1
 	params:
-		virSorter_db="db/virSorter"
+		virSorter_db="db/VirSorter"
 	shell:
 		"""
 		if [ ! -f {output.virSorter_dir} ]
@@ -26,7 +27,19 @@ rule downloadVirsorter:
 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
 			rm virsorter-data-v2.tar.gz
 		fi
+   		if [ ! -f {output.virFinder_dir} ]
+		then
+			if { config[operating_system] == "macOs" }
+			then
+				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
+			else
+				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
+			fi
+			mkdir -p {output.virFinder_dir}
+			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
+		fi
     	"""
+
 rule virSorter:
 	input:
 		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
@@ -51,33 +64,24 @@ rule virSorter:
 			--virome  
 		"""
 
-#rule virFinder:
-#	input:
-#		scaffolds=directory("{ASSEMBLY_DIR}/{sample}/filtered_scaffolds.fasta")
-#	output:
-#		pvalues = "{indir}/virfinder/{name}.pvalues.tsv"	
-#	params:
-#		virFinder_script="scripts/virfinder_wrapper.R'"
-#	messsage: 
-#		"Scoring virus VirFinder"
-#	conda:
-#		"envs/main.yaml"
-#	threads: 1
-#	shell:
-#		"""
-#		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
-#		cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
-#		"""
+rule virFinder:
+	input:
+		scaffolds=directory("{ASSEMBLY_DIR}/{sample}/filtered_scaffolds.fasta"),
+		virFinder_dir=config['virFinder_dir']
+	output:
+		pvalues = "{indir}/virfinder/{name}.pvalues.tsv"	
+	params:
+		virFinder_script="scripts/virfinder_wrapper.R'"
+		virFinder_dir=config['virFinder_dir']
+	message: 
+		"Scoring virus VirFinder"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 1
+	shell:
+		"""
+		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
+		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
+		"""
                   
-#rule getVirSorterDB:
-#	input:
-#		directory("{DB_DIR}/")
-#	output:
-#		db = "{DB_DIR}/virsorter-data-v2"	
-#	messsage: 
-#		"Downloading Virsorter Data"
-#	shell:
-#		"""
-#		wget https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
-#		tar -xvzf virsorter-data-v2.tar.gz
-#       """
+
