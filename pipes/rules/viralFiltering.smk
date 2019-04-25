@@ -212,7 +212,7 @@ rule extractViralContigs:
 	threads: 1
 	shell:
 		"""
-		sed 's/./_/g' {input.representatives} > {params.edited_fasta}
+		sed 's/\./_/g' {input.representatives} > {params.edited_fasta}
 		seqtk subseq {params.edited_fasta} {input.circular_H} > {output.high_contigs}
 		sed -i 's/>/>Circular-/g' {output.high_contigs}
 		seqtk subseq {params.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
