@@ -98,8 +98,6 @@ rule getViralTable:
 		virFinder_dir=config['virFinder_dir']
 	message: 
 		"Scoring virus VirFinder"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
 	run:
 		import pandas as pd
