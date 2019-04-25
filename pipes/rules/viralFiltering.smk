@@ -114,7 +114,7 @@ rule getViralTable:
 		                category=(line.strip().split()[1])
 		        else:
 		            circular="N"
-		            contigName=line.split(",")[0].split("VIRSorter_")[1]
+		            contigName=line.split(",")[0].split("VIRSorter_")[1].replace(".", "_")
 		            if "-circular" in contigName:
 		                contigName=contigName.split("-circular")[0]
 		                circular="Y"
