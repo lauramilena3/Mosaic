@@ -46,9 +46,9 @@ rule virSorter:
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
-		pvalues=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
+		results=dirs_dict["VIRAL_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
 	params:
-		out_folder=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter",
+		out_folder=dirs_dict["VIRAL_DIR"] + "/{sample}_virSorter",
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -60,7 +60,7 @@ rule virSorter:
 			--db 2 \
 			--wdir {params.out_folder} \
 			--ncpu {threads} \
-			--data-dir {input.virSorter_db}
+			--data-dir {input.virSorter_db} \
 			--virome  
 		"""
 
@@ -68,6 +68,25 @@ rule virFinder:
 	input:
 		scaffolds=directory("{ASSEMBLY_DIR}/{sample}/filtered_scaffolds.fasta"),
 		virFinder_dir=config['virFinder_dir']
+	output:
+		pvalues = "{indir}/virfinder/{sample}.pvalues.tsv"	
+	params:
+		virFinder_script="scripts/virfinder_wrapper.R'",
+		virFinder_dir=config['virFinder_dir']
+	message: 
+		"Scoring virus VirFinder"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 1
+	shell:
+		"""
+		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
+		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
+		"""
+rule getViralTable:
+	input:
+		pvalues = "{indir}/virfinder/{sample}.pvalues.tsv",
+		categories=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
 	output:
 		pvalues = "{indir}/virfinder/{name}.pvalues.tsv"	
 	params:
@@ -83,5 +102,8 @@ rule virFinder:
 		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
 		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
 		"""
+rule extractViralContigs:
+
+
                   
 
