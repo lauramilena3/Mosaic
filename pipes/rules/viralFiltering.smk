@@ -168,11 +168,11 @@ rule getViralTable:
 		print("circular")
 		print("\n".join(lsCf))
 
-		f=open({input.circular_H}, 'w')
+		f=open(input.circular_H, 'w')
 		f.write("\n".join(lsAB))
 		f.close()
 
-		f=open({input.circular_L}, 'w')
+		f=open(input.circular_L, 'w')
 		f.write("\n".join(lsCf))
 		f.close()
 
@@ -187,11 +187,11 @@ rule getViralTable:
 		lsCnoAB=set(lsC) - set(lsAB)
 		lsCf=list(lsCnoAB)
 
-		f=open({input.non_circular_H}, 'w')
+		f=open(input.non_circular_H, 'w')
 		f.write("\n".join(lsAB))
 		f.close()
 
-		f=open({input.non_circular_L}, 'w')
+		f=open(input.non_circular_L, 'w')
 		f.write("\n".join(lsCf))
 		f.close()
 
