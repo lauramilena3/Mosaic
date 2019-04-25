@@ -83,6 +83,7 @@ rule virFinder:
 		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
 		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
 		"""
+
 rule getViralTable:
 	input:
 		pvalues = "{indir}/virfinder/{sample}.pvalues.tsv",
@@ -102,7 +103,7 @@ rule getViralTable:
 		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
 		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
 		"""
-rule extractViralContigs:
+#rule extractViralContigs:
 
 
                   
