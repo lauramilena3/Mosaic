@@ -66,10 +66,10 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		scaffolds=directory("{ASSEMBLY_DIR}/{sample}/filtered_scaffolds.fasta"),
+		scaffolds=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
 		virFinder_dir=config['virFinder_dir']
 	output:
-		pvalues = "{indir}/virfinder/{sample}.pvalues.tsv"	
+		pvalues=dirs_dict["VIRAL_DIR"] + "/{sample}_virFinder_pvalues.txt"
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
@@ -81,12 +81,11 @@ rule virFinder:
 	shell:
 		"""
 		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
-		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
 		"""
 
 rule getViralTable:
 	input:
-		pvalues = "{indir}/virfinder/{sample}.pvalues.tsv",
+		pvalues = dirs_dict["VIRAL_DIR"] + "/{sample}_virFinder_pvalues.txt",
 		categories=dirs_dict["vOUT_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
 	output:
 		pvalues = "{indir}/virfinder/{name}.pvalues.tsv"	
@@ -100,10 +99,9 @@ rule getViralTable:
 	threads: 1
 	shell:
 		"""
-		Rscript {params.wrapper_script} {input.fasta} {output.pvalues} 
-		#cat virFinder_list.txt |  sed '1d' | awk '{if($4 <= 0.05) print $1}' > virFinder_selection.txt
 		"""
-#rule extractViralContigs:
+
+rule extractViralContigs:
 
 
                   
