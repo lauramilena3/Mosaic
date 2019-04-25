@@ -15,7 +15,7 @@ READ_TYPES=["R1", "R2"]
 CONTAMINANTS=config['contaminants_list']
 #CONTAMINANTS_LIST= config[contaminants_list]
 
-dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR","MAPPING_DIR", "VIRAL_DIR, "PROFILE_DIR", "MERGE_DIR"]
+dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR","MAPPING_DIR", "VIRAL_DIR", "PROFILE_DIR", "MERGE_DIR"]
 dir_names = ["rules", "../envs", "db/adapters", "db/contaminants" ,"data/00_RAW_DATA", "data/01_QC", "data/02_CLEAN_DATA","data/03_CONTIGS", "data/04_vOTUs", "05_VIRAL_ID","data/05_MAPPING", "05_ANVIO_PROFILE", "06_MERGED"]
 dirs_dict = dict(zip(dir_list, dir_names))
 
