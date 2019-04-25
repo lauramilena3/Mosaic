@@ -196,7 +196,29 @@ rule getViralTable:
 		f.close()
 
 rule extractViralContigs:
-
+	input:
+		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
+		circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_circular_list.txt",
+		circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_circular_list.txt",
+		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_non_circular_list.txt",
+		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_non_circular_list.txt"
+	output:
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta",
+	message:
+		"Selecting Viral Contigs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		seqtk subseq {input.representatives} {input.circular_H} > {output.high_contigs}
+		sed -i 's/>/>Circular-/g' {output.high_contigs}
+		seqtk subseq {input.representatives} {input.non_circular_H} >> {output.high_contigs}
+		seqtk subseq {input.representatives} {input.circular_L} > {output.low_contigs}
+		sed -i 's/>/>Circular-/g' {output.low_contigs}
+		seqtk subseq {input.representatives} {input.non_circular_L} >> {output.low_contigs}
+		"""
 
                   
 
