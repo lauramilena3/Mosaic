@@ -129,7 +129,7 @@ rule getViralTable:
 		        cnt += 1
 		        
 		#VirFinder
-		VF = {input.pvalues} 
+		VF = input.pvalues
 		with open(VF) as fp:  
 		    line = fp.readline()
 		    cnt = 1
