@@ -114,15 +114,13 @@ rule getViralTable:
 		                category=(line.strip().split()[1])
 		        else:
 		            circular="N"
-		            if "cov_" in line.split(",")[0]:
-		                contigNameA=line.split(",")[0].split("VIRSorter_")[1].split("cov_")[0]
-		                contigNameB=line.split(",")[0].split("VIRSorter_")[1].split("cov_")[1].replace("_", ".")
-		                contigName=contigNameA + "cov_" + contigNameB
-		            else:
-		                contigName=line.split(",")[0].split("VIRSorter_")[1]
+		            contigName=line.split(",")[0].split("VIRSorter_")[1]
 		            if "-circular" in contigName:
 		                contigName=contigName.split("-circular")[0]
 		                circular="Y"
+		            if "suggestCircular=yes" in contigName:
+		                circular="Y"
+		                print(contigName)
 		            results.loc[contigName, 'VS_cat'] = int(category)
 		            results.loc[contigName, 'circular'] = circular
 		        line = fp.readline()
@@ -135,7 +133,7 @@ rule getViralTable:
 		    cnt = 1
 		    while line:
 		        if cnt != 1:
-		            contigName=line.split("\t")[0].strip()
+		            contigName=line.split("\t")[0].strip().replace(".", "_")
 		            contigLenght=line.split("\t")[1]
 		            contigScore=line.split("\t")[2]
 		            contigPval=line.split("\t")[3].split("\n")[0]
@@ -151,8 +149,8 @@ rule getViralTable:
 		df_B_c=results[results['VF_score']>0.9][results['VF_pval']<0.05][results['circular']=="Y"]
 		df_C_c=results[results['VF_score']>0.7][results['VF_pval']<0.05][results['VS_cat']>0][results['circular']=="Y"]
 
-		df_A_nc=results[results['VS_cat']<3][results['circular']=="N"]
-		df_B_nc=results[results['VF_score']>0.9][results['VF_pval']<0.05][results['circular']=="N"]
+		df_A_nc=results[results['VS_cat']<3][results['circular']!="Y"]
+		df_B_nc=results[results['VF_score']>0.9][results['VF_pval']<0.05][results['circular']!="N"]
 		df_C_nc=results[results['VF_score']>0.7][results['VF_pval']<0.05][results['VS_cat']>0][results['circular']=="N"]
 
 		#joinin and dereplicating circular contigs
@@ -204,7 +202,9 @@ rule extractViralContigs:
 		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_non_circular_list.txt"
 	output:
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta"
+	params:
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/{sample}_merged_scaffolds_95-80.fna"
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -212,12 +212,13 @@ rule extractViralContigs:
 	threads: 1
 	shell:
 		"""
-		seqtk subseq {input.representatives} {input.circular_H} > {output.high_contigs}
+		sed 's/./_/g' {input.representatives} > {params.edited_fasta}
+		seqtk subseq {params.edited_fasta} {input.circular_H} > {output.high_contigs}
 		sed -i 's/>/>Circular-/g' {output.high_contigs}
-		seqtk subseq {input.representatives} {input.non_circular_H} >> {output.high_contigs}
-		seqtk subseq {input.representatives} {input.circular_L} > {output.low_contigs}
+		seqtk subseq {params.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
+		seqtk subseq {params.edited_fasta} {input.circular_L} > {output.low_contigs}
 		sed -i 's/>/>Circular-/g' {output.low_contigs}
-		seqtk subseq {input.representatives} {input.non_circular_L} >> {output.low_contigs}
+		seqtk subseq {params.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
 		"""
 
                   
