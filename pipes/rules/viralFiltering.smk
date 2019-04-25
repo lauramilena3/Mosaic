@@ -1,6 +1,6 @@
 rule downloadViralFiles:
 	output:
-		virSorter_db=directory(config['virSorter_db']),
+		virSorter_db=protected(directory(config['virSorter_db'])),
 		virSorter_dir=directory(config['virSorter_dir']),
 		virFinder_dir=directory(config['virFinder_dir'])
 	message:
@@ -14,9 +14,9 @@ rule downloadViralFiles:
 		then
 			echo "no existe"
 			mkdir -p tools
+			cd tools
 			git clone https://github.com/simroux/VirSorter.git 
-			mv VirSorter tools
-			cd tools/VirSorter/Scripts 
+			cd VirSorter/Scripts 
 			make clean
 			make
 			cd ../../../
