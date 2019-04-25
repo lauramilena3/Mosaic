@@ -12,6 +12,7 @@ rule downloadViralFiles:
 		"""
 		if [ ! -f {output.virSorter_dir} ]
 		then
+			echo "no existe"
 			mkdir -p tools
 			git clone https://github.com/simroux/VirSorter.git 
 			mv VirSorter tools
