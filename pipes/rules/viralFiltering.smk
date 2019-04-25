@@ -93,11 +93,9 @@ rule getViralTable:
 		circular_L=dirs_dict["VIRAL_DIR"]+ "Low_confidence_circular_list.txt",
 		non_circular_H=dirs_dict["VIRAL_DIR"]+ "High_confidence_non_circular_list.txt",
 		non_circular_L=dirs_dict["VIRAL_DIR"]+ "Low_confidence_non_circular_list.txt"
-
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
-		res_dir=dirs_dict["VIRAL_DIR"]
 	message: 
 		"Scoring virus VirFinder"
 	conda:
