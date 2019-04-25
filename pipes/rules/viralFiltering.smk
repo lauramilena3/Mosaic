@@ -1,8 +1,8 @@
 rule downloadViralFiles:
 	output:
-		virSorter_db=config['virSorter_db'],
-		virSorter_dir=config['virSorter_dir'],
-		virFinder_dir=config['virFinder_dir']
+		virSorter_db=directory(config['virSorter_db']),
+		virSorter_dir=directory(config['virSorter_dir']),
+		virFinder_dir=directory(config['virFinder_dir'])
 	message:
 		"Downloading required VirSorter and VirFinder data"
 	threads: 1
