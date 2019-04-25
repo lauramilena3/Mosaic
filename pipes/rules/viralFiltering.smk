@@ -60,7 +60,7 @@ rule virSorter:
 			--db 2 \
 			--wdir {params.out_folder} \
 			--ncpu {threads} \
-			--data-dir {params.virSorter_db}   
+			--data-dir {input.virSorter_db}
 			--virome  
 		"""
 
