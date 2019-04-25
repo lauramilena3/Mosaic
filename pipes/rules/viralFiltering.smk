@@ -29,7 +29,7 @@ rule downloadViralFiles:
 		fi
    		if [ ! -f {output.virFinder_dir} ]
 		then
-			if { config[operating_system] == "macOs" }
+			if { {config[operating_system]} == "macOs" }
 			then
 				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
 			else
