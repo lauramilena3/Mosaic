@@ -97,14 +97,14 @@ rule getViralTable:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
 	message: 
-		"Scoring virus VirFinder"
+		"Parsing VirSorter and VirFinder results"
 	threads: 1
 	run:
 		import pandas as pd
 		results = pd.DataFrame(columns=('lenght', 'circular','VS_cat', 'VF_score', 'VF_pval', 'pCAT'))
 
 		#VirSorter
-		VS = {input.categories}  
+		VS = {input.categories}+""
 		with open(VS) as fp:  
 		    line = fp.readline()
 		    cnt = 1
