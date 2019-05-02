@@ -120,10 +120,7 @@ rule getAbundancesPE:
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{type}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{type}.fasta"
 	output:
-		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{type}.bam",
-		low_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{type}.bam",
-		high_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{type}.bam",
-		low_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{type}.bam",
+		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{type}.csv",
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -140,10 +137,7 @@ rule getAbundancesSE:
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{type}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{type}.fasta"
 	output:
-		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{type}.bam",
-		low_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{type}.bam",
-		high_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{type}.bam",
-		low_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{type}.bam",
+		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{type}.csv",
 	message:
 		"Selecting Viral Contigs"
 	conda:
