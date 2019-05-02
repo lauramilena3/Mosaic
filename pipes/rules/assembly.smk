@@ -191,7 +191,7 @@ rule errorCorrectCanuSE:
 
 rule assemblyStats:
 	input:
-		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_{assembly}_filtered_scaffolds.{type}.fasta", assembly=ASSEMBLY_TYPES),
+		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_{assembly}_filtered_scaffolds.{type}.fasta", assembly=ASSEMBLY_TYPES, sample={wildcards.sample}, type={wildcards.type}),
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
