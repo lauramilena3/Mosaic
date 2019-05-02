@@ -1,3 +1,5 @@
+input_dir: "data/00_RAW_DATA"
+results_dir: "data"
 
 operating_system: "linux"
 forward_tag: "R1"
@@ -30,5 +32,4 @@ canu_dir: "tools/canu-1.8/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
 virFinder_dir: "tools/VirFinder"
-
 
