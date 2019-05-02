@@ -226,7 +226,6 @@ rule hmmCircularContigs:
 		hmmsearch {params.hmm} {input.circular_unk} -E 0.001 -T 50 > {output.hmm_out}
 		grep {output.hmm_out} > {output.hmm_list}
 		"""
-
 rule extractViralContigs:
 	input:
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{type}.fna",
