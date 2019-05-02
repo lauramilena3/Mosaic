@@ -5,7 +5,7 @@ rule mergeAssembliesHIBRID:
 		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
 	output:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling} .fasta")
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
 	message:
 		"Merging assembled contigs"
 	conda:
@@ -20,7 +20,7 @@ rule mergeAssembliesSHORT:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
 	output:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling} .fasta")
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
 	message:
 		"Merging assembled contigs"
 	conda:
@@ -33,10 +33,10 @@ rule mergeAssembliesSHORT:
 
 rule vOUTclustering:
 	input:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling} .fasta"),
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling} .clstr",
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling} .fna"
+		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.clstr",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	message:
 		"Creating vOUTs with stampede"
 	conda:

@@ -3,14 +3,14 @@ ruleorder: getAbundancesPE > getAbundancesSE
 
 rule createContigBowtieDb:
 	input:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .fasta"
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .1.bt2",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .1.bt2"
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.1.bt2",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.1.bt2"
 	params:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} ",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} "
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}"
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -24,17 +24,17 @@ rule createContigBowtieDb:
 
 rule mapReadsToContigsPE:
 	input:
-		high_bt2=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .1.bt2",
-		low_bt2=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .1.bt2",
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling} .fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling} .fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling} .fastq",
+		high_bt2=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.1.bt2",
+		low_bt2=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.1.bt2",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
-		high_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling} .sam",
-		low_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling} .sam",
+		high_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling}.sam",
+		low_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling}.sam",
 	params:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} ",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} "
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}"
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -49,17 +49,17 @@ rule mapReadsToContigsPE:
 		"""
 rule mapReadsToContigsSE:
 	input:
-		high_bt2=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .1.bt2",
-		low_bt2=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .1.bt2",
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling} .fastq",
+		high_bt2=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.1.bt2",
+		low_bt2=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.1.bt2",
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
-		high_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling} .sam",
-		low_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling} .sam",
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling} .bam",
+		high_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling}.sam",
+		low_sam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling}.sam",
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling}.bam",
 	params:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} ",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} "
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}"
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -74,11 +74,11 @@ rule mapReadsToContigsSE:
 		"""
 rule filterBAM:
 	input:
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling} .bam",
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{sampling}.bam",
 	output:
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered.{sampling} .bam",
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -91,15 +91,15 @@ rule filterBAM:
 		"""
 rule filterContigs:
 	input:
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered.{sampling} .bam",
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .fasta"
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
-		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{sampling} .bam",
-		low_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{sampling} .bam",
-		high_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling} .bam",
-		low_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling} .bam",
+		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{sampling}.bam",
+		low_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{sampling}.bam",
+		high_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
+		low_bam_final=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -115,12 +115,12 @@ rule filterContigs:
 
 rule getAbundancesPE:
 	input:
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling} .bam",
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .fasta"
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
-		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{sampling} .csv",
+		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{sampling}.csv",
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -132,12 +132,12 @@ rule getAbundancesPE:
 		"""
 rule getAbundancesSE:
 	input:
-		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling} .bam",
-		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling} .bam",
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .fasta"
+		high_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
+		low_bam=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
-		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{sampling} .csv",
+		high_bam_sorted=dirs_dict["VIRAL_DIR"]+ "/{sample}_final_results.{sampling}.csv",
 	message:
 		"Selecting Viral Contigs"
 	conda:

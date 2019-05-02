@@ -42,13 +42,13 @@ rule downloadViralFiles:
 
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling} .fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
-		results=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling} /VIRSorter_global-phage-signal.csv"
+		results=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
 	params:
-		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling} "
+		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -66,10 +66,10 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling} .fna",
+		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna",
 		virFinder_dir=config['virFinder_dir']
 	output:
-		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling} .txt"
+		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R"
 	message: 
@@ -84,15 +84,15 @@ rule virFinder:
 
 rule getViralTable:
 	input:
-		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling} .txt",
-		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling} /VIRSorter_global-phage-signal.csv"
+		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
+		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
 	output:
-		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling} .txt",
-		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling} .txt",
-		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling} .txt",
-		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling} .txt",
-		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling} .txt",
-		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling} .csv" 
+		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
+		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
+		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling}.txt",
+		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling}.txt",
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
+		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv" 
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
@@ -210,10 +210,10 @@ rule getViralTable:
 
 rule hmmCircularContigs:
 	input:
-		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling} .txt"
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt"
 	output:
-		hmm_out=dirs_dict["VIRAL_DIR"]+ "/hmmsearch.{sampling} .out",
-		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling} .txt"
+		hmm_out=dirs_dict["VIRAL_DIR"]+ "/hmmsearch.{sampling}.out",
+		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt"
 	params:
 		hmm="db/hmm/ssDNA.hmm"
 	message:
@@ -228,17 +228,17 @@ rule hmmCircularContigs:
 		"""
 rule extractViralContigs:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling} .fna",
-		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling} .txt",
-		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling} .txt",
-		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling} .txt",
-		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling} .txt",
-		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling} .txt",
-#		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling} .txt"
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna",
+		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
+		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
+		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling}.txt",
+		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling}.txt",
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
+#		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt"
 	output:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling} .fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling} .fasta",
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling} .fna"
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	message:
 		"Selecting Viral Contigs"
 	conda:
