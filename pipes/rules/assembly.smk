@@ -4,16 +4,16 @@ ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 
 rule hybridAsemblySpades:
 	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{type}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{type}.fastq"
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling} .fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling} .fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling} .fastq"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/filtered_list.txt")
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling} .fasta"),
+		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /filtered_list.txt")
 	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}")
+		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /scaffolds.fasta",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} ")
 	message: 
 		"Assembling hybrid reads with metaSpades"
 	conda:
@@ -29,15 +29,15 @@ rule hybridAsemblySpades:
 		"""
 rule shortReadAsemblySpadesPE:
 	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{type}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling} .fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling} .fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq",
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/filtered_list.txt")
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling} .fasta"),
+		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /filtered_list.txt")
 	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}")
+		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /scaffolds.fasta",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} ")
 	message: 
 		"Assembling PE reads with metaSpades"
 	conda:
@@ -54,13 +54,13 @@ rule shortReadAsemblySpadesPE:
 
 rule shortReadAsemblySpadesSE:
 	input:
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/filtered_list.txt")
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling} .fasta"),
+		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /filtered_list.txt")
 	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{type}")
+		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} /scaffolds.fasta",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling} ")
 	message: 
 		"Assembling SE reads with metaSpades"
 	conda:
@@ -97,14 +97,14 @@ rule downloadCanu:
 
 rule asemblyCanu:
 	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{type}.fastq",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling} .fastq",
 		canu_dir=config['canu_dir']
 	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu/{sample}.contigs.{type}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu/{sample}.contigs.{sampling} .fasta"
 	message:
 		"Assembling nanopore reads with canu"
 	params: 
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{type}"
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling} "
 	threads: 4
 	shell:
 		"""
@@ -117,24 +117,24 @@ rule asemblyCanu:
 
 rule errorCorrectCanuPE:
 	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{type}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{type}/{sample}.contigs.fasta"
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling} .fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling} .fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling} /{sample}.contigs.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{type}.fasta"),
-		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{type}.sam",
-		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{type}.bam",
-		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{type}.bam",
-		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{type}.bam.bai",
-		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{type}.sam",
-		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{type}.bam",
-		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{type}.bam",
-		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{type}.bam.bai"
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling} .fasta"),
+		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling} .sam",
+		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling} .bam",
+		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling} .bam",
+		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling} .bam.bai",
+		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling} .sam",
+		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling} .bam",
+		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling} .bam",
+		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling} .bam.bai"
 	params:
-		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{type}",
-		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{type}/pilon.fasta"),
-		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{type}"
+		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling} ",
+		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling} /pilon.fasta"),
+		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling} "
 	message:
 		"Correcting nanopore assembly with pilon"
 	conda:
@@ -160,18 +160,18 @@ rule errorCorrectCanuPE:
 		"""
 rule errorCorrectCanuSE:
 	input:
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{type}/{sample}.contigs.fasta"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling} /{sample}.contigs.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{type}.fasta"),
-		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{type}.sam",
-		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{type}.bam",
-		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{type}.bam",
-		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{type}.bam.bai"
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling} .fasta"),
+		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling} .sam",
+		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling} .bam",
+		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling} .bam",
+		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling} .bam.bai"
 	params:
-		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{type}",
-		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{type}/pilon.fasta"),
-		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{type}"
+		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling} ",
+		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling} /pilon.fasta"),
+		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling} "
 	message:
 		"Correcting nanopore assembly with pilon"
 	conda:
@@ -192,11 +192,11 @@ rule errorCorrectCanuSE:
 
 rule assemblyStatsHYBRID:
 	input:
-		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{type}.fasta"),
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta")
+		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling} .fasta"),
+		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling} .fasta")
 	output:
-		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{sampling} "),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling} .txt"
 	message:
 		"Creating assembly stats with quast"
 	threads: 1
@@ -213,10 +213,10 @@ rule assemblyStatsHYBRID:
 
 rule assemblyStatsILLUMINA:
 	input:
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta")
+		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling} .fasta")
 	output:
-		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{sampling} "),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling} .txt"
 	message:
 		"Creating assembly stats with quast"
 	threads: 1

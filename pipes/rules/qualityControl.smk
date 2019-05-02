@@ -6,10 +6,10 @@ ruleorder: normalizeReads_PE > normalizeReads_SE
 
 rule qualityCheckIllumina:
 	input:
-		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{type}.fastq"
+		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{sampling} .fastq"
 	output:
-		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{type}_fastqc.html"),
-		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{type}_fastqc.zip")
+		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{sampling} _fastqc.html"),
+		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{sampling} _fastqc.zip")
 	message: 
 		"Performing fastqQC statistics"
 	conda:
@@ -39,7 +39,7 @@ rule qualityCheckNanopore:
 		"""
 rule multiQC:
 	input:
-		forward=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{type}_fastqc.html", sample=SAMPLES, type=READ_TYPES)
+		forward=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{sampling} _fastqc.html", sample=SAMPLES, type=READ_TYPES)
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
 	params:
@@ -287,13 +287,13 @@ rule subsampleReadsNanopore:
 
 rule normalizeReads_PE:
 	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{type}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{type}.fastq",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling} .fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling} .fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling} .fastq",
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{type}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling} .fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling} .fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq",
 	message: 
 		"Normalizing reads with BBtools"
 	conda:
@@ -316,9 +316,9 @@ rule normalizeReads_PE:
 
 rule normalizeReads_SE:
 	input:
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{type}.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling} .fastq"
 	output:
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling} .fastq"
 	message: 
 		"Normalizing reads with BBtools"
 	conda:
