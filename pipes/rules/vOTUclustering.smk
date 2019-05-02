@@ -18,7 +18,7 @@ rule mergeAssembliesHIBRID:
 
 rule mergeAssembliesSHORT:
 	input:
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta",sample=SAMPLES)
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{type}}.fasta",sample=SAMPLES)
 	output:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{type}.fasta")
 	message:
