@@ -23,10 +23,11 @@ NANOPORE=False
 PAIRED=False
 READ_TYPES=[config['forward_tag']]
 ASSEMBLY_TYPES=["spades"]
+
 for fname in os.listdir('.'):
-    if fname.endswith(config['reverse_tag'] + '.fastq'):
-    	PAIRED=True
-	elif fname.endswith(config['nanopore_tag'] + '.fastq'): 
+	if fname.endswith(config['reverse_tag'] + '.fastq'):
+		PAIRED=True
+	elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 		NANOPORE=True
 		ASSEMBLY_TYPES.append("canu")
 if PAIRED:
