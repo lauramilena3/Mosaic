@@ -3,7 +3,7 @@ ruleorder: mergeAssembliesHIBRID > mergeAssembliesSHORT
 rule mergeAssembliesHIBRID:
 	input:
 		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{{sampling} }.fasta",sample=SAMPLES),
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling} }.fasta",sample=SAMPLES)
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
 	output:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling} .fasta")
 	message:
