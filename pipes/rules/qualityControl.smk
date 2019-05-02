@@ -216,7 +216,7 @@ rule subsampleReadsIllumina_PE:
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
-		max_subsample=config['max_subsample']/2
+		max_subsample=int(config['max_subsample'])/2
 	threads: 1
 	resources:
 		mem_mb=4000
