@@ -12,7 +12,6 @@ rule downloadViralFiles:
 		"""
 		if [ ! -d {config[virSorter_dir]} ]
 		then
-			echo "no existe"
 			mkdir -p tools
 			cd tools
 			git clone https://github.com/simroux/VirSorter.git 
@@ -33,24 +32,23 @@ rule downloadViralFiles:
 			if [ ! {config[operating_system]} == "linux" ] 
 			then
 				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
-				echo "mac"
 			else
 				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
 			fi
 			mkdir -p {output.virFinder_dir}
 			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
 		fi
-    	"""
+		"""
 
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{type}.fna",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
-		results=dirs_dict["VIRAL_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
+		results=dirs_dict["VIRAL_DIR"] + "/virSorter_{type}/VIRSorter_global-phage-signal.csv"
 	params:
-		out_folder=dirs_dict["VIRAL_DIR"] + "/{sample}_virSorter",
+		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{type}"
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -68,10 +66,10 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		scaffolds=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
+		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{type}.fna",
 		virFinder_dir=config['virFinder_dir']
 	output:
-		pvalues=dirs_dict["VIRAL_DIR"] + "/{sample}_virFinder_pvalues.txt"
+		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{type}.txt"
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R"
 	message: 
@@ -86,13 +84,15 @@ rule virFinder:
 
 rule getViralTable:
 	input:
-		pvalues = dirs_dict["VIRAL_DIR"] + "/{sample}_virFinder_pvalues.txt",
-		categories=dirs_dict["VIRAL_DIR"] + "/{sample}_virSorter/VIRSorter_global-phage-signal.csv"
+		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{type}.txt",
+		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{type}/VIRSorter_global-phage-signal.csv"
 	output:
-		circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_circular_list.txt",
-		circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_circular_list.txt",
-		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_non_circular_list.txt",
-		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_non_circular_list.txt"
+		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{type}.txt",
+		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{type}.txt",
+		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{type}.txt",
+		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{type}.txt",
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{type}.txt",
+		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{type}.csv" 
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
@@ -101,48 +101,50 @@ rule getViralTable:
 	threads: 1
 	run:
 		import pandas as pd
-		results = pd.DataFrame(columns=('lenght', 'circular','VS_cat', 'VF_score', 'VF_pval', 'pCAT'))
+		results = pd.DataFrame(columns=('lenght', 'circular','type', 'VS_cat', 'VF_score', 'VF_pval'))
+
 
 		#VirSorter
 		VS = input.categories
 		with open(VS) as fp:  
-		    line = fp.readline()
-		    cnt = 1
-		    while line:
-		        if line.startswith("#"):
-		            if (line.strip().split()[1].isdigit()):
-		                category=(line.strip().split()[1])
-		        else:
-		            circular="N"
-		            contigName=line.split(",")[0].split("VIRSorter_")[1].replace(".", "_")
-		            if "-circular" in contigName:
-		                contigName=contigName.split("-circular")[0]
-		                circular="Y"
-		            if "suggestCircular=yes" in contigName:
-		                circular="Y"
-		                print(contigName)
-		            results.loc[contigName, 'VS_cat'] = int(category)
-		            results.loc[contigName, 'circular'] = circular
-		        line = fp.readline()
-		        cnt += 1
-		        
+			line = fp.readline()
+			cnt = 1
+			while line:
+				if line.startswith("#"):
+					if (line.strip().split()[1].isdigit()):
+						contig_type=(line.strip().split("-")[1])
+				else:
+					circular="N"
+					contigName=line.split(",")[0].split("VIRSorter_")[1].replace(".", "_")
+					category=line.split(",")[4]
+					if "-circular" in contigName:
+						contigName=contigName.split("-circular")[0]
+						circular="Y"
+					if "suggestCircular=yes" in contigName:
+						circular="Y"
+					results.loc[contigName, 'VS_cat'] = int(category)
+					results.loc[contigName, 'circular'] = circular
+					results.loc[contigName, 'type'] = contig_type
+				line = fp.readline()
+				cnt += 1
+				
 		#VirFinder
 		VF = input.pvalues
 		with open(VF) as fp:  
-		    line = fp.readline()
-		    cnt = 1
-		    while line:
-		        if cnt != 1:
-		            contigName=line.split("\t")[0].strip().replace(".", "_")
-		            contigLenght=line.split("\t")[1]
-		            contigScore=line.split("\t")[2]
-		            contigPval=line.split("\t")[3].split("\n")[0]
-		            results.loc[contigName, 'lenght'] = float(contigLenght)
-		            results.loc[contigName, 'VF_score'] = float(contigScore)
-		            results.loc[contigName, 'VF_pval'] = float(contigPval)
-		                #check if circular also
-		        line = fp.readline()
-		        cnt += 1    
+			line = fp.readline()
+			cnt = 1
+			while line:
+				if cnt != 1:
+					contigName=line.split("\t")[0].strip().replace(".", "_")
+					contigLenght=line.split("\t")[1]
+					contigScore=line.split("\t")[2]
+					contigPval=line.split("\t")[3].split("\n")[0]
+					results.loc[contigName, 'lenght'] = float(contigLenght)
+					results.loc[contigName, 'VF_score'] = float(contigScore)
+					results.loc[contigName, 'VF_pval'] = float(contigPval)
+						#check if circular also
+				line = fp.readline()
+				cnt += 1	
 
 		#filtering DFs
 		df_A_c=results[results['VS_cat']<3][results['circular']=="Y"]
@@ -152,6 +154,9 @@ rule getViralTable:
 		df_A_nc=results[results['VS_cat']<3][results['circular']!="Y"]
 		df_B_nc=results[results['VF_score']>0.9][results['VF_pval']<0.05][results['circular']!="N"]
 		df_C_nc=results[results['VF_score']>0.7][results['VF_pval']<0.05][results['VS_cat']>0][results['circular']=="N"]
+
+		df_circular=results[results['circular']=="Y"]
+
 
 		#joinin and dereplicating circular contigs
 		lsA=(df_A_c.index.tolist())
@@ -173,6 +178,14 @@ rule getViralTable:
 		f=open(output.circular_L, 'w')
 		f.write("\n".join(lsCf))
 		f.close()
+		#dereplicating circular contigs
+
+		lsCirc=df_circular.index.tolist()
+		lsCircNothers=set(lsCirc) - set(lsA) - set(lsB) - set(lsC)
+
+		f=open(output.circular_unk, 'w')
+		f.write("\n".join(lsCircNothers))
+		f.close()
 
 		#joinin and dereplicating noncircular contigs
 		lsA=(df_A_nc.index.tolist())
@@ -193,18 +206,40 @@ rule getViralTable:
 		f.write("\n".join(lsCf))
 		f.close()
 
+		results.to_csv(table)
+
+rule hmmCircularContigs:
+	input:
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{type}.txt"
+	output:
+		hmm_out=dirs_dict["VIRAL_DIR"]+ "/hmmsearch.{type}.out",
+		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{type}.txt"
+	params:
+		hmm="db/hmm/ssDNA.hmm"
+	message:
+		"Selecting Viral Circular Contigs with hmmsearch"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		hmmsearch {params.hmm} {input.circular_unk} -E 0.001 -T 50 > {output.hmm_out}
+		grep {output.hmm_out} > {output.hmm_list}
+		"""
+
 rule extractViralContigs:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
-		circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_circular_list.txt",
-		circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_circular_list.txt",
-		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/{sample}_High_confidence_non_circular_list.txt",
-		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/{sample}_Low_confidence_non_circular_list.txt"
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{type}.fna",
+		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{type}.txt",
+		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{type}.txt",
+		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{type}.txt",
+		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{type}.txt",
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{type}.txt",
+#		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{type}.txt"
 	output:
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta"
-	params:
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/{sample}_merged_scaffolds_95-80.fna"
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{type}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{type}.fasta",
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{type}.fna"
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -212,14 +247,15 @@ rule extractViralContigs:
 	threads: 1
 	shell:
 		"""
-		sed 's/\./_/g' {input.representatives} > {params.edited_fasta}
-		seqtk subseq {params.edited_fasta} {input.circular_H} > {output.high_contigs}
+		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
+		seqtk subseq {output.edited_fasta} {input.circular_H} > {output.high_contigs}
+		#seqtk subseq {output.hmm_list} {input.circular_unk} >> {output.high_contigs}
 		sed -i 's/>/>Circular-/g' {output.high_contigs}
-		seqtk subseq {params.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
-		seqtk subseq {params.edited_fasta} {input.circular_L} > {output.low_contigs}
+		seqtk subseq {output.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
+		seqtk subseq {output.edited_fasta} {input.circular_L} > {output.low_contigs}
 		sed -i 's/>/>Circular-/g' {output.low_contigs}
-		seqtk subseq {params.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
+		seqtk subseq {output.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
 		"""
 
-                  
+			  
 

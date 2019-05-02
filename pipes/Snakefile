@@ -9,15 +9,30 @@ configfile: "config.yaml"
 #======================================================
 # Global variables
 #======================================================
-RULES_DIR = 'rules'
-SAMPLES,=glob_wildcards("data/00_RAW_DATA/{sample}_R1.fastq")
-READ_TYPES=["R1", "R2"]
-CONTAMINANTS=config['contaminants_list']
-#CONTAMINANTS_LIST= config[contaminants_list]
+
 
 dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR", "VIRAL_DIR", "MAPPING_DIR", "PROFILE_DIR", "MERGE_DIR"]
 dir_names = ["rules", "../envs", "db/adapters", "db/contaminants" ,"data/00_RAW_DATA", "data/01_QC", "data/02_CLEAN_DATA","data/03_CONTIGS", "data/04_vOTUs", "data/05_VIRAL_ID","data/05_MAPPING", "05_ANVIO_PROFILE", "06_MERGED"]
 dirs_dict = dict(zip(dir_list, dir_names))
+RULES_DIR = 'rules'
+
+SAMPLES,=glob_wildcards("data/00_RAW_DATA/{sample}_" + config['forward_tag'] + ".fastq")
+CONTAMINANTS=config['contaminants_list']
+NANOPORE=False
+PAIRED=False
+READ_TYPES=[config['forward_tag']]
+
+for fname in os.listdir('.'):
+    if fname.endswith(config['reverse_tag'] + '.fastq'):
+    	PAIRED=True
+	elif fname.endswith(config['nanopore_tag'] + '.fastq'): 
+		NANOPORE=True
+
+if PAIRED:
+	READ_TYPES.append(config['reverse_tag'])
+
+
+#CONTAMINANTS_LIST= config[contaminants_list]
 
 ########################################
 # Helper functions
@@ -30,7 +45,7 @@ dirs_dict = dict(zip(dir_list, dir_names))
  
 rule all:
 	input:
-		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
+		#Viral Contigs
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.txt", sample=SAMPLES),
 		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.fasta", sample=SAMPLES),
 		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta", sample=SAMPLES)
@@ -41,7 +56,7 @@ include: os.path.join(RULES_DIR, 'qualityControl.smk')
 include: os.path.join(RULES_DIR, 'assembly.smk')
 include: os.path.join(RULES_DIR, 'vOTUclustering.smk')
 include: os.path.join(RULES_DIR, 'viralFiltering.smk')
-
+include: os.path.join(RULES_DIR, 'abundance.smk')
 
 #00_Raw_data	(raw_data_dir)
 #	Illumina
