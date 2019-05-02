@@ -1,4 +1,5 @@
 ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
+ruleorder: errorCorrectCanuPE > errorCorrectCanuSE
 
 rule hybridAsemblySpades:
 	input:
@@ -190,8 +191,7 @@ rule errorCorrectCanuSE:
 
 rule assemblyStats:
 	input:
-		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{type}.fasta"),
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta")
+		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_{assembly}_filtered_scaffolds.{type}.fasta", assembly=ASSEMBLY_TYPES),
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
@@ -205,6 +205,6 @@ rule assemblyStats:
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
     		tar -xzf quast-5.0.2.tar.gz tools
     	fi
-		./{config[quast_dir]}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
+		./{config[quast_dir]}/quast.py {input.scaffolds}  -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
