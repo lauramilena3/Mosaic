@@ -1,5 +1,6 @@
 ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
 ruleorder: errorCorrectCanuPE > errorCorrectCanuSE
+ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 
 rule hybridAsemblySpades:
 	input:
@@ -189,9 +190,10 @@ rule errorCorrectCanuSE:
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
 
-rule assemblyStats:
+rule assemblyStatsHYBRID:
 	input:
-		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_{assembly}_filtered_scaffolds.{type}.fasta", assembly=ASSEMBLY_TYPES, sample={wildcards.sample}, type={wildcards.type}),
+		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{type}.fasta"),
+		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta")
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
@@ -205,6 +207,26 @@ rule assemblyStats:
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
     		tar -xzf quast-5.0.2.tar.gz tools
     	fi
-		./{config[quast_dir]}/quast.py {input.scaffolds}  -o {output.quast_report_dir}
+		./{config[quast_dir]}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
+		cp {output.quast_report_dir}/report.txt {output.quast_txt}
+		"""
+
+rule assemblyStatsILLUMINA:
+	input:
+		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{type}.fasta")
+	output:
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{type}"),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{type}.txt"
+	message:
+		"Creating assembly stats with quast"
+	threads: 1
+	shell:
+		"""
+		if [ -f {config[quast_dir]} ]
+		then
+			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
+    		tar -xzf quast-5.0.2.tar.gz tools
+    	fi
+		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
