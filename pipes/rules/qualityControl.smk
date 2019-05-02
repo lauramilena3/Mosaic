@@ -39,7 +39,7 @@ rule qualityCheckNanopore:
 		"""
 rule multiQC:
 	input:
-		forward=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{sampling} _fastqc.html", sample=SAMPLES, type=READ_TYPES)
+		forward=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES)
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
 	params:
