@@ -16,20 +16,18 @@ dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA
 dir_names = ["rules", "../envs", "db/adapters", "db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA",RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", RESULTS_DIR + "/05_VIRAL_ID",RESULTS_DIR + "/05_MAPPING", "05_ANVIO_PROFILE", "06_MERGED"]
 dirs_dict = dict(zip(dir_list, dir_names))
 RULES_DIR = 'rules'
-
+SAMPLING_TYPE=["sub", "tot"]
 SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 CONTAMINANTS=config['contaminants_list']
 NANOPORE=False
 PAIRED=False
 READ_TYPES=[config['forward_tag']]
-ASSEMBLY_TYPES=["spades"]
 
 for fname in os.listdir('.'):
 	if fname.endswith(config['reverse_tag'] + '.fastq'):
 		PAIRED=True
 	elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 		NANOPORE=True
-		ASSEMBLY_TYPES.append("canu")
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
 
@@ -49,8 +47,8 @@ rule all:
 	input:
 		#Viral Contigs
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.txt", sample=SAMPLES),
-		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.fasta", sample=SAMPLES),
-		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.fasta", sample=SAMPLES)
+		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_high_confidence.{type}.fasta", sample=SAMPLES, type=SAMPLING_TYPE),
+		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_low_confidence.{type}.fasta", sample=SAMPLES, type=SAMPLING_TYPE)
 		#expand(dirs_dict["vOUT_DIR"] + "/{sample}_circlator",sample=SAMPLES)
 
 
