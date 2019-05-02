@@ -17,7 +17,7 @@ trimmomatic_minlen: "50"
 #bbnorm
 min_norm: "2" 
 max_norm: "100"
-max_subsample: 20000000"
+max_subsample: "20000000"
 #Spades and canu assembly
 min_len: "1000"
 min_cov: "2"
