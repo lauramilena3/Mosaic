@@ -1,4 +1,8 @@
+ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE 
 ruleorder: removeContaminants_PE > removeContaminants_SE 
+ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE 
+ruleorder: normalizeReads_PE > normalizeReads_SE 
+
 
 rule qualityCheckIllumina:
 	input:
@@ -102,7 +106,7 @@ rule remove_adapters_quality_nanopore:
 	output:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.fastq"),
 		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_porechopped.fastq"),
-		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.txt"
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.txt"
 	message: 
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
@@ -150,8 +154,8 @@ rule removeContaminants_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_singletons.tot.fastq",
 		temp_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_temp_unpaired.fastq",
-		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.txt"),
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.txt"
+		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt"),
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	message: 
 		"Removing contaminants with BBtools"
 	conda:
@@ -180,7 +184,7 @@ rule removeContaminants_SE:
 		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
 	output:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.txt"
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	message: 
 		"Removing contaminants with BBtools"
 	conda:
@@ -197,14 +201,16 @@ rule removeContaminants_SE:
 
 rule subsampleReadsIllumina_PE:
 	input:
-		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.txt", sample=SAMPLES),
+		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt", sample=SAMPLES),
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq"
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.sub.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.sub.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.fastq",
+		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt"),
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt"
 	message: 
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -226,14 +232,17 @@ rule subsampleReadsIllumina_PE:
 		reads_left=$(({params.max_subsample} - ($paired*2)))
 		unpaired=$([ $un -le $reads_left ] && echo "$un" || echo $reads_left )
 		reformat.sh in={input.unpaired} out={output.unpaired} reads=$unpaired
+		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		"""
 
 rule subsampleReadsIllumina_SE:
 	input:
-		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.txt", sample=SAMPLES),
+		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt", sample=SAMPLES),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq"
 	output:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.fastq"
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt"
 	message: 
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -249,14 +258,16 @@ rule subsampleReadsIllumina_SE:
 		unpaired_temp=$( cat *_unpaired_clean*txt | sort -n | head -1 )
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})
 		reformat.sh in={input.unpaired} out={output.unpaired} reads=$un
+		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
 
 rule subsampleReadsNanopore:
 	input:
-		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.txt", sample=SAMPLES),
+		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.txt", sample=SAMPLES),
 		fastq=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.fastq",
 	output:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.fastq"
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.txt"
 	message: 
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -271,6 +282,7 @@ rule subsampleReadsNanopore:
 		"""
 		nanopore=$( cat *_nanopore_clean*txt | sort -n | head -1 )
 		reformat.sh in={input.fastq} out={output.forward_paired} reads=$nanopore
+		grep -c "^@" {output.nanopore} > {output.size}
 		"""
 
 rule normalizeReads_PE:
