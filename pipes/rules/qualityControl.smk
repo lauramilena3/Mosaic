@@ -266,8 +266,8 @@ rule subsampleReadsNanopore:
 		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.txt", sample=SAMPLES),
 		fastq=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.fastq",
 	output:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.fastq"
-		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.txt"
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.fastq",
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.txt",
 	message: 
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -289,11 +289,11 @@ rule normalizeReads_PE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{type}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{type}.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{type}.fastq",
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{type}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{type}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq"
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{type}.fastq",
 	message: 
 		"Normalizing reads with BBtools"
 	conda:
