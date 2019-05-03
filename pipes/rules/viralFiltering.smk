@@ -24,7 +24,7 @@ rule downloadViralFiles:
 		fi
 		VS_db="{config[virSorter_db]}"
 		echo $VS_db
-		if [ ! -d $ VS_db]
+		if [ ! -d $ VS_db ]
 		then
 			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
 			mkdir -p {params.virSorter_db}
