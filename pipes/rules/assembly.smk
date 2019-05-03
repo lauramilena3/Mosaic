@@ -202,6 +202,7 @@ rule assemblyStatsHYBRID:
 	threads: 1
 	shell:
 		"""
+		mkdir -p tools
 		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
@@ -225,6 +226,7 @@ rule assemblyStatsILLUMINA:
 	threads: 1
 	shell:
 		"""
+		mkdir -p tools
 		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
