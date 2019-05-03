@@ -21,3 +21,5 @@ dependencies:
   - bwa =0.7.17
   - perl =5.26.2
   - circlator=1.5.5
+  - bamm =1.7.3
+  - bedtools =2.28.0

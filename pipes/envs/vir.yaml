@@ -3,7 +3,6 @@ channels:
   - biobuilds
   - conda-forge
   - r
-  - g2554711
 dependencies:
 #CAT
   - cat =4.3.3
