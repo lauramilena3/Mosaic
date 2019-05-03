@@ -222,7 +222,7 @@ rule assemblyStatsILLUMINA:
 	threads: 1
 	shell:
 		"""
-		if [ -f {config[quast_dir]} ]
+		if [ -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
     		tar -xzf quast-5.0.2.tar.gz tools
