@@ -68,7 +68,7 @@ rule shortReadAsemblySpadesSE:
 	threads: 4
 	shell:
 		"""
-		spades.py  --ss-1 {input.unpaired} -o {params.assembly_dir} \
+		spades.py  --s-1 {input.unpaired} -o {params.assembly_dir} \
 		--meta -t {threads} --only-assembler
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
@@ -79,7 +79,7 @@ rule downloadCanu:
 	output:
 		canu_dir=config['canu_dir'],
 	message:
-		"Downloading required VirSorter files"
+		"Installing Canu assembler"
 	threads: 1
 	shell:
 		"""
@@ -102,7 +102,7 @@ rule asemblyCanu:
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu/{sample}.contigs.{sampling}.fasta"
 	message:
-		"Assembling nanopore reads with canu"
+		"Assembling Nanopore reads with Canu"
 	params: 
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}"
 	threads: 4
@@ -136,7 +136,7 @@ rule errorCorrectCanuPE:
 		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
 	message:
-		"Correcting nanopore assembly with pilon"
+		"Correcting nanopore assembly with Pilon"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -173,7 +173,7 @@ rule errorCorrectCanuSE:
 		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
 	message:
-		"Correcting nanopore assembly with pilon"
+		"Correcting nanopore assembly with Pilon"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
