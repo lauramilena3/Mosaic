@@ -26,7 +26,7 @@ contaminants_list: "GCF_000819615.1"
 adapters_file: "NexteraPE-PE.fa"
 basecalled_dir: "data/basecalled/"
 
-virSorter_db: "db/virSorter/virsorter-data"
+virSorter_db: "db/VirSorter/virsorter-data"
 kraken_db: "db/NCBI-bacteria-01.04.2019"
 canu_dir: "tools/canu-1.8/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
