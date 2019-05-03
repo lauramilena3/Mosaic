@@ -217,18 +217,20 @@ rule subsampleReadsIllumina_PE:
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
-		max_subsample=int(config['max_subsample'])/2
+		max_subsample=int(config['max_subsample'])/2,
+		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt"
+		files_paired=dirs_dict["CLEAN_DATA_DIR"] + "/*_paired_clean.tot.txt"
 	threads: 1
 	resources:
 		mem_mb=4000
 	shell:
 		"""
 		#paired
-		paired=$( cat *_paired_clean*txt 2>/dev/null | cat "1" | sort -n | head -1 )
+		paired=$( {params.files_paired} | cat "1" | sort -n | head -1 )
 		p=$([ $paired -le {params.max_subsample} ] && echo "$paired" || echo {params.max_subsample})
 		reformat.sh in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} reads=$p
 		#unpaired
-		unpaired_temp=$( cat *_unpaired_clean*txt | sort -n | head -1 )
+		unpaired_temp=$( cat {params.files_unpaired} | sort -n | head -1 )
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})
 		reads_left=$(({params.max_subsample} - ($paired*2)))
 		unpaired=$([ $un -le $reads_left ] && echo "$un" || echo $reads_left )
@@ -249,14 +251,15 @@ rule subsampleReadsIllumina_SE:
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
-		max_subsample=config['max_subsample']
+		max_subsample=config['max_subsample'],
+		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt"
 	threads: 1
 	resources:
 		mem_mb=4000
 	shell:
 		"""
 		#unpaired
-		unpaired_temp=$( cat *_unpaired_clean*txt | sort -n | head -1 )
+		unpaired_temp=$( cat {params.files_unpaired} | sort -n | head -1 )
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})
 		reformat.sh in={input.unpaired} out={output.unpaired} reads=$un
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
