@@ -202,10 +202,13 @@ rule assemblyStatsHYBRID:
 	threads: 1
 	shell:
 		"""
-		if [ -f {config[quast_dir]} ]
+		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-    		tar -xzf quast-5.0.2.tar.gz tools
+    		tar -xzf quast-5.0.2.tar.gz -C tools
+    		cd {config[quast_dir]}
+    		./setup.py install
+    		cd ../..
     	fi
 		./{config[quast_dir]}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
@@ -225,7 +228,7 @@ rule assemblyStatsILLUMINA:
 		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-    		tar -xzf quast-5.0.2.tar.gz tools
+    		tar -xzf quast-5.0.2.tar.gz -C tools
     		cd {config[quast_dir]}
     		./setup.py install
     		cd ../..
