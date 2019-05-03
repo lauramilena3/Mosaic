@@ -1,7 +1,7 @@
 channels:
+  - conda-forge
   - bioconda
   - biobuilds
-  - conda-forge
 dependencies: 
   - porechop =0.2.3
   - pip:

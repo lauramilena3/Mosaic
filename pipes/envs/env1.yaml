@@ -1,8 +1,8 @@
 channels:
+  - conda-forge
   - agbiome
   - bioconda
   - biobuilds
-  - conda-forge
 #  - g2554711/label/bioconda 
 dependencies:
   - java-jdk =8.0.112

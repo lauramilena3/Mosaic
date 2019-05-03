@@ -3,3 +3,4 @@ channels:
 #  - g2554711/label/bioconda 
 dependencies:
   - bamm =1.7.3
+

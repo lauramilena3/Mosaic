@@ -1,7 +1,7 @@
 channels:
+  - conda-forge
   - bioconda
   - biobuilds
-  - conda-forge
 dependencies:
   - multiqc =1.6      #python3.6
   - nanofilt =2.2.0   #python3.6
