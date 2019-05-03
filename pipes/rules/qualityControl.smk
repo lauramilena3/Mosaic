@@ -6,10 +6,10 @@ ruleorder: normalizeReads_PE > normalizeReads_SE
 
 rule qualityCheckIllumina:
 	input:
-		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{sampling}.fastq"
+		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}.fastq"
 	output:
-		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{sampling}_fastqc.html"),
-		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{sampling}_fastqc.zip")
+		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.html"),
+		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip")
 	message: 
 		"Performing fastqQC statistics"
 	conda:
@@ -40,7 +40,7 @@ rule qualityCheckNanopore:
 rule multiQC:
 	input:
 		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
-		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{sampling}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
+		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
 	params:
