@@ -66,7 +66,7 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna"
+		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna",
 		virFinder_dir=config['virFinder_dir']
 	output:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
@@ -228,7 +228,7 @@ rule hmmCircularContigs:
 		"""
 rule extractViralContigs:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna"
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna",
 		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
 		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
 		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling}.txt",
