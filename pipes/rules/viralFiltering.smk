@@ -2,7 +2,7 @@ rule downloadViralFiles:
 	output:
 		virSorter_db=directory(config['virSorter_db']),
 		virSorter_dir=directory(config['virSorter_dir']),
-		virFinder_dir=directory(config['virFinder_dir'])
+		virFinder_dir=directory(config['virFinder_dir']),
 	message:
 		"Downloading required VirSorter and VirFinder data"
 	threads: 1
@@ -26,7 +26,7 @@ rule downloadViralFiles:
 		echo $VS_db
 		if [ ! -d $VS_db ]
 		then
-			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
+			#curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
 			mkdir -p {params.virSorter_db}
 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
 			rm virsorter-data-v2.tar.gz
