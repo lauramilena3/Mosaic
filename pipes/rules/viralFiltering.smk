@@ -1,6 +1,6 @@
 rule downloadViralFiles:
 	output:
-		virSorter_db=protected(directory(config['virSorter_db'])),
+		virSorter_db=directory(config['virSorter_db']),
 		virSorter_dir=directory(config['virSorter_dir']),
 		virFinder_dir=directory(config['virFinder_dir'])
 	message:
