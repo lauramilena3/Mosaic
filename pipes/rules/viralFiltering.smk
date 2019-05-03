@@ -10,7 +10,8 @@ rule downloadViralFiles:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		if [ ! -d "{config[virSorter_dir]}" ]
+		VS_dir={config[virSorter_dir]}
+		if [ ! -d $VS_dir ]
 		then
 			mkdir -p tools
 			cd tools
