@@ -23,7 +23,8 @@ NANOPORE=False
 PAIRED=False
 READ_TYPES=[config['forward_tag']]
 
-for fname in os.listdir('.'):
+for fname in os.listdir(RAW_DATA_DIR):
+	print()
 	if fname.endswith(config['reverse_tag'] + '.fastq'):
 		PAIRED=True
 	elif fname.endswith(config['nanopore_tag'] + '.fastq'):
