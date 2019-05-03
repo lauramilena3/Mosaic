@@ -10,7 +10,7 @@ rule downloadViralFiles:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		if [ ! -d {config[virSorter_dir]} ]
+		if [ ! -d "{config[virSorter_dir]}" ]
 		then
 			mkdir -p tools
 			cd tools
@@ -31,7 +31,7 @@ rule downloadViralFiles:
 		then
 			if [ ! {config[operating_system]} == "linux" ] 
 			then
-				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
+				curl -OL https://raw.gils dbthub.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
 			else
 				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
 			fi
