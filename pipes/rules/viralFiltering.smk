@@ -42,7 +42,7 @@ rule downloadViralFiles:
 
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
@@ -66,7 +66,7 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		scaffolds=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna",
 		virFinder_dir=config['virFinder_dir']
 	output:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
@@ -79,7 +79,7 @@ rule virFinder:
 	threads: 1
 	shell:
 		"""
-		Rscript {params.virFinder_script} {input.scaffolds} {output.pvalues}
+		Rscript {params.virFinder_script} {input.representatives} {output.pvalues}
 		"""
 
 rule getViralTable:
