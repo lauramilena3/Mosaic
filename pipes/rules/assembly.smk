@@ -68,7 +68,7 @@ rule shortReadAsemblySpadesSE:
 	threads: 4
 	shell:
 		"""
-		spades.py  --s {input.unpaired} -o {params.assembly_dir} \
+		spades.py  -s {input.unpaired} -o {params.assembly_dir} \
 		--meta -t {threads} --only-assembler
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
