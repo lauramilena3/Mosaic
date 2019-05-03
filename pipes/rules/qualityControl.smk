@@ -226,7 +226,7 @@ rule subsampleReadsIllumina_PE:
 	shell:
 		"""
 		#paired
-		paired=$( {params.files_paired} | sort -n | head -1 )
+		paired=$( cat {params.files_paired} | sort -n | head -1 )
 		p=$([ $paired -le {params.max_subsample} ] && echo "$paired" || echo {params.max_subsample})
 		reformat.sh in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} reads=$p
 		#unpaired
