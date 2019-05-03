@@ -82,7 +82,7 @@ rule filterBAM:
 	message:
 		"Selecting Viral Contigs"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+		dirs_dict["ENVS_DIR"] + "/env2.yaml"
 	threads: 1
 	shell:
 		"""
