@@ -260,6 +260,7 @@ rule subsampleReadsIllumina_SE:
 		"""
 		#unpaired
 		unpaired_temp=$( cat {params.files_unpaired} | sort -n | head -1 )
+		echo $unpaired_temp
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})
 		reformat.sh in={input.unpaired} out={output.unpaired} reads=$un
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
