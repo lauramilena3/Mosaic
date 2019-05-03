@@ -11,6 +11,7 @@ rule downloadViralFiles:
 	shell:
 		"""
 		VS_dir="{config[virSorter_dir]}"
+		echo $VS_dir
 		if [ ! -d $VS_dir ]
 		then
 			mkdir -p tools
