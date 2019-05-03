@@ -35,8 +35,8 @@ rule vOUTclustering:
 	input:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.clstr",
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds_{sampling}_95-80.fna"
+		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.clstr",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna"
 	message:
 		"Creating vOUTs with stampede"
 	conda:
