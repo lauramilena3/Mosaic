@@ -218,7 +218,7 @@ rule subsampleReadsIllumina_PE:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
 		max_subsample=int(config['max_subsample'])/2,
-		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt"
+		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt",
 		files_paired=dirs_dict["CLEAN_DATA_DIR"] + "/*_paired_clean.tot.txt"
 	threads: 1
 	resources:
