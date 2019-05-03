@@ -31,7 +31,9 @@ rule downloadViralFiles:
 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
 			rm virsorter-data-v2.tar.gz
 		fi
-   		if [ ! -d {config[virFinder_dir]} ]
+		VF_dir="{config[virSorter_dir]}"
+		echo $VF_dir
+   		if [ ! -d $VF_dir ]
 		then
 			if [ ! {config[operating_system]} == "linux" ] 
 			then
