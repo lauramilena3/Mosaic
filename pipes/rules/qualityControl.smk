@@ -259,6 +259,7 @@ rule subsampleReadsIllumina_SE:
 	shell:
 		"""
 		#unpaired
+		echo {params.files_unpaired}
 		unpaired_temp=$( cat {params.files_unpaired} | sort -n | head -1 )
 		echo $unpaired_temp
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})

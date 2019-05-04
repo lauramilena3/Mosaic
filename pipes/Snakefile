@@ -24,7 +24,6 @@ PAIRED=False
 READ_TYPES=[config['forward_tag']]
 
 for fname in os.listdir(RAW_DATA_DIR):
-	print()
 	if fname.endswith(config['reverse_tag'] + '.fastq'):
 		PAIRED=True
 	elif fname.endswith(config['nanopore_tag'] + '.fastq'):
@@ -48,8 +47,9 @@ rule all:
 	input:
 		#Viral Contigs
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		expand(dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE),
-		expand(dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE)
+		expand(dirs_dict["VIRAL_DIR"]+ "/{sample}_unpaired_clean.sub.fastq", sampling=SAMPLING_TYPE),
+#		expand(dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE),
+#		expand(dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE)
 		#expand(dirs_dict["vOUT_DIR"] + "/{sample}_circlator",sample=SAMPLES)
 
 
