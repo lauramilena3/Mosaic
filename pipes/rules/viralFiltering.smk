@@ -247,7 +247,9 @@ rule hmmCircularContigs:
 			echo "good"
 		fi
 		cat {output.hmm_out} | grep -v '^#' | awk '{{ if ($6 > {params.min_score}) {{print $1,$3,$5,$6}}}}' > {output.hmm_results}
+		echo "1"
 		cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
+		echo "2"
 		"""
 rule extractViralContigs:
 	input:
