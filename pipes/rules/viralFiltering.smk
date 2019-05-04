@@ -216,12 +216,17 @@ rule getViralTable:
 
 rule hmmCircularContigs:
 	input:
-		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt"
+		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
+		circular_unk_fasta=dirs_dict["VIRAL_DIR"]+ "/unknown_circular.{sampling}.fasta"
 	output:
 		hmm_out=dirs_dict["VIRAL_DIR"]+ "/hmmsearch.{sampling}.out",
-		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt"
+		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
+		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	params:
 		hmm="db/hmm/ssDNA.hmm"
+		min_score=50
+		min_eval=0.001
 	message:
 		"Selecting Viral Circular Contigs with hmmsearch"
 	conda:
@@ -229,18 +234,20 @@ rule hmmCircularContigs:
 	threads: 1
 	shell:
 		"""
-		hmmsearch {params.hmm} {input.circular_unk} -E 0.001 -T 50 > {output.hmm_out}
-		grep {output.hmm_out} > {output.hmm_list}
+		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
+		seqtk subseq {input.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
+		hmmsearch {params.hmm} {output.circular_unk_fasta} -E {params.min_eval} > {output.hmm_out}
+		cat {output.hmm_out} | grep -v '^#' | awk '{{ if ($6 > {params.min_score}) {{print $1,$3,$5,$6}}}' > {output.hmm_results}
+		cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 		"""
 rule extractViralContigs:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
 		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
 		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
 		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling}.txt",
 		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling}.txt",
-		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
-#		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt"
+		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	output:
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
@@ -252,14 +259,19 @@ rule extractViralContigs:
 	threads: 1
 	shell:
 		"""
-		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
-		seqtk subseq {output.edited_fasta} {input.circular_H} > {output.high_contigs}
-		#seqtk subseq {output.hmm_list} {input.circular_unk} >> {output.high_contigs}
+		#High Confidence
+		#circular
+		seqtk subseq {input.edited_fasta} {input.circular_H} > {output.high_contigs}
 		sed -i 's/>/>Circular-/g' {output.high_contigs}
-		seqtk subseq {output.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
-		seqtk subseq {output.edited_fasta} {input.circular_L} > {output.low_contigs}
+		#non-circular
+		seqtk subseq {input.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
+		seqtk subseq {input.edited_fasta} {input.hmm_list} >> {output.high_contigs}
+		#Low Confidence
+		#circular
+		seqtk subseq {input.edited_fasta} {input.circular_L} > {output.low_contigs}
 		sed -i 's/>/>Circular-/g' {output.low_contigs}
-		seqtk subseq {output.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
+		#non-circular
+		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
 		"""
 
 			  
