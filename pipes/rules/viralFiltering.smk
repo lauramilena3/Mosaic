@@ -237,8 +237,9 @@ rule hmmCircularContigs:
 		"""
 		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
-		if [ -s {{output.circular_unk_fasta}} ] 
+		if [ -s {output.circular_unk_fasta} ] 
 		then
+			echo "failing"
 			hmmsearch -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} --tblout {output.hmm_out}
 		else
 			touch {output.hmm_out}
