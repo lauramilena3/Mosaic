@@ -246,8 +246,9 @@ rule hmmCircularContigs:
 			touch {output.hmm_out}
 			echo "good"
 		fi
-		echo "holi"
 		cat {output.hmm_out} | grep -v '^#' > {output.hmm_results}
+		echo "holi"
+		# | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}'
 		echo "1"
 		cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 		echo "2"
