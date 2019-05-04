@@ -224,8 +224,8 @@ rule hmmCircularContigs:
 		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	params:
-		hmm="db/hmm/ssDNA.hmm"
-		min_score=50
+		hmm="db/hmm/ssDNA.hmm",
+		min_score=50,
 		min_eval=0.001
 	message:
 		"Selecting Viral Circular Contigs with hmmsearch"
