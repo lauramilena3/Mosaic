@@ -15,7 +15,6 @@ dependencies:
   - bowtie2 =2.3.5
   - samtools =1.9
   - pilon =1.22
-  - seqtk =1.3
   - mummer =3.23
   - prodigal =2.6.3
   - bwa =0.7.17
