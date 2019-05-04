@@ -251,7 +251,6 @@ rule extractViralContigs:
 	output:
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	message:
 		"Selecting Viral Contigs"
 	conda:
