@@ -275,7 +275,7 @@ rule subsampleReadsNanopore:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.fastq",
 		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.txt",
 	message: 
-		"Subsampling Illumina reads with BBtools"
+		"Subsampling Nanopore reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
