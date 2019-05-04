@@ -5,6 +5,7 @@ channels:
   - agbiome
 dependencies:
   - snakemake-minimal =5.3.0
+  - pandas =0.24.2
 
 #  - matplotlib =3.0.3
 #  - khmer =3.0.0
