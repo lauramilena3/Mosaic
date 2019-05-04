@@ -237,21 +237,17 @@ rule hmmCircularContigs:
 		"""
 		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
-		echo "test"
+		cp temp {output.circular_unk_fasta}
 		if [ -s {output.circular_unk_fasta} ] 
 		then
-			echo "failing"
 			hmmsearch -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} --tblout {output.hmm_out}
+			cat {output.hmm_out} | grep -v '^#' | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
+			cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 		else
 			touch {output.hmm_out}
-			echo "good"
+			touch {output.hmm_list}
+			touch {output.hmm_results}
 		fi
-		cat {output.hmm_out} | grep -v '^#' > {output.hmm_results}
-		echo "holi"
-		# | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}'
-		echo "1"
-		cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
-		echo "2"
 		"""
 rule extractViralContigs:
 	input:
