@@ -238,7 +238,7 @@ rule hmmCircularContigs:
 		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
 		hmmsearch {params.hmm} {output.circular_unk_fasta} -E {params.min_eval} > {output.hmm_out}
-		cat {output.hmm_out} | grep -v '^#' | awk '{{ if ($6 > {params.min_score}) {{print $1,$3,$5,$6}}}' > {output.hmm_results}
+		cat {output.hmm_out} | grep -v '^#' | awk '{{ if ($6 > {params.min_score}) {{print $1,$3,$5,$6}}}}' > {output.hmm_results}
 		cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 		"""
 rule extractViralContigs:
