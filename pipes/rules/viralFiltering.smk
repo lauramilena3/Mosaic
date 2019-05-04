@@ -231,7 +231,7 @@ rule hmmCircularContigs:
 	message:
 		"Selecting Viral Circular Contigs with hmmsearch"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
 	shell:
 		"""
@@ -263,7 +263,7 @@ rule extractViralContigs:
 	message:
 		"Selecting Viral Contigs"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
 	shell:
 		"""
