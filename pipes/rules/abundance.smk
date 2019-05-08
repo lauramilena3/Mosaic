@@ -163,7 +163,7 @@ rule getAbundancesSE:
 	output:
 		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_final_results.{sampling}.csv",
 	message:
-		"Selecting Viral Contigs"
+		"Getting vOTU tables"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
