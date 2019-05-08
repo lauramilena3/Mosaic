@@ -291,7 +291,7 @@ rule extractViralContigs:
 		#non-circular
 		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs_dup}
 		#filter duplicated sequences
-		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.high_contigs_dup} > {output.high_contigs}
-		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs_dup} > {output.low_contigs}
+		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.high_contigs_dup} > {output.high_contigs}
+		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
 		"""
 
