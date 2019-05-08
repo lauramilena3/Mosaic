@@ -99,7 +99,7 @@ rule virFinder:
 		Rscript {params.virFinder_script} {input.representatives} {output.pvalues}
 		"""
 
-rule getViralTable:
+rule parseViralTable:
 	input:
 		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
