@@ -39,7 +39,7 @@ rule mapReadsToContigsPE:
 		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
+	threads: 4
 	shell:
 		"""
 		bowtie2 --non-deterministic -x {params.high_contigs} -1 {input.forward_paired} -2 {input.reverse_paired} \
@@ -64,12 +64,12 @@ rule mapReadsToContigsSE:
 		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
+	threads: 4
 	shell:
 		"""
 		#Mapping reads to contigs
-		bowtie2 --non-deterministic -x {params.high_contigs} -U {input.unpaired} -S {output.high_sam} 
-		bowtie2 --non-deterministic -x {params.low_contigs} -U {input.unpaired} -S {output.low_sam} 
+		bowtie2 --non-deterministic -x {params.high_contigs} -U {input.unpaired} -S {output.high_sam} -p {threads}
+		bowtie2 --non-deterministic -x {params.low_contigs} -U {input.unpaired} -S {output.low_sam} -p {threads}
 		#Sam to Bam
 		samtools view -b -S {output.high_sam} > {output.high_bam}
 		samtools view -b -S {output.low_sam} > {output.low_bam}
