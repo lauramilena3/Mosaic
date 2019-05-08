@@ -288,5 +288,8 @@ rule extractViralContigs:
 		sed -i 's/>/>Circular-/g' {output.low_contigs}
 		#non-circular
 		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
+		#filter duplicated sequences
+		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs} > {output.low_contigs}
+		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs} > {output.low_contigs}
 		"""
 
