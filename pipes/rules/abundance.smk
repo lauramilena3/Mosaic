@@ -93,6 +93,8 @@ rule filterBAM:
 		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.bam",
 		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}_filtered.bam",
+		high_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.tsv",
+		low_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
 	message:
@@ -106,6 +108,8 @@ rule filterBAM:
 		samtools sort {input.low_bam} -o {output.low_bam_sorted}
 		bamm filter --bamfile {output.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
 		bamm filter --bamfile {output.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+		bamm parse -c {output.high_bam_cov} -m tpmean -b {output.high_bam}
+		bamm parse -c {output.low_bam_cov} -m tpmean -b {output.low_bam}
 		"""
 rule filterContigs:
 	input:
@@ -121,7 +125,7 @@ rule filterContigs:
 		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt",
 		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt",
 	message:
-		"Filtering low breadth coverage contigs"
+		"Calculating breadth coverage contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -142,7 +146,7 @@ rule getAbundancesPE:
 	output:
 		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_final_results.{sampling}.csv",
 	message:
-		"Selecting Viral Contigs"
+		"Getting vOTU tables"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
