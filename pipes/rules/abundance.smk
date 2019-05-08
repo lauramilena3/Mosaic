@@ -80,10 +80,10 @@ rule filterBAM:
 		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence.{sampling}.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence.{sampling}.bam",
 	output:
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
+		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.bam",
+		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.bam",
+		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
-		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{sampling}.bam",
-		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{sampling}.bam",
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
@@ -93,13 +93,13 @@ rule filterBAM:
 		"""
 		samtools sort {input.high_bam} -o {output.high_bam_sorted}
 		samtools sort {input.low_bam} -o {output.low_bam_sorted}
-		bamm filter --bamfile {input.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
-		bamm filter --bamfile {input.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
+		bamm filter --bamfile {output.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
+		bamm filter --bamfile {output.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
 		"""
 rule filterContigs:
 	input:
-		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_sorted.{sampling}.bam",
-		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_sorted.{sampling}.bam",
+		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
+		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}.fasta",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
