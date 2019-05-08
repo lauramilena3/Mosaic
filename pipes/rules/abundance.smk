@@ -116,6 +116,8 @@ rule filterContigs:
 		high_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/high_confidence_lenghts.{sampling}.txt",
 		low_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/low_confidence_lenghts.{sampling}.txt",
 	output:
+		high_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_genomecov.{sampling}.txt",
+		low_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_genomecov.{sampling}.txt",
 		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt",
 		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt",
 	message:
@@ -125,9 +127,10 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {input.high_bam} > {output.high_bam_final}
-		bedtools genomecov -dz -ibam {input.low_bam} > {output.low_bam_final}s
-		#get list of contigs and filter high_bam_sorted
+		bedtools genomecov -dz -ibam {input.high_bam} > {output.high_bam_cov}
+		bedtools genomecov -dz -ibam {input.low_bam} > {output.low_bam_cov}
+		cut -f 1 {output.high_bam_cov} | sort| uniq -c | sort -nr > {output.high_bam_final}
+		cut -f 1 {output.low_bam_cov} | sort| uniq -c | sort -nr > {low.high_bam_final}
 		"""
 
 rule getAbundancesPE:
