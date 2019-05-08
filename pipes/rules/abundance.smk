@@ -25,8 +25,8 @@ rule createContigBowtieDb:
 		bowtie2-build -f {input.high_contigs} {params.high_contigs}
 		bowtie2-build -f {input.low_contigs} {params.low_contigs}
 		#Get genome file
-		samtools faidx {output.high_contigs}
-		samtools faidx {output.low_contigs}
+		samtools faidx {input.high_contigs}
+		samtools faidx {input.low_contigs}
 		awk -F' ' '{{print $1"	"$2}}' {output.high_contigs_info} > {output.high_contigs_lenght}
 		awk -F' ' '{{print $1"	"$2}}' {output.low_contigs_info} > {output.low_contigs_lenght}
 		"""
