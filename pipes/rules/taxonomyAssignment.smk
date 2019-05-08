@@ -18,8 +18,8 @@ rule getORFs:
 		"""
 		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa} -p meta
 		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa} -p meta
-		grep ">" {output.high_aa} | awk '{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}' > {output.high_genome_file}
-		grep ">" {output.high_aa} | awk '{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}' > {output.high_genome_file}
+		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}}' > {output.high_genome_file}
+		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}}' > {output.high_genome_file}
 		"""
 rule clusterTaxonomy:
 	input:
