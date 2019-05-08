@@ -27,25 +27,13 @@ rule qualityCheckNanopore:
 		nanoqc=dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html"
 	message: 
 		"Performing nanoQC statistics"
-	params:
-		nanopore_pooled=dirs_dict["QC_DIR"] + "/"+ config["nanopore_pooled_name"]+ "_nanopore_report.html"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/QC.yaml"
 #	threads: 1
 	shell:
 		"""
-		if [ {config[nanopore_pooled] == "true"} ]
-		then
-			if [ ! -s {params.nanopore_pooled_name} ]
-			then
-				nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
-				mv {output.nanoqc_dir}/summary.html {output.nanoqc}
-				ln -s {params.nanopore_pooled_name} {output.nanoqc}
-			else
-				ln -s {params.nanopore_pooled_name} {output.nanoqc}
-		else
-			nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
-			mv {output.nanoqc_dir}/summary.html {output.nanoqc}
+		nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
+		mv {output.nanoqc_dir}/summary.html {output.nanoqc}
 		"""
 
 rule multiQC:
@@ -66,6 +54,7 @@ rule multiQC:
 		"""
 		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
 		"""
+		
 rule trim_adapters_quality_illumina_PE:
 	input:
 		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R1.fastq",
