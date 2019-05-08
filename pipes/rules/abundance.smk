@@ -43,9 +43,9 @@ rule mapReadsToContigsPE:
 	shell:
 		"""
 		bowtie2 --non-deterministic -x {params.high_contigs} -1 {input.forward_paired} -2 {input.reverse_paired} \
-		-U {input.unpaired} -S {output.high_sam} 
+		-U {input.unpaired} -S {output.high_sam} -p {threads}
 		bowtie2 --non-deterministic -x {params.low_contigs} -1 {input.forward_paired} -2 {input.reverse_paired} \
-		-U {input.unpaired} -S {output.low_sam} 
+		-U {input.unpaired} -S {output.low_sam} -p {threads}
 		"""
 rule mapReadsToContigsSE:
 	input:
@@ -61,7 +61,7 @@ rule mapReadsToContigsSE:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}"
 	message:
-		"Mappint reads to contigs"
+		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
