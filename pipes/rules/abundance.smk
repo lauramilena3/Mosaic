@@ -116,7 +116,7 @@ rule filterContigs:
 		"""
 		bedtools genomecov -dz -ibam {input.high_bam} 
 		bedtools genomecov -dz -ibam {input.low_bam} 
-		#get list of contigs and filter {output.high_bam_sorted} 
+		#get list of contigs and filter high_bam_sorted
 		"""
 
 rule getAbundancesPE:
