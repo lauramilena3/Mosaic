@@ -130,7 +130,7 @@ rule filterContigs:
 		bedtools genomecov -dz -ibam {input.high_bam} > {output.high_bam_cov}
 		bedtools genomecov -dz -ibam {input.low_bam} > {output.low_bam_cov}
 		cut -f 1 {output.high_bam_cov} | sort| uniq -c | sort -nr > {output.high_bam_final}
-		cut -f 1 {output.low_bam_cov} | sort| uniq -c | sort -nr > {low.high_bam_final}
+		cut -f 1 {output.low_bam_cov} | sort| uniq -c | sort -nr > {output.low_bam_final}
 		"""
 
 rule getAbundancesPE:
