@@ -100,10 +100,10 @@ rule filterBAM:
 		"""
 rule filterContigs:
 	input:
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
-		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
-		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.fasta"
+		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
+		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}_filtered.bam",
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
 		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
 		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
@@ -114,7 +114,8 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {output.high_bam_sorted} 
+		bedtools genomecov -dz -ibam {output.high_bam} 
+		bedtools genomecov -dz -ibam {output.low_bam} 
 		#get list of contigs and filter {output.high_bam_sorted} 
 		"""
 
