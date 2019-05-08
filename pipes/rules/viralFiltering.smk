@@ -266,6 +266,8 @@ rule extractViralContigs:
 		hmm_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		edited_fasta=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_95-80.{sampling}.fna"
 	output:
+		high_contigs_dup=dirs_dict["VIRAL_DIR"]+ "/high_confidence_dup.{sampling}.fasta",
+		low_contigs_dup=dirs_dict["VIRAL_DIR"]+ "/low_confidence_dup.{sampling}.fasta",
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
 	message:
@@ -277,19 +279,19 @@ rule extractViralContigs:
 		"""
 		#High Confidence
 		#circular
-		seqtk subseq {input.edited_fasta} {input.circular_H} > {output.high_contigs}
-		sed -i 's/>/>Circular-/g' {output.high_contigs}
+		seqtk subseq {input.edited_fasta} {input.circular_H} > {output.high_contigs_dup}
+		sed -i 's/>/>Circular-/g' {output.high_contigs_dup}
 		#non-circular
-		seqtk subseq {input.edited_fasta} {input.non_circular_H} >> {output.high_contigs}
-		seqtk subseq {input.edited_fasta} {input.hmm_list} >> {output.high_contigs}
+		seqtk subseq {input.edited_fasta} {input.non_circular_H} >> {output.high_contigs_dup}
+		seqtk subseq {input.edited_fasta} {input.hmm_list} >> {output.high_contigs_dup}
 		#Low Confidence
 		#circular
-		seqtk subseq {input.edited_fasta} {input.circular_L} > {output.low_contigs}
-		sed -i 's/>/>Circular-/g' {output.low_contigs}
+		seqtk subseq {input.edited_fasta} {input.circular_L} > {output.low_contigs_dup}
+		sed -i 's/>/>Circular-/g' {output.low_contigs_dup}
 		#non-circular
-		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
+		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs_dup}
 		#filter duplicated sequences
-		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs} > {output.low_contigs}
-		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs} > {output.low_contigs}
+		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.high_contigs_dup} > {output.high_contigs}
+		awk '/^>/{f=!d[$1];d[$1]=1}f' {output.low_contigs_dup} > {output.low_contigs}
 		"""
 
