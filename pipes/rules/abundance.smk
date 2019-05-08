@@ -27,8 +27,8 @@ rule createContigBowtieDb:
 		#Get genome file
 		samtools faidx {output.high_contigs}
 		samtools faidx {output.low_contigs}
-		awk -F' ' '{print $1"	"$2}' {output.high_contigs_info} > {output.high_contigs_lenght}
-		awk -F' ' '{print $1"	"$2}' {output.low_contigs_info} > {output.low_contigs_lenght}
+		awk -F' ' '{{print $1"	"$2}}' {output.high_contigs_info} > {output.high_contigs_lenght}
+		awk -F' ' '{{print $1"	"$2}}' {output.low_contigs_info} > {output.low_contigs_lenght}
 		"""
 
 rule mapReadsToContigsPE:
