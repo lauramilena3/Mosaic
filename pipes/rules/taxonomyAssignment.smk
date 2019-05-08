@@ -29,7 +29,7 @@ rule clusterTaxonomy:
 		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	output:
 		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
-		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}.fasta",
+		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
 	params:
 		clusterONE_dir:config["clusterONE_dir"]
 	message:
