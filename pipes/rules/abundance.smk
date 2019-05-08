@@ -12,7 +12,7 @@ rule createContigBowtieDb:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}"
 	message:
-		"Selecting Viral Contigs"
+		"Creating contig DB with Bowtie2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -36,7 +36,7 @@ rule mapReadsToContigsPE:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}"
 	message:
-		"Selecting Viral Contigs"
+		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -61,7 +61,7 @@ rule mapReadsToContigsSE:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}"
 	message:
-		"Selecting Viral Contigs"
+		"Mappint reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -83,7 +83,7 @@ rule filterBAM:
 		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
 	message:
-		"Selecting Viral Contigs"
+		"Filtering reads in Bam file with BamM"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env2.yaml"
 	threads: 1
@@ -104,7 +104,7 @@ rule filterContigs:
 		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
 		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
 	message:
-		"Selecting Viral Contigs"
+		"Filtering low breadth coverage contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
