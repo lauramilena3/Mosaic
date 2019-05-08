@@ -7,7 +7,11 @@ rule createContigBowtieDb:
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
 	output:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}.1.bt2",
-		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.1.bt2"
+		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.1.bt2",
+		high_contigs_info=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta.fai",
+		low_contigs_info=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta.fai",
+		high_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/high_confidence_lenghts.{sampling}.txt",
+		low_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/low_confidence_lenghts.{sampling}.txt",
 	params:
 		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}",
 		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}"
@@ -20,6 +24,11 @@ rule createContigBowtieDb:
 		"""
 		bowtie2-build -f {input.high_contigs} {params.high_contigs}
 		bowtie2-build -f {input.low_contigs} {params.low_contigs}
+		#Get genome file
+		samtools faidx {output.high_contigs}
+		samtools faidx {output.low_contigs}
+		awk -F' ' '{print $1"	"$2}' {output.high_contigs_info} > {output.high_contigs_lenght}
+		awk -F' ' '{print $1"	"$2}' {output.low_contigs_info} > {output.low_contigs_lenght}
 		"""
 
 rule mapReadsToContigsPE:
@@ -103,7 +112,9 @@ rule filterContigs:
 		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}_filtered.bam",
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta"
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
+		high_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/high_confidence_lenghts.{sampling}.txt",
+		low_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/low_confidence_lenghts.{sampling}.txt",
 	output:
 		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
 		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
@@ -114,8 +125,8 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {input.high_bam} 
-		bedtools genomecov -dz -ibam {input.low_bam} 
+		bedtools genomecov -dz -ibam {input.high_bam} -g {input.high_contigs_lenght}
+		bedtools genomecov -dz -ibam {input.low_bam} -g {input.low_contigs_lenght}
 		#get list of contigs and filter high_bam_sorted
 		"""
 
