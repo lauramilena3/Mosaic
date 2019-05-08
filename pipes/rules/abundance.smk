@@ -82,8 +82,10 @@ rule filterBAM:
 	output:
 		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.bam",
 		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.bam",
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
-		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
+		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
+		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}_filtered.bam",
+	params:
+		out_dir=dirs_dict["MAPPING_DIR"]
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
@@ -93,8 +95,8 @@ rule filterBAM:
 		"""
 		samtools sort {input.high_bam} -o {output.high_bam_sorted}
 		samtools sort {input.low_bam} -o {output.low_bam_sorted}
-		bamm filter --bamfile {output.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
-		bamm filter --bamfile {output.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9
+		bamm filter --bamfile {output.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+		bamm filter --bamfile {output.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
 		"""
 rule filterContigs:
 	input:
