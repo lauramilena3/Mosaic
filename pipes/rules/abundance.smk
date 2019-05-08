@@ -116,8 +116,8 @@ rule filterContigs:
 		high_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/high_confidence_lenghts.{sampling}.txt",
 		low_contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/low_confidence_lenghts.{sampling}.txt",
 	output:
-		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
-		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
+		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt",
+		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt",
 	message:
 		"Filtering low breadth coverage contigs"
 	conda:
@@ -125,8 +125,8 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {input.high_bam} -g {input.high_contigs_lenght}
-		bedtools genomecov -dz -ibam {input.low_bam} -g {input.low_contigs_lenght}
+		bedtools genomecov -dz -ibam {input.high_bam} > {output.high_bam_final}
+		bedtools genomecov -dz -ibam {input.low_bam} > {output.low_bam_final}s
 		#get list of contigs and filter high_bam_sorted
 		"""
 
