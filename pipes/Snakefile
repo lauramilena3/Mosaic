@@ -46,7 +46,7 @@ rule all:
 	input:
 		#Viral Contigs
 #		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam", sample=SAMPLES, sampling=SAMPLING_TYPE),
 #		expand(dirs_dict["CLEAN_DATA_DIR"]+ "/{sample}_unpaired_clean.sub.fastq", sample=SAMPLES),
 #		expand(dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE),
 #		expand(dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta", sampling=SAMPLING_TYPE)
