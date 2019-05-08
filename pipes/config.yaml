@@ -7,6 +7,7 @@ reverse_tag: "R2"
 nanopore_tag: "nanopore"
 
 nanopore_pooled: "true"
+nanopore_pooled_name: "raw"
 
 trimmomatic_leading: "15"
 trimmomatic_trailing: "15"
@@ -32,4 +33,5 @@ canu_dir: "tools/canu-1.8/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
 virFinder_dir: "tools/VirFinder"
+clusterONE_dir: "tools/clusterONE"
 
