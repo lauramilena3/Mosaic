@@ -82,7 +82,7 @@ rule filterBAM:
 	output:
 		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.bam",
 		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.bam",
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.bam",
+		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered.{sampling}.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered.{sampling}.bam",
 	message:
 		"Filtering reads in Bam file with BamM"
