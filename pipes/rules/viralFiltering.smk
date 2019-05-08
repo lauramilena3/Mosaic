@@ -1,15 +1,13 @@
-rule downloadViralFiles:
+rule downloadViralTools:
 	output:
-		virSorter_db=directory(config['virSorter_db']),
 		virSorter_dir=directory(config['virSorter_dir']),
 		virFinder_dir=directory(config['virFinder_dir']),
 	message:
-		"Downloading required VirSorter and VirFinder data"
+		"Downloading required VirSorter and VirFinder"
 	threads: 1
-	params:
-		virSorter_db="db/VirSorter"
 	shell:
 		"""
+		#VIRSORTER
 		VS_dir="{config[virSorter_dir]}"
 		echo $VS_dir
 		if [ ! -d $VS_dir ]
@@ -22,15 +20,7 @@ rule downloadViralFiles:
 			make
 			cd ../../../
 		fi
-		VS_db="{config[virSorter_db]}"
-		echo $VS_db
-		if [ ! -d $VS_db ]
-		then
-			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
-			mkdir -p {params.virSorter_db}
-			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
-			rm virsorter-data-v2.tar.gz
-		fi
+		#VIRFNDER
 		VF_dir="{config[virFinder_dir]}"
 		echo $VF_dir
    		if [ ! -d $VF_dir ]
@@ -43,6 +33,27 @@ rule downloadViralFiles:
 			fi
 			mkdir -p {output.virFinder_dir}
 			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
+		fi
+		"""
+
+rule downloadViralDB:
+	output:
+		virSorter_db=directory(config['virSorter_db']),
+	message:
+		"Downloading VirSorter database"
+	threads: 1
+	params:
+		virSorter_db="db/VirSorter"
+	shell:
+		"""
+		VS_db="{config[virSorter_db]}"
+		echo $VS_db
+		if [ ! -d $VS_db ]
+		then
+			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
+			mkdir -p {params.virSorter_db}
+			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
+			rm virsorter-data-v2.tar.gz
 		fi
 		"""
 
@@ -174,8 +185,6 @@ rule getViralTable:
 
 		lsCnoAB=set(lsC) - set(lsAB)
 		lsCf=list(lsCnoAB)
-		print("circular")
-		print("\n".join(lsCf))
 
 		f=open(output.circular_H, 'w')
 		f.write("\n".join(lsAB))
@@ -280,6 +289,4 @@ rule extractViralContigs:
 		#non-circular
 		seqtk subseq {input.edited_fasta} {input.non_circular_L} >> {output.low_contigs}
 		"""
-
-			  
 

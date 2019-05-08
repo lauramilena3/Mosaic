@@ -31,7 +31,6 @@ for fname in os.listdir(RAW_DATA_DIR):
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
 
-print(READ_TYPES)
 #CONTAMINANTS_LIST= config[contaminants_list]
 
 ########################################

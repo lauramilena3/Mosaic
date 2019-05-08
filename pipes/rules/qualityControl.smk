@@ -28,15 +28,26 @@ rule qualityCheckNanopore:
 	message: 
 		"Performing nanoQC statistics"
 	params:
-		nanopore="nanopore"
+		nanopore_pooled=dirs_dict["QC_DIR"] + "/"+ config["nanopore_pooled_name"]+ "_nanopore_report.html"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/QC.yaml"
 #	threads: 1
 	shell:
 		"""
-		nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
-		mv {output.nanoqc_dir}/summary.html {output.nanoqc}
+		if [ {config[nanopore_pooled] == "true"} ]
+		then
+			if [ ! -s {params.nanopore_pooled_name} ]
+			then
+				nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
+				mv {output.nanoqc_dir}/summary.html {output.nanoqc}
+				ln -s {params.nanopore_pooled_name} {output.nanoqc}
+			else
+				ln -s {params.nanopore_pooled_name} {output.nanoqc}
+		else
+			nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
+			mv {output.nanoqc_dir}/summary.html {output.nanoqc}
 		"""
+
 rule multiQC:
 	input:
 		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
