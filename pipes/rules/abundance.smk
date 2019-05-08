@@ -114,8 +114,8 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {output.high_bam} 
-		bedtools genomecov -dz -ibam {output.low_bam} 
+		bedtools genomecov -dz -ibam {input.high_bam} 
+		bedtools genomecov -dz -ibam {input.low_bam} 
 		#get list of contigs and filter {output.high_bam_sorted} 
 		"""
 
