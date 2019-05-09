@@ -19,9 +19,9 @@ rule getORFs:
 		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa} -p meta
 		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa} -p meta
 		sed -i 's/;/|/g' {output.high_aa}
-		sed -i 's/ # /|/g' {output.high_aa}
+		sed -i 's/#/|/g' {output.high_aa}
 		sed -i 's/;/|/g' {output.low_aa}
-		sed -i 's/ # /|/g' {output.low_aa}
+		sed -i 's/#/|/g' {output.low_aa}
 		grep ">" {output.high_aa} | awk '{{ print substr($0,2,length($0))", "substr($1,2,length($1))}}' > {output.high_genome_file}
 		grep ">" {output.low_aa} | awk '{{ print substr($0,2,length($0))", "substr($1,2,length($1))}}' > {output.low_genome_file}
 		"""
