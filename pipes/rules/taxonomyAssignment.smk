@@ -35,7 +35,7 @@ rule clusterTaxonomy:
 	message:
 		"Clustering viral genomes with vContact2"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 1
 	shell:
 		"""
