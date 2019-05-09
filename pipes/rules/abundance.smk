@@ -195,7 +195,7 @@ rule getSummaryTable:
 	input:
 		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
 		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
-		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
+		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
 		high_dir=directory(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
 		low_dir=directory(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
 	output:
