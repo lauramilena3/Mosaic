@@ -291,9 +291,7 @@ rule extractViralContigs:
 		#filter duplicated sequences
 		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.high_contigs_dup} > {output.high_contigs}
 		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
-		sed -i 's/_/-/g' {output.low_contigs_dup}
-		sed -i 's/_/-/g' {output.low_contigs_dup}
-
-
+		sed -i 's/_/-/g' {output.high_contigs}
+		sed -i 's/_/-/g' {output.low_contigs}
 		"""
 
