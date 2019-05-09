@@ -12,7 +12,7 @@ rule getORFs:
 		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
 		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	message:
-		"Creating contig DB with Bowtie2"
+		"Calling ORFs with prodigal"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
@@ -23,7 +23,7 @@ rule getORFs:
 		awk '{for(x=1;x<=NF;x++)if($x~/^>/){sub(/^>/,">orf|"++i"|")}}1' {output.high_aa_temp} > {output.high_aa}
 		awk '{for(x=1;x<=NF;x++)if($x~/^>/){sub(/^>/,">orf"++i"|")}}1' {output.low_aa_temp} >  {output.low_aa}
 		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($0))","substr($1,2,length($1))}}' > {output.high_genome_file}
-		grep ">" {output.low_aa} | awk '{{ print substr($1,2,length($1))","substr($1,2,length($1)) > {output.low_genome_file}
+		grep ">" {output.low_aa} | awk '{{ print substr($1,2,length($1))","substr($1,2,length($1))}}' > {output.low_genome_file}
 		#sed -i 's/_/,/g' {output.high_aa}
 		#sed -i 's/_/,/g' {output.low_aa}
 		"""
