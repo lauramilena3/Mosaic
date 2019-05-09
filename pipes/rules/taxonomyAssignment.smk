@@ -18,8 +18,8 @@ rule getORFs:
 		"""
 		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa} -p meta
 		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa} -p meta
-		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}}' > {output.high_genome_file}
-		grep ">" {output.low_aa} | awk '{{ print substr($1,2,length($1)-2)", "substr($0,2,length($0)-2)}}' > {output.low_genome_file}
+		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($1))", "substr($0,2,length($0)}}' > {output.high_genome_file}
+		grep ">" {output.low_aa} | awk '{{ print substr($1,2,length($1))", "substr($0,2,length($0))}}' > {output.low_genome_file}
 		"""
 rule clusterTaxonomy:
 	input:
@@ -45,6 +45,10 @@ rule clusterTaxonomy:
 			curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 			mv cluster_one-1.0.jar {params.clusterONE_dir}
 		fi
+			wget https://bitbucket.org/bolduc/vcontact2/get/master.tar.gz
+			tar xvf MAVERICLab-vcontact2-XXXXXXX.tar.gz
+			cd MAVERICLab-vcontact2-XXXXXXX && pip install .
+
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {input.high_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
 		--output-dir {output.high_dir}
