@@ -7,10 +7,10 @@ rule getORFs:
 		low_coords=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.coords",
 		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta",
 		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta",
-		high_aa_temp=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta_temp",
-		low_aa_temp=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta_temp",
-		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
-		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
+		#high_aa_temp=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta_temp",
+		#low_aa_temp=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta_temp",
+		#high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
+		#low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	message:
 		"Calling ORFs with prodigal"
 	conda:
@@ -18,24 +18,28 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa_temp} -p meta
-		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa_temp} -p meta
-		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.high_aa_temp} > {output.high_aa}
-		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.low_aa_temp} >  {output.low_aa}
-		grep ">" {output.high_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.high_genome_file}
-		grep ">" {output.low_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.low_genome_file}
-		sed 's/[ ].*$//' {output.high_aa} > {output.high_aa_temp}
-		sed 's/[ ].*$//' {output.low_aa} > {output.low_aa_temp}
+		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa} -p meta
+		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa} -p meta
+		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.high_aa_temp} > {output.high_aa}
+		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.low_aa_temp} >  {output.low_aa}
+		#grep ">" {output.high_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.high_genome_file}
+		#grep ">" {output.low_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.low_genome_file}
+		#sed 's/[ ].*$//' {output.high_aa} > {output.high_aa_temp}
+		#sed 's/[ ].*$//' {output.low_aa} > {output.low_aa_temp}
 		"""
 rule clusterTaxonomy:
 	input:
-		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta_temp",
-		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta_temp",
+		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta",
+		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta",
 		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
 		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	output:
 		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
 		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
+		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
+		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
+		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
+		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	params:
 		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"]
@@ -43,7 +47,7 @@ rule clusterTaxonomy:
 		"Clustering viral genomes with vContact2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env4.yaml"
-	threads: 1
+	threads: 4
 	shell:
 		"""
 		if [ ! -d {params.clusterONE_dir} ]
@@ -59,10 +63,12 @@ rule clusterTaxonomy:
 			envir=$( which vcontact | rev | cut -d/ -f3 | rev)
 			cp {params.vcontact_dir}/vcontact/data/ViralRefSeq-* .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/data/
 		fi
+		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.high_aa} -s Prodigal-FAA -o {output.high_genome_file}
+		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.low_aa} -s Prodigal-FAA -o {output.low_genome_file}
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {input.high_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
-		--output-dir {output.high_dir}
+		--output-dir {output.high_dir} --threads {threads}
 		vcontact --raw-proteins {input.low_aa} --rel-mode 'Diamond' --proteins-fp {input.low_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
-		--output-dir {output.low_dir}
+		--output-dir {output.low_dir} --threads {threads}
 		"""
