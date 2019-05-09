@@ -22,8 +22,10 @@ rule getORFs:
 		sed -i 's/ # /|/g' {output.high_aa}
 		sed -i 's/;/|/g' {output.low_aa}
 		sed -i 's/ # /|/g' {output.low_aa}
-		grep ">" {output.high_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))}}' > {output.high_genome_file}
-		grep ">" {output.low_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))}}' > {output.low_genome_file}
+		grep ">" {output.high_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))","$2";"$3";"$4";"$5";"$6}}' \
+		> {output.high_genome_file}
+		grep ">" {output.low_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))","$2";"$3";"$4";"$5";"$6}}' \
+		> {output.low_genome_file}
 		"""
 rule clusterTaxonomy:
 	input:
