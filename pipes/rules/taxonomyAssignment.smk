@@ -37,7 +37,7 @@ rule clusterTaxonomy:
 		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
 		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
 	params:
-		clusterONE_dir=config["clusterONE_dir"]
+		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"]
 	message:
 		"Clustering viral genomes with vContact2"
