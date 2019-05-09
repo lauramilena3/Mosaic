@@ -138,12 +138,12 @@ rule filterContigs:
 		"""
 rule getAbundancesPE:
 	input:
-		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
-		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
-		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
-		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
-		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_unpaired_clean.sub.txt", sampling=SAMPLING_TYPE),
-		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_paired_clean.sub.txt", sampling=SAMPLING_TYPE),
+		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
 	output:
 		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.txt",
 		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.txt",
@@ -157,12 +157,11 @@ rule getAbundancesPE:
 		"""
 rule getAbundancesSE:
 	input:
-		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
-		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
-		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
-		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
-		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_unpaired_clean.sub.txt", sampling=SAMPLING_TYPE),
-		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_paired_clean.sub.txt", sampling=SAMPLING_TYPE),
+		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
 	output:
 		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.txt",
 		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.txt",
