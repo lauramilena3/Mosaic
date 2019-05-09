@@ -58,9 +58,9 @@ rule clusterTaxonomy:
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.high_aa} -s Prodigal-FAA -o {output.high_genome_file}
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.low_aa} -s Prodigal-FAA -o {output.low_genome_file}
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {input.high_genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
 		--output-dir {output.high_dir} --threads {threads}
 		vcontact --raw-proteins {input.low_aa} --rel-mode 'Diamond' --proteins-fp {input.low_genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
 		--output-dir {output.low_dir} --threads {threads}
 		"""
