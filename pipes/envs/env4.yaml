@@ -18,4 +18,4 @@ dependencies:
 #  - blast 2.7.1
   - diamond 0.9.24
   - pip:
-    - git+https://bitbucket.org/MAVERICLab/vcontact2
+    - git+https://bitbucket.org/MAVERICLab/vcontact2/src/master/vcontact/
