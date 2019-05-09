@@ -45,10 +45,10 @@ rule clusterTaxonomy:
 			curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 			mv cluster_one-1.0.jar {params.clusterONE_dir}
 		fi
-		vcontact2 --raw-proteins {input.high_aa} --rel-mode ‘Diamond’ --proteins-fp {input.high_genome_file} \
+		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {input.high_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
 		--output-dir {output.high_dir}
-		vcontact2 --raw-proteins {input.low_aa} --rel-mode ‘Diamond’ --proteins-fp {input.low_genome_file} \
+		vcontact --raw-proteins {input.low_aa} --rel-mode 'Diamond' --proteins-fp {input.low_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
 		--output-dir {output.low_dir}
 		"""
