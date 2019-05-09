@@ -11,7 +11,7 @@ dependencies:
   - biopython =1.73
   - networkx =2.3
   - numpy =1.11.3
-  - pandas =0.24.2
+  - pandas =0.23.4
   - scipy =1.2.1
   - scikit-learn =0.20.3
   - psutil =5.6.2
