@@ -53,10 +53,13 @@ rule clusterTaxonomy:
 			envir=$( which vcontact | rev | cut -d/ -f3 | rev)
 			cp {params.vcontact_dir}/vcontact/data/ViralRefSeq-* .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/data/
 		fi
+		#three changes in code 1) int 2,3) summary remove excluded
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.high_aa} -s Prodigal-FAA -o {output.high_genome_file}
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.low_aa} -s Prodigal-FAA -o {output.low_genome_file}
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {output.high_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
 		--output-dir {output.high_dir} --threads {threads}
-		cp {output.high_dir} temp
+		vcontact --raw-proteins {input.low_aa} --rel-mode 'Diamond' --proteins-fp {output.low_genome_file} \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
+		--output-dir {output.low_dir} --threads {threads}
 		"""
