@@ -26,8 +26,8 @@ rule clusterTaxonomy:
 		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta",
 		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta",
 	output:
-		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
-		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
+		high_dir=directory(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
+		low_dir=directory(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
 		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
 		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	params:
@@ -37,7 +37,7 @@ rule clusterTaxonomy:
 		"Clustering viral genomes with vContact2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env4.yaml"
-	threads: 4
+	threads: 8
 	shell:
 		"""
 		if [ ! -d {params.clusterONE_dir} ]
@@ -56,9 +56,7 @@ rule clusterTaxonomy:
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.high_aa} -s Prodigal-FAA -o {output.high_genome_file}
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.low_aa} -s Prodigal-FAA -o {output.low_genome_file}
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {output.high_genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
 		--output-dir {output.high_dir} --threads {threads}
-		vcontact --raw-proteins {input.low_aa} --rel-mode 'Diamond' --proteins-fp {output.low_genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
-		--output-dir {output.low_dir} --threads {threads}
+		cp {output.high_dir} temp
 		"""
