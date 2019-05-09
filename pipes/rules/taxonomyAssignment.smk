@@ -7,6 +7,8 @@ rule getORFs:
 		low_coords=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.coords",
 		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta",
 		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta",
+		high_aa_temp=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta_temp",
+		low_aa_temp=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta_temp",
 		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
 		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	message:
@@ -16,16 +18,14 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa} -p meta
-		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa} -p meta
-		sed -i 's/;/|/g' {output.high_aa}
-		sed -i 's/ # /_/g' {output.high_aa}
-		sed -i 's/;/|/g' {output.low_aa}
-		sed -i 's/ # /_/g' {output.low_aa}
-		grep ">" {output.high_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))","$2";"$3";"$4";"$5";"$6}}' \
-		> {output.high_genome_file}
-		grep ">" {output.low_aa} | awk -F  "|" '{{ print substr($0,2,length($0))","substr($1,2,length($1))","$2";"$3";"$4";"$5";"$6}}' \
-		> {output.low_genome_file}
+		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa_temp} -p meta
+		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa_temp} -p meta
+		awk '{for(x=1;x<=NF;x++)if($x~/^>/){sub(/^>/,">orf|"++i"|")}}1' {output.high_aa_temp} > {output.high_aa}
+		awk '{for(x=1;x<=NF;x++)if($x~/^>/){sub(/^>/,">orf"++i"|")}}1' {output.low_aa_temp} >  {output.low_aa}
+		grep ">" {output.high_aa} | awk '{{ print substr($1,2,length($0))","substr($1,2,length($1))}}' > {output.high_genome_file}
+		grep ">" {output.low_aa} | awk '{{ print substr($1,2,length($1))","substr($1,2,length($1)) > {output.low_genome_file}
+		#sed -i 's/_/,/g' {output.high_aa}
+		#sed -i 's/_/,/g' {output.low_aa}
 		"""
 rule clusterTaxonomy:
 	input:
