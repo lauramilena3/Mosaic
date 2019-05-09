@@ -33,6 +33,7 @@ for fname in os.listdir(RAW_DATA_DIR):
 		NANOPORE=True
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
+print(POOLED)
 if POOLED == "True":
 	NANOPORE_SAMPLES=config['nanopore_pooled_name']
 
