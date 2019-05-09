@@ -18,9 +18,12 @@ dirs_dict = dict(zip(dir_list, dir_names))
 RULES_DIR = 'rules'
 SAMPLING_TYPE=["sub", "tot"]
 SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
+NANOPORE_SAMPLES=SAMPLES
 CONTAMINANTS=config['contaminants_list']
 NANOPORE=False
 PAIRED=False
+POOLED=config['nanopore_pooled']
+
 READ_TYPES=[config['forward_tag']]
 
 for fname in os.listdir(RAW_DATA_DIR):
@@ -30,13 +33,8 @@ for fname in os.listdir(RAW_DATA_DIR):
 		NANOPORE=True
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
-
-#CONTAMINANTS_LIST= config[contaminants_list]
-
-########################################
-# Helper functions
-########################################
-
+if POOLED == "True":
+	NANOPORE_SAMPLES=config['nanopore_pooled_name']
 
 #======================================================
 # Rules
@@ -44,10 +42,9 @@ if PAIRED:
  
 rule all:
 	input:
-		#Viral Contigs
-#		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
 		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
-		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES),
 		expand(dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE),
 		expand(dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE),
 		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE),
@@ -59,16 +56,7 @@ include: os.path.join(RULES_DIR, 'viralFiltering.smk')
 include: os.path.join(RULES_DIR, 'abundance.smk')
 include: os.path.join(RULES_DIR, 'taxonomyAssignment.smk')
 
-#00_Raw_data	(raw_data_dir)
-#	Illumina
-#	Nanopore
-#
-#01_Quality_control (qc_dir)
-#	fastQC
-#	QC_data
 
-#wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
-#gunzip hg38.fa.gz
 		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.high_aa_temp} > {output.high_aa}
 		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.low_aa_temp} >  {output.low_aa}
 		#grep ">" {output.high_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.high_genome_file}
