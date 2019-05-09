@@ -20,10 +20,10 @@ rule getORFs:
 		"""
 		prodigal -i {input.high_contigs} -o {output.high_coords} -a {output.high_aa_temp} -p meta
 		prodigal -i {input.low_contigs} -o {output.low_coords} -a {output.low_aa_temp} -p meta
-		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"|_")}}}}1' {output.high_aa_temp} > {output.high_aa}
-		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"|_")}}}}1' {output.low_aa_temp} >  {output.low_aa}
-		grep ">" {output.high_aa} | awk -F "_" '{{ print substr($1,2,length($1))","$2","$4}}' > {output.high_genome_file}
-		grep ">" {output.low_aa} | awk -F "_" '{{ print substr($1,2,length($1))","$2","$4}}' > {output.low_genome_file}
+		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.high_aa_temp} > {output.high_aa}
+		awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.low_aa_temp} >  {output.low_aa}
+		grep ">" {output.high_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$4}}' > {output.high_genome_file}
+		grep ">" {output.low_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$4}}' > {output.low_genome_file}
 		#sed -i 's/_/,/g' {output.high_aa}
 		#sed -i 's/_/,/g' {output.low_aa}
 		"""
