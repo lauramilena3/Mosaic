@@ -25,8 +25,6 @@ rule clusterTaxonomy:
 	input:
 		high_aa=dirs_dict["VIRAL_DIR"]+ "/high_confidence_ORFs.{sampling}.fasta",
 		low_aa=dirs_dict["VIRAL_DIR"]+ "/low_confidence_ORFs.{sampling}.fasta",
-		high_genome_file=dirs_dict["VIRAL_DIR"]+ "/high_confidence_genome_file.{sampling}.csv",
-		low_genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_genome_file.{sampling}.csv",
 	output:
 		high_dir=dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}",
 		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
