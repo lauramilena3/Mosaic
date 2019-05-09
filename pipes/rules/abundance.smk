@@ -93,8 +93,8 @@ rule filterBAM:
 		low_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.bam",
 		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
 		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}_filtered.bam",
-		high_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}.tsv",
-		low_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted.{sampling}.tsv",
+		high_tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_tpmean.{sampling}.tsv",
+		low_tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
 	message:
@@ -108,8 +108,8 @@ rule filterBAM:
 		samtools sort {input.low_bam} -o {output.low_bam_sorted}
 		bamm filter --bamfile {output.high_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
 		bamm filter --bamfile {output.low_bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
-		bamm parse -c {output.high_bam_cov} -m tpmean -b {output.high_bam}
-		bamm parse -c {output.low_bam_cov} -m tpmean -b {output.low_bam}
+		bamm parse -c {output.high_tpmean} -m tpmean -b {output.high_bam}
+		bamm parse -c {output.low_tpmean} -m tpmean -b {output.low_bam}
 		"""
 rule filterContigs:
 	input:
@@ -122,8 +122,8 @@ rule filterContigs:
 	output:
 		high_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_genomecov.{sampling}.txt",
 		low_bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_genomecov.{sampling}.txt",
-		high_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt",
-		low_bam_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt",
+		high_cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.txt",
+		low_cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.txt",
 	message:
 		"Calculating breadth coverage contigs"
 	conda:
@@ -133,35 +133,54 @@ rule filterContigs:
 		"""
 		bedtools genomecov -dz -ibam {input.high_bam} > {output.high_bam_cov}
 		bedtools genomecov -dz -ibam {input.low_bam} > {output.low_bam_cov}
-		cut -f 1 {output.high_bam_cov} | sort| uniq -c | sort -nr > {output.high_bam_final}
-		cut -f 1 {output.low_bam_cov} | sort| uniq -c | sort -nr > {output.low_bam_final}
+		cut -f 1 {output.high_bam_cov} | sort| uniq -c | sort -nr > {output.high_cov_final}
+		cut -f 1 {output.low_bam_cov} | sort| uniq -c | sort -nr > {output.low_cov_final}
 		"""
-
 rule getAbundancesPE:
 	input:
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
-		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
-		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.fasta"
+		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
+		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
+		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
+		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_unpaired_clean.sub.txt", sampling=SAMPLING_TYPE),
+		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_paired_clean.sub.txt", sampling=SAMPLING_TYPE),
 	output:
-		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_final_results.{sampling}.csv",
+		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.txt",
+		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.txt",
 	message:
 		"Getting vOTU tables"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
 	shell:
 		"""
-		bamm 
+		touch {output.high_abundances}
+		touch {output.low_abundances}
 		"""
 rule getAbundancesSE:
 	input:
-		high_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_filtered_coverage.{sampling}.bam",
-		low_bam=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_filtered_coverage.{sampling}.bam",
-		high_contigs=dirs_dict["MAPPING_DIR"]+ "/high_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["MAPPING_DIR"]+ "/low_confidence.{sampling}.fasta"
+		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
+		low_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_filtered_coverage.{sampling}.txt", sampling=SAMPLING_TYPE),
+		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_high_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
+		low_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{{sample}}_low_confidence_tpmean.{sampling}.tsv", sampling=SAMPLING_TYPE),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_unpaired_clean.sub.txt", sampling=SAMPLING_TYPE),
+		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_paired_clean.sub.txt", sampling=SAMPLING_TYPE),
 	output:
-		high_bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_final_results.{sampling}.csv",
+		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.txt",
+		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.txt",
+	message:
+		"Getting vOTU tables"
+	threads: 1
+	shell:
+		"""
+		touch {output.high_abundances}
+		touch {output.low_abundances}
+		"""
+rule tabletoBIOM:
+	input:
+		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.txt",
+		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.txt",
+	output:
+		high_abundances=dirs_dict["MAPPING_DIR"]+ "/high_confidence_vOTU_abundance_table.{sampling}.biom",
+		low_abundances=dirs_dict["MAPPING_DIR"]+ "/low_confidence_vOTU_abundance_table.{sampling}.biom",
 	message:
 		"Getting vOTU tables"
 	conda:
@@ -169,5 +188,22 @@ rule getAbundancesSE:
 	threads: 1
 	shell:
 		"""
-		bamm 
+		touch {output.high_abundances}
+		touch {output.low_abundances}	
+		"""
+rule getSummaryTable:
+	input:
+		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
+		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
+		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
+		high_dir=directory(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
+		low_dir=directory(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
+	output:
+		summary=dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",
+	message:
+		"Getting vOTU tables"
+	threads: 1
+	shell:
+		"""
+		touch {output.summary}
 		"""
