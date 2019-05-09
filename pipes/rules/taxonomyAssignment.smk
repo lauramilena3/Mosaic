@@ -38,6 +38,7 @@ rule clusterTaxonomy:
 		low_dir=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}",
 	params:
 		clusterONE_dir=config["clusterONE_dir"]
+		vcontact_dir=config["vcontact_dir"]
 	message:
 		"Clustering viral genomes with vContact2"
 	conda:
@@ -51,7 +52,13 @@ rule clusterTaxonomy:
 			curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 			mv cluster_one-1.0.jar {params.clusterONE_dir}
 		fi
-
+		if [ ! -d {params.vcontact_dir} ]
+		then
+			git clone https://bitbucket.org/MAVERICLab/vcontact2/
+			mv vcontact2 tools
+			envir=$( which vcontact | rev | cut -d/ -f3 | rev)
+			cp {params.vcontact_dir}/vcontact/data/ViralRefSeq-* .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/data/
+		fi
 		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {input.high_genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir} \
 		--output-dir {output.high_dir}
