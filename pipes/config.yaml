@@ -34,4 +34,7 @@ quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
 virFinder_dir: "tools/VirFinder"
 clusterONE_dir: "tools/clusterONE"
+vcontact_dir: "tools/vcontact2"
+
+
 
