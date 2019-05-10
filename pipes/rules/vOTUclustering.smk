@@ -1,4 +1,4 @@
-#ruleorder: mergeAssembliesHIBRID > mergeAssembliesSHORT
+ruleorder: mergeAssembliesHIBRID > mergeAssembliesSHORT
 
 rule mergeAssembliesHIBRID:
 	input:
