@@ -106,7 +106,7 @@ rule asemblyCanuPOOLED:
 	message:
 		"Assembling Nanopore reads with Canu"
 	params: 
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}"
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
 		assembly=dirs_dict["ASSEMBLY_DIR"] 
 	threads: 4
 	shell:
