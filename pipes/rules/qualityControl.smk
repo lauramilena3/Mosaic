@@ -21,10 +21,10 @@ rule qualityCheckIllumina:
 		"""
 rule qualityCheckNanopore:
 	input:
-		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_nanopore.fastq"
+		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample_nanopore}_nanopore.fastq"
 	output:
-		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample}_nanoplot")),
-		nanoqc=dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html"
+		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot")),
+		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report.html"
 	message: 
 		"Performing nanoQC statistics"
 	conda:
@@ -102,12 +102,12 @@ rule trim_adapters_quality_illumina_SE:
 
 rule remove_adapters_quality_nanopore:
 	input:
-		raw_data=dirs_dict["RAW_DATA_DIR"] + "/{sample}_nanopore.fastq",
-		nanoqc=dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html"
+		raw_data=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore.fastq",
+		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report.html"
 	output:
-		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.fastq"),
-		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_porechopped.fastq"),
-		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.txt"
+		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
+		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_porechopped.fastq"),
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
 	message: 
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
@@ -269,11 +269,11 @@ rule subsampleReadsIllumina_SE:
 
 rule subsampleReadsNanopore:
 	input:
-		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.txt", sample=SAMPLES),
-		fastq=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.tot.fastq",
+		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt", sample=SAMPLES),
+		fastq=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq",
 	output:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.fastq",
-		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.sub.txt",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.fastq",
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.txt",
 	message: 
 		"Subsampling Nanopore reads with BBtools"
 	conda:
