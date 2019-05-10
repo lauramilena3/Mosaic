@@ -1,25 +1,9 @@
-ruleorder: mergeAssembliesHIBRIDpooled > mergeAssembliesHIBRID > mergeAssembliesSHORT
-
-rule mergeAssembliesHIBRIDpooled:
-	input:
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
-		scaffolds_canu=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_filtered_scaffolds.{sampling}.fasta"
-	output:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
-	message:
-		"Merging assembled contigs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
-	shell:
-		"""
-		cat {input.scaffolds_canu} {input.scaffolds_spades} > {output.merged_assembly}
-		"""
+ruleorder: mergeAssembliesHIBRIDpooled > mergeAssembliesSHORT
 
 rule mergeAssembliesHIBRID:
 	input:
-		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
+		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{sampling}.fasta", sample_nanopore=NANOPORE_SAMPLES)
 	output:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
 	message:
@@ -30,21 +14,6 @@ rule mergeAssembliesHIBRID:
 	shell:
 		"""
 		cat {input.scaffolds_canu} {input.scaffolds_spades} > {output.merged_assembly}
-		"""
-
-rule mergeAssembliesSHORT:
-	input:
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
-	output:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
-	message:
-		"Merging assembled contigs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
-	shell:
-		"""
-		cat {input.scaffolds_spades} > {output.merged_assembly}
 		"""
 
 rule vOUTclustering:
