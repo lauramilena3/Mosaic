@@ -3,7 +3,7 @@ ruleorder: mergeAssembliesHIBRIDpooled > mergeAssembliesSHORT
 rule mergeAssembliesHIBRID:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
-		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{sampling}.fasta", sample_nanopore=NANOPORE_SAMPLES),
+		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
 	message:
