@@ -125,7 +125,7 @@ rule asemblyCanu:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		canu_dir=config['canu_dir']
 	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/{sample}.contigs.{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/{sample}.contigs.{sampling}.fasta",
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
 	message:
 		"Assembling Nanopore reads with Canu"
