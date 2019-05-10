@@ -1,6 +1,7 @@
 ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
 ruleorder: errorCorrectCanuPE > errorCorrectCanuSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
+ruleorder: asemblyCanuPOOLED > asemblyCanu
 
 rule hybridAsemblySpades:
 	input:
@@ -94,17 +95,42 @@ rule downloadCanu:
 		fi
 		tar -xJf canu-1.8.*.tar.xz tools
 		"""
-
-rule asemblyCanu:
+rule asemblyCanuPOOLED:
 	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{sampling}.fastq",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/" + config['nanopore_pooled_name'] + "_nanopore_clean.{sampling}.fastq",
 		canu_dir=config['canu_dir']
 	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu/{sample_nanopore}.contigs.{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_{sampling}/"+ "/" + \
+			config['nanopore_pooled_name'] + ".contigs.{sampling}.fasta",
+		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
 	params: 
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_{sampling}"
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}"
+		assembly=dirs_dict["ASSEMBLY_DIR"] 
+	threads: 4
+	shell:
+		"""
+		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
+		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
+		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
+		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
+		for sample in {wildcards.sample}:
+			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
+		"""
+
+rule asemblyCanu:
+	input:
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
+		canu_dir=config['canu_dir']
+	output:
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/{sample}.contigs.{sampling}.fasta"
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
+	message:
+		"Assembling Nanopore reads with Canu"
+	params: 
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}"
 	threads: 4
 	shell:
 		"""
@@ -113,6 +139,7 @@ rule asemblyCanu:
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
+		cp {output.scaffolds} {output.scaffolds_final}
 		"""
 
 rule errorCorrectCanuPE:
@@ -120,9 +147,9 @@ rule errorCorrectCanuPE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_{sampling}/{sample_nanopore}.contigs.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
 		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
 		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
 		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
@@ -161,9 +188,9 @@ rule errorCorrectCanuPE:
 rule errorCorrectCanuSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_{sampling}/{sample_nanopore}.contigs.fasta"
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
 		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
@@ -192,7 +219,7 @@ rule errorCorrectCanuSE:
 
 rule assemblyStatsHYBRID:
 	input:
-		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_canu_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
 		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta")
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{sampling}"),
