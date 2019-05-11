@@ -13,7 +13,7 @@ rule getAbundancesPE:
 		"""
 		touch {output.abundances}
 		"""
-rule getAbundancesSE:
+rule getAbundancesSE:	
 	input:
 		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
 		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
@@ -48,7 +48,8 @@ rule getSummaryTable:
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
 		high_dir=directory(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
 		low_dir=directory(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
-		high_confidence_lenghts.{sampling}.txt
+		high_lenghts=high_confidence_lenghts.{sampling}.txt
+		low_lenghts=low_confidence_lenghts.{sampling}.txt
 	output:
 		summary=dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",
 	message:
