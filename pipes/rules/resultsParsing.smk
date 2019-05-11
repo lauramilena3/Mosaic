@@ -1,9 +1,9 @@
 rule getAbundancesPE:
 	input:
-		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt"),
+		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_tpmean.{{sampling}}.tsv", sample=SAMPLES),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES),
+		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt", sample=SAMPLES),
 	output:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.txt",
 	message:
@@ -15,9 +15,9 @@ rule getAbundancesPE:
 		"""
 rule getAbundancesSE:	
 	input:
-		high_cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		high_tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt"),
+		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_tpmean.{{sampling}}.tsv", sample=SAMPLES),
+		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES),
 	output:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.txt",
 	message:
