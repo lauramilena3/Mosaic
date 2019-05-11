@@ -44,7 +44,7 @@ rule clusterTaxonomy:
 		fi
 		#three changes in code 1) int 2,3) summary remove excluded
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
-		vcontact --raw-proteins {input.high_aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
+		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
 		--output-dir {output.out_dir} --threads {threads}
 		"""
