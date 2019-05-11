@@ -1,6 +1,6 @@
 rule getAbundancesPE:
 	input:
-		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt"),
+		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt", sample=SAMPLES),
 		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_tpmean.{{sampling}}.tsv", sample=SAMPLES),
 		unpaired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES),
 		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt", sample=SAMPLES),
