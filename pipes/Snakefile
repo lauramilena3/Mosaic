@@ -43,11 +43,14 @@ if POOLED == "True":
  
 rule all:
 	input:
-		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
-		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES),
-		expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES),
-		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE),
+		#THA RULES!
+		#dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
+		#expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		#expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES),
+		#expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES),
+		#expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE),
+		#TESTING:
+		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES), 
 
 
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
@@ -59,11 +62,6 @@ include: os.path.join(RULES_DIR, 'taxonomyAssignment.smk')
 include: os.path.join(RULES_DIR, 'resultsParsing.smk')
 
 
-		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.high_aa_temp} > {output.high_aa}
-		#awk '{{for(x=1;x<=NF;x++)if($x~/^>/){{sub(/^>/,">orf|"++i"| ")}}}}1' {output.low_aa_temp} >  {output.low_aa}
-		#grep ">" {output.high_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.high_genome_file}
-		#grep ">" {output.low_aa} | awk -F "[_ ]" '{{ print substr($1,2,length($1))","$2","$13}}' > {output.low_genome_file}
-		#sed 's/[ ].*$//' {output.high_aa} > {output.high_aa_temp}
-		#sed 's/[ ].*$//' {output.low_aa} > {output.low_aa_temp}
+
 
 
