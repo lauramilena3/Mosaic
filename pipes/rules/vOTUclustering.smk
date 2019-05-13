@@ -37,6 +37,7 @@ rule vOUTclustering:
 	output:
 		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.clstr",
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna"
+		representative_lenghts=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
 	message:
 		"Creating vOUTs with stampede"
 	conda:
@@ -45,6 +46,8 @@ rule vOUTclustering:
 	shell:
 		"""
 		./scripts/stampede-Cluster_genomes.pl -f {input.merged_assembly} -c 80 -i 95
+		cat {output.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
+		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		"""
 
 #rule circularizeContigs:
