@@ -44,16 +44,16 @@ if POOLED == "True":
 rule all:
 	input:
 		#THA RULES!
-		#dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
-		#expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
-		#expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES),
-		#expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES),
-		#expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE),
+		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html",
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
+		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES),
+		expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES),
+		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE),
 		#TESTING:
-		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES), 
+		#expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt", sample=SAMPLES), 
 
 
-include: os.path.join(RULES_DIR, 'qualityControl.smk')
+include: os.path.join(RULES_DIR, 'qualityControl.smk')	
 include: os.path.join(RULES_DIR, 'assembly.smk')
 include: os.path.join(RULES_DIR, 'vOTUclustering.smk')
 include: os.path.join(RULES_DIR, 'viralFiltering.smk')
