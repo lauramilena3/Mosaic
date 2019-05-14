@@ -114,11 +114,7 @@ rule asemblyCanuPOOLED:
 	threads: 4
 	shell:
 		"""
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
-		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
-		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
-		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
+		touch {output.scaffolds}
 		for sample in {params.sample_list}:
 		do
 			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
