@@ -104,6 +104,7 @@ rule asemblyCanuPOOLED:
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_{sampling}/" + \
 			config['nanopore_pooled_name'] + ".contigs.{sampling}.fasta",
+		scaffolds_pooled=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name'] + "_contigs_canu.{{sampling}}.fasta"
 		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
@@ -115,9 +116,10 @@ rule asemblyCanuPOOLED:
 	shell:
 		"""
 		touch {output.scaffolds}
+		mv {output.scaffolds} {output.scaffolds_pooled}
 		for sample in {params.sample_list}
 		do
-			ln -s {output.scaffolds} {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
+			ln -s {output.scaffolds_pooled} {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
 		done
 		"""
 
