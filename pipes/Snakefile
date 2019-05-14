@@ -41,7 +41,7 @@ if POOLED == "True":
 # Rules
 #======================================================
  
-def inputAll:
+def inputAll():
 	inputs=[]
 	inputs.append(dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html")
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE))
