@@ -109,8 +109,8 @@ rule asemblyCanuPOOLED:
 		"Assembling Nanopore reads with Canu"
 	params: 
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
-		assembly=dirs_dict["ASSEMBLY_DIR"] 
-		sample_list=" ".join(SAMPLES)
+		assembly=dirs_dict["ASSEMBLY_DIR"],
+		sample_list=" ".join(SAMPLES),
 	threads: 4
 	shell:
 		"""
