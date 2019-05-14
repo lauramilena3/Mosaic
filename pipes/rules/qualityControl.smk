@@ -281,7 +281,7 @@ rule subsampleReadsNanopore:
 	params: 
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm'],
-		sizes="*_nanopore_clean*txt"
+		sizes=dirs_dict["CLEAN_DATA_DIR"] + "/*_nanopore_clean.tot.txt"
 	threads: 1
 	resources:
 		mem_mb=4000
