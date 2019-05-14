@@ -104,7 +104,7 @@ rule asemblyCanuPOOLED:
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_{sampling}/" + \
 			config['nanopore_pooled_name'] + ".contigs.{sampling}.fasta",
-		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{{sampling}}.fasta", sample=SAMPLES)
+		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
 	params: 
@@ -118,8 +118,8 @@ rule asemblyCanuPOOLED:
 		echo {params.sample_list}
 		for sample in {params.sample_list}:
 		do
-			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
-			echo "{params.assembly}/$sample.contigs.{wildcards.sampling}.fasta"
+			ln -s {output.scaffolds} {params.assembly}/$sample_contigs_canu.{wildcards.sampling}.fasta
+			echo "{params.assembly}/$sample_contigs_canu.{wildcards.sampling}.fasta"
 		done
 		"""
 
@@ -129,7 +129,7 @@ rule asemblyCanu:
 		canu_dir=config['canu_dir']
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/{sample}.contigs.{sampling}.fasta",
-		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	message:
 		"Assembling Nanopore reads with Canu"
 	params: 
@@ -150,7 +150,7 @@ rule errorCorrectCanuPE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	output:
 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
 		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
@@ -191,7 +191,7 @@ rule errorCorrectCanuPE:
 rule errorCorrectCanuSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}.contigs.{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	output:
 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
