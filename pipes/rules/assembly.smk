@@ -110,6 +110,7 @@ rule asemblyCanuPOOLED:
 	params: 
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
 		assembly=dirs_dict["ASSEMBLY_DIR"] 
+		sample_list=" ".join(SAMPLES)
 	threads: 4
 	shell:
 		"""
@@ -118,8 +119,10 @@ rule asemblyCanuPOOLED:
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
 		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
-		for sample in {wildcards.SAMPLES}:
+		for sample in {params.sample_list}:
+		do
 			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
+		fi
 		"""
 
 rule asemblyCanu:
