@@ -104,7 +104,7 @@ rule asemblyCanuPOOLED:
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_{sampling}/" + \
 			config['nanopore_pooled_name'] + ".contigs.{sampling}.fasta",
-		scaffolds_pooled=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name'] + "_contigs_canu.{{sampling}}.fasta"
+		scaffolds_pooled=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name'] + "_contigs_canu.{{sampling}}.fasta",
 		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
