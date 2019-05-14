@@ -118,7 +118,7 @@ rule asemblyCanuPOOLED:
 		touch {output.scaffolds_pooled}
 		for sample in {params.sample_list}
 		do
-			ln -s {output.scaffolds_pooled} {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
+			ln -sr {output.scaffolds_pooled} {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
 		done
 		"""
 
