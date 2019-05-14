@@ -95,7 +95,7 @@ rule downloadCanu:
 				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Linux-amd64.tar.xz
 			fi
 		fi
-		tar -xJf canu-1.8.*.tar.xz tools
+		tar -xJf canu-1.8.*.tar.xz -C tools
 		"""
 rule asemblyCanuPOOLED:
 	input:
