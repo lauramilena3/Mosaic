@@ -116,7 +116,7 @@ rule asemblyCanuPOOLED:
 		"""
 		touch {output.scaffolds}
 		echo {params.sample_list}
-		for sample in {params.sample_list}:
+		for sample in {params.sample_list}
 		do
 			echo $sample
 			ln -s {output.scaffolds} {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
