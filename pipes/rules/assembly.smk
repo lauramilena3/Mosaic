@@ -88,8 +88,10 @@ rule downloadCanu:
 		then
 			if [ {config[operating_system]} == "macOs" ]
 			then
+				mkdir -p tools
 				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Darwin-amd64.tar.xz
 			else
+				mkdir -p tools
 				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Linux-amd64.tar.xz
 			fi
 		fi
@@ -116,7 +118,7 @@ rule asemblyCanuPOOLED:
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
 		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
-		for sample in {wildcards.sample}:
+		for sample in {wildcards.SAMPLES}:
 			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
 		"""
 
