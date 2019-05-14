@@ -118,7 +118,7 @@ rule asemblyCanuPOOLED:
 		for sample in {params.sample_list}:
 		do
 			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
-		fi
+		done
 		"""
 
 rule asemblyCanu:
