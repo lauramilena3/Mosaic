@@ -269,8 +269,8 @@ rule subsampleReadsIllumina_SE:
 
 rule subsampleReadsNanopore:
 	input:
-		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt", sample_nanopore=NANOPORE_SAMPLES),
-		fastq=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq",
+		nano_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt", sample_nanopore=NANOPORE_SAMPLES),
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq",
 	output:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.fastq",
 		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.txt",
@@ -280,14 +280,15 @@ rule subsampleReadsNanopore:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params: 
 		min_depth=config['min_norm'],
-		max_depth=config['max_norm']
+		max_depth=config['max_norm'],
+		sizes="*_nanopore_clean*txt"
 	threads: 1
 	resources:
 		mem_mb=4000
 	shell:
 		"""
-		nanopore=$( cat *_nanopore_clean*txt | sort -n | head -1 )
-		reformat.sh in={input.fastq} out={output.forward_paired} reads=$nanopore
+		nanopore=$( cat {params.sizes} | sort -n | head -1 )
+		reformat.sh in={input.nanopore} out={output.nanopore} reads=$nanopore
 		grep -c "^@" {output.nanopore} > {output.size}
 		"""
 
