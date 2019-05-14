@@ -115,6 +115,7 @@ rule asemblyCanuPOOLED:
 	shell:
 		"""
 		touch {output.scaffolds}
+		echo {params.sample_list}
 		for sample in {params.sample_list}:
 		do
 			ln -s {output.scaffolds} {params.assembly}/$sample.contigs.{wildcards.sampling}.fasta
