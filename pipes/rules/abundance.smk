@@ -100,7 +100,7 @@ rule filterContigs:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -bg -ibam {input.bam_filtered} > {output.bam_cov}
-		cut -f 1 {output.bam_cov} | sort| uniq -c | sort -nr > {output.cov_final}
+		bedtools genomecov -d -ibam {input.bam_filtered} > {output.bam_cov}
+		grep -v "0$" {output.bam_cov} | cut -f 1 | sort| uniq -c | sort -nr > {output.cov_final}
 		sed -ie 's/^[[:space:]]*//' {output.cov_final}
 		"""
