@@ -102,4 +102,5 @@ rule filterContigs:
 		"""
 		bedtools genomecov -dz -ibam {input.bam_filtered} > {output.bam_cov}
 		cut -f 1 {output.bam_cov} | sort| uniq -c | sort -nr > {output.cov_final}
+		sed -ie 's/^[[:space:]]*//' {output.cov_final}
 		"""
