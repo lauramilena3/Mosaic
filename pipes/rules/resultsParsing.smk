@@ -1,3 +1,5 @@
+
+
 rule getAbundancesPE:
 	input:
 		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt", sample=SAMPLES),
@@ -46,8 +48,8 @@ rule getSummaryTable:
 		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
 		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
-		high_dir=directory(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
-		low_dir=directory(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
+		high_dir=(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}"),
+		low_dir=(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}"),
 		representative_lenghts=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
 	output:
 		summary=dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",
