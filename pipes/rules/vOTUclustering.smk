@@ -37,7 +37,7 @@ rule vOUTclustering:
 	output:
 		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.clstr",
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
-		representative_lenghts=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
+		representative_lengths=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
 	message:
 		"Creating vOUTs with stampede"
 	conda:
