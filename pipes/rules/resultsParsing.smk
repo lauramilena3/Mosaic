@@ -14,6 +14,10 @@ rule getAbundancesPE:
 	shell:
 		"""
 		touch {output.abundances}
+		echo {input.cov_final}
+		echo {input.tpmean}
+		echo {input.unpaired_size}
+		echo {input.paired_size}
 		"""
 rule getAbundancesSE:	
 	input:
