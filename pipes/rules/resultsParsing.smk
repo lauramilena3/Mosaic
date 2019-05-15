@@ -41,7 +41,7 @@ rule tabletoBIOM:
 	threads: 1
 	shell:
 		"""
-		touch {output.high_abundances}
+		touch {output.abundances}
 		"""
 rule getSummaryTable:
 	input:
