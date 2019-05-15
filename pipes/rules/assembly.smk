@@ -144,6 +144,8 @@ rule asemblyCanu:
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
 		cp {output.scaffolds} {output.scaffolds_final}
+		sed -i s"/ /_/"g {output.scaffolds_final}
+		sed -i s"/>/>{wildcards.sample}_/"g {output.scaffolds_final}
 		"""
 
 rule errorCorrectCanuPE:
