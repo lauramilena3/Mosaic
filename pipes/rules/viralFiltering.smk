@@ -250,7 +250,7 @@ rule hmmCircularContigs:
 		then
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
 			echo "pasa1"
-			cat {output.hmm_out} | grep -v '^#' | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
+			grep -v '^#' {output.hmm_out} | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
 			echo "pasa2"
 			cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 			echo "pasa3"
