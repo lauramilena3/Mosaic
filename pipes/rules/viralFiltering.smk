@@ -252,10 +252,11 @@ rule hmmCircularContigs:
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
 			echo "pasa1"
 			cat {output.hmm_out}
-			if [ -s {output.hmm_out} ] 
+			grep -v '^#' {output.hmm_out} > temp
+			if [ -s temp ] 
 			then
 				echo "pasa2"
-				grep -v '^#' {output.hmm_out} | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
+				cat temp | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
 				echo "pasa3"
 				cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 			else
