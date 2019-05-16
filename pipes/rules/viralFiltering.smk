@@ -249,15 +249,18 @@ rule hmmCircularContigs:
 		if [ -s {output.circular_unk_fasta} ] 
 		then
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
-			echo "pasa1"
-			grep -v '^#' {output.hmm_out} | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
-			echo "pasa2"
-			cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
-			echo "pasa3"
+			if [ -s {output.hmm_out} ] 
+			then
+				grep -v '^#' {output.hmm_out} | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results}
+				cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
+			else
+				touch {output.hmm_results}
+				touch {output.hmm_list}
+			fi
 		else
 			touch {output.hmm_out}
-			touch {output.hmm_list}
 			touch {output.hmm_results}
+			touch {output.hmm_list}
 		fi
 		"""
 rule extractViralContigs:
