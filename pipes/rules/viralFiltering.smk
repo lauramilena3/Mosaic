@@ -251,7 +251,7 @@ rule hmmCircularContigs:
 			echo "pasa0"
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
 			echo "pasa1"
-			grep -v  '^#' {output.hmm_out} > temp
+			grep -v  '#' {output.hmm_out} > temp
 			echo "pasa1.1"
 			if [ -s temp ] 
 			then
