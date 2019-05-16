@@ -250,8 +250,8 @@ rule hmmCircularContigs:
 		then
 			echo "pasa0"
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
-			cat {output.hmm_out}
 			echo "pasa1"
+			cat {output.hmm_out}
 			if [ -s {output.hmm_out} ] 
 			then
 				echo "pasa2"
