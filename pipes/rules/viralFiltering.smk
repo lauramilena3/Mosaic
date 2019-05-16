@@ -248,6 +248,7 @@ rule hmmCircularContigs:
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
 		if [ -s {output.circular_unk_fasta} ] 
 		then
+			echo "pasa0"
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
 			echo "pasa1"
 			if [ -s {output.hmm_out} ] 
