@@ -19,6 +19,7 @@ rule getAbundancesPE:
 		SAMPLING=["tot", "sub"]
 		CONFIDENCES=["high", "low"]
 		for sampling in SAMPLING:
+			print(sampling)
 		    for confidence in CONFIDENCES:
 		        df_tpmean=pd.DataFrame()
 		        for sample in SAMPLES:
