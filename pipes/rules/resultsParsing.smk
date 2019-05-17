@@ -19,22 +19,21 @@ rule getAbundancesPE:
 		SAMPLING=["tot", "sub"]
 		CONFIDENCES=["high", "low"]
 		for sampling in SAMPLING:
-			print(sampling)
 			for confidence in CONFIDENCES:
 				df_tpmean=pd.DataFrame()
 				for sample in SAMPLES:
 					#READ NUMBER
-					paired_size=open(sample+"_paired_clean."+sampling+".txt")
-					unpaired_size=open(sample+"_unpaired_clean."+sampling+".txt")
+					paired_size=open(dirs_dict["CLEAN_DATA_DIR"]+ "/" +sample+"_paired_clean."+sampling+".txt")
+					unpaired_size=open(dirs_dict["CLEAN_DATA_DIR"]+ "/" +sample+"_unpaired_clean."+sampling+".txt")
 					paired=int(paired_size.readline())
 					unpaired=int(unpaired_size.readline())
 					reads=((paired*2)+unpaired)/1000000
 					#NORMALIZE TP MEAN
-					tpmean_file=sample+"_"+ confidence + "_confidence_tpmean." + sampling + ".tsv"
+					tpmean_file=dirs_dict["MAPPING_DIR"]+ "/" +sample+"_"+ confidence + "_confidence_tpmean." + sampling + ".tsv"
 					tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
 					tpmean[sample] = tpmean[sample].apply(lambda x: x/reads)
 					#REMOVE LOW COVERED CONTIGS
-					breadth_file = sample+"_"+ confidence + "_confidence_filtered_coverage." + sampling + ".txt"
+					breadth_file = dirs_dict["MAPPING_DIR"]+ "/" +sample+"_"+ confidence + "_confidence_filtered_coverage." + sampling + ".txt"
 					breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
 					df=pd.merge(tpmean, breadth, on='contig', how='outer')
 					#Divide dataframe in lenghts
@@ -79,15 +78,15 @@ rule getAbundancesSE:
 				df_tpmean=pd.DataFrame()
 				for sample in SAMPLES:
 					#READ NUMBER
-					unpaired_size=open(sample+"_unpaired_clean."+sampling+".txt")
+					unpaired_size=open(dirs_dict["CLEAN_DATA_DIR"]+ "/" +sample+"_unpaired_clean."+sampling+".txt")
 					unpaired=int(unpaired_size.readline())
 					reads=(unpaired)/1000000
 					#NORMALIZE TP MEAN
-					tpmean_file=sample+"_"+ confidence + "_confidence_tpmean." + sampling + ".tsv"
+					tpmean_file=dirs_dict["MAPPING_DIR"]+ "/" +sample+"_"+ confidence + "_confidence_tpmean." + sampling + ".tsv"
 					tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
 					tpmean[sample] = tpmean[sample].apply(lambda x: x/reads)
 					#REMOVE LOW COVERED CONTIGS
-					breadth_file = sample+"_"+ confidence + "_confidence_filtered_coverage." + sampling + ".txt"
+					breadth_file = dirs_dict["MAPPING_DIR"]+ "/" +sample+"_"+ confidence + "_confidence_filtered_coverage." + sampling + ".txt"
 					breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
 					df=pd.merge(tpmean, breadth, on='contig', how='outer')
 					#Divide dataframe in lenghts
