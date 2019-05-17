@@ -1,14 +1,9 @@
 channels:
+  - conda-forge
   - bioconda
   - biobuilds
-  - conda-forge
   - agbiome
 dependencies:
   - snakemake-minimal =5.3.0
   - pandas =0.24.2
-
-#  - matplotlib =3.0.3
-#  - khmer =3.0.0
-
-#  - pip
-#    - git+https://github.com/marbl/canu.git
+  - numpy =1.16.3
