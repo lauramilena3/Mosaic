@@ -120,7 +120,7 @@ rule asemblyCanuPOOLED:
 		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
 		for sample in {params.sample_list}
 		do
-			cat {output.scaffolds} | sed s"/ /_/"g | sed s"/>/>${{sample}}_/"g > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
+			cat {output.scaffolds} | sed s"/ /_/"g  > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
 		done
 		"""
 
@@ -145,7 +145,6 @@ rule asemblyCanu:
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
 		cp {output.scaffolds} {output.scaffolds_final}
 		sed -i s"/ /_/"g {output.scaffolds_final}
-		sed -i s"/>/>{wildcards.sample}_/"g {output.scaffolds_final}
 		"""
 
 rule errorCorrectCanuPE:
@@ -239,11 +238,11 @@ rule assemblyStatsHYBRID:
 		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-    		tar -xzf quast-5.0.2.tar.gz -C tools
-    		cd {config[quast_dir]}
-    		./setup.py install
-    		cd ../..
-    	fi
+			tar -xzf quast-5.0.2.tar.gz -C tools
+			cd {config[quast_dir]}
+			./setup.py install
+			cd ../..
+		fi
 		./{config[quast_dir]}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
@@ -263,11 +262,11 @@ rule assemblyStatsILLUMINA:
 		if [ ! -d {config[quast_dir]} ]
 		then
 			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-    		tar -xzf quast-5.0.2.tar.gz -C tools
-    		cd {config[quast_dir]}
-    		./setup.py install
-    		cd ../..
-    	fi
+			tar -xzf quast-5.0.2.tar.gz -C tools
+			cd {config[quast_dir]}
+			./setup.py install
+			cd ../..
+		fi
 		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
