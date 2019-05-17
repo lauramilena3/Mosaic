@@ -64,8 +64,7 @@ rule getAbundancesSE:
 	message:
 		"Getting vOTU tables"
 	threads: 1
-	shell:
-		"""
+	run:
 		import pandas as pd
 		import numpy as np
 
@@ -107,7 +106,8 @@ rule getAbundancesSE:
 						df_tpmean=pd.merge(positive, df_tpmean, on='contig', how='outer')
 				filename=confidence+ "_confidence_vOTU_abundance_table." + sampling + ".txt"
 				df_tpmean=df_tpmean.fillna(0)
-				df_tpmean.to_csv(filename, sep='\t', index=True, header=False)		"""
+				df_tpmean.to_csv(filename, sep='\t', index=True, header=False)
+
 rule tabletoBIOM:
 	input:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.txt",
