@@ -25,16 +25,21 @@ In order to change this values, you can append the desired values to the main co
 Below, you can find all the variables, and their default values.  
 
 
-==================  ====================  ===========================
-  	   Name               Default                Description 
-==================  ====================  ===========================
-input_dir			"data/00_RAW_DATA"		a
-results_dir			"data"					a
-operating_system	"linux"					a
-forward_tag 		"R1"					a
-reverse_tag 		"R2"					a
-nanopore_tag 		"nanopore"				a
-==================  ====================  ===========================
++-------------------+---------------------+------------------------+
+| Name              | Default             | Description            |
++===================+=====================+========================+
+| input_dir         | "data/00_RAW_DATA"  | a                      |
++-------------------+---------------------+------------------------+
+| results_dir       | "data"              | a                      |
++-------------------+---------------------+------------------------+
+| operating_system  | "linux"             | a                      |
++-------------------+---------------------+------------------------+
+| forward_tag       | "R1"                | a                      |
++-------------------+---------------------+------------------------+
+| reverse_tag       | "R2"                | a                      |
++-------------------+---------------------+------------------------+
+| nanopore_tag      | "nanopore"          | a                      |
++-------------------+---------------------+------------------------+
 
 nanopore_pooled: "True"
 nanopore_pooled_name: "raw"

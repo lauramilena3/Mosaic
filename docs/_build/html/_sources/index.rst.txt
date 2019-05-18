@@ -6,6 +6,7 @@
 Welcome to Mosaic's documentation!
 ==================================
 
+
 .. toctree::
    :caption: Getting started
    :name: getting_started
