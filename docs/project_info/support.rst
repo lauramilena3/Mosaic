@@ -1,3 +1,5 @@
+.. _project_info:
+
 Cluster Execution
 =================
 
