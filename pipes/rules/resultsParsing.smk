@@ -53,7 +53,9 @@ rule getAbundancesPE:
 				filename=confidence+ "_confidence_vOTU_abundance_table." + sampling + ".txt"
 				df_tpmean=df_tpmean.fillna(0)
 				df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)        
-				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=True, header=False)
+				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=False, header=True)
+
+
 rule getAbundancesSE:	
 	input:
 		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt", sample=SAMPLES),
@@ -107,7 +109,7 @@ rule getAbundancesSE:
 				filename=confidence+ "_confidence_vOTU_abundance_table." + sampling + ".txt"
 				df_tpmean=df_tpmean.fillna(0)
 				df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)        
-				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=True, header=False)
+				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=False, header=True)
 
 rule tabletoBIOM:
 	input:
