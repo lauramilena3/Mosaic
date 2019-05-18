@@ -28,7 +28,7 @@ rule clusterTaxonomy:
 		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 8
 	shell:
-		"""shell
+		"""
 		if [ ! -d {params.clusterONE_dir} ]
 		then 
 			mkdir -p {params.clusterONE_dir}
