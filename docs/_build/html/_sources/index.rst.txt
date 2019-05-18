@@ -23,8 +23,9 @@ Welcome to Mosaic's documentation!
 
    project_info/support
 
+
 Indices and tables
 ==================
 
-* :ref:`getting_started`
-* :ref:`project_info`
+:ref:`getting_started`
+:ref:`project_info`
