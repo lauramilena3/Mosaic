@@ -25,6 +25,5 @@ Welcome to Mosaic's documentation!
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+* :ref:`getting_started`
+* :ref:`project_info`

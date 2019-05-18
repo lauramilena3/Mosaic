@@ -1,9 +1,8 @@
 Requirements
 ============
 
-- Anaconda
-
-You can follow the `installation guide <https://docs.anaconda.com/anaconda/install/>`_ .
+The only required software for running Mosaic is Anaconda.
+Please follow the installation guide avaliable `here <https://docs.anaconda.com/anaconda/install/>`_ .
 
 Installation
 ============
@@ -11,42 +10,54 @@ Installation
 Clone GitHub  repo and enter directory::
    
    git clone https://github.com/lauramilena3/Mosaic
-   cd On-rep-seq
+   cd Mosaic/pipes
 
-Create On-rep-seq virtual environment and activate it::
+Create Mosaic virtual environment and activate it::
    
    conda env create -n Mosaic -f Mosaic.yaml
    source activate Mosaic
-
 
 Running Mosaic
 ==============
 
 View the number of avaliable cores with::
    
-   nproc #linux
-   sysctl -n hw.ncpu #Os
+   nproc #Linux
+   sysctl -n hw.ncpu #MacOs
 
 Go into Mosaic directory and create variables for the number of cores,
-your basecalled data directory and the results directory of your choice::
+your raw data directory and the results directory of your choice::
    
    nCores="cores"
-   fastqDir="/path/to/your/basecalled/data"
+   fastqDir="/path/to/your/raw/data"
    reusultDir="/path/to/your/desired/results/dir"
 
-Run Mosaic's pipeline with the desired number of cores::
+Run Mosaic's pipeline with the desired number of cores and choosen directories::
    
    snakemake -j $nCores --use-conda --config basecalled_data=$fastqDir results_dir=$reusultDir
 
-If you are using your laptop we suggest you to leave 2 free processors
+NOTE: Please notice that every time you run Mosaic: 1) you will need to activate the virtual environment and 
+2) you need to run it from the Mosaic/pipes folder. If you are using your laptop we suggest you to leave 2 free processors
 for other system tasks. 
 
-View dag of jobs to visualize the workflow 
-++++++++++++++++++++++++++++++++++++++++++
+Visualize the workflow 
++++++++++++++++++++++++
 
-To view the dag run::
+DAG
+***
+
+The directed acyclic graph (DAG) includes all files and rules used in the workflow.
+
+To view the DAG use::
 
    snakemake --dag | dot -Tpdf > dag.pdf
+
+RULES
+*****
+
+If you want to visualize a simpler diagram, only including the rules, use::
+
+   snakemake --rulegraph | dot -Tpdf > rulegraph.pdf
 
 
 
