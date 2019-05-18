@@ -137,7 +137,7 @@ Nanopore report of each nanopore fastq file::
 
    {sample}_nanopore_report.html
 
-2_CLEAN_DATA
+02_CLEAN_DATA
 -------------
 
 Clean Illumina fastq files (not normalized) for subsampled and total reads::
@@ -150,7 +150,7 @@ Clean Nanopore fastq files (not normalized) for subsampled and total reads::
    {sample}_clean.sub.fastq
    {sample}_clean.tot.fastq
 
-3_CONTIGS
+03_CONTIGS
 ----------
 
 
@@ -169,7 +169,7 @@ Quast report of (Spades) or (Spades + Canu)  assembly::
    {sample}_quast_report.sub.txt
    {sample}_quast_report.tot.txt
 
-4_vOTUs
+04_vOTUs
 --------
 
 All assembled scaffolds::
@@ -182,7 +182,7 @@ Representatives contigs after clustering::
    merged_scaffolds.sub_95-80.fna
    merged_scaffolds.tot_95-80.fna
 
-5_VIRAL_ID
+05_VIRAL_ID
 -----------
 
 High confidence viral contigs::
@@ -205,7 +205,7 @@ Low confidence open reading frames (ORFs)::
    low_confidence_ORFs.sub.fasta
    low_confidence_ORFs.tot.fasta
 
-6_MAPPING
+06_MAPPING
 ----------
 
 Sorted bam files of sample clean reads mapped to high confidence contigs::
