@@ -18,10 +18,3 @@ Welcome to Mosaic's documentation!
    :maxdepth: 1
 
    project_info/support
-
-
-Indices and tables
-==================
-
-* :ref:`getting_started`
-* :ref:`project_info`
