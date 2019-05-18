@@ -28,7 +28,7 @@ rule clusterTaxonomy:
 		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 8
 	shell:
-		"""
+		"""shell
 		if [ ! -d {params.clusterONE_dir} ]
 		then 
 			mkdir -p {params.clusterONE_dir}
@@ -41,6 +41,9 @@ rule clusterTaxonomy:
 			mv vcontact2 tools
 			envir=$( which vcontact | rev | cut -d/ -f3 | rev)
 			cp {params.vcontact_dir}/vcontact/data/ViralRefSeq-* .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/data/
+			cp scripts/matrices.py .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/matrices.py
+			cp scripts/vcontact .snakemake/conda/$envir/bin/vcontact
+			cp scripts/summaries.py .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/exports/summaries.py
 		fi
 		#three changes in code 1) int 2,3) summary remove excluded
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
