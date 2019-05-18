@@ -32,7 +32,7 @@ Single End
 
 Mosaic automatically detects the Illumina input file. Please note that Spades does not support metagenomic assembly for SE files. Hence, Mosaic assembles SE reads using Spades single-cell flag.
 
-General:
+General
 --------
 
 +----------------------------+---------------------+---------------------------------------------+
@@ -52,7 +52,7 @@ General:
 +----------------------------+---------------------+---------------------------------------------+
 
 
-Nanopore:
+Nanopore
 ---------
 +----------------------------+---------------------+---------------------------------------------+
 | Name                       | Default             | Description                                 |
@@ -64,7 +64,7 @@ Nanopore:
 
 
 
-Trimmomatic:
+Trimmomatic
 ------------
 
 +----------------------------+---------------------+---------------------------------------------+
@@ -81,7 +81,7 @@ Trimmomatic:
 | trimmomatic_minlen         | "50"                | Read minimum length                         |
 +----------------------------+---------------------+---------------------------------------------+
 
-Cleaning:
+Cleaning
 ---------
 
 +----------------------------+---------------------+---------------------------------------------+
@@ -95,7 +95,7 @@ Cleaning:
 |                            |                     | you need to add them to pipes/db/adapters   |
 +----------------------------+---------------------+---------------------------------------------+
 
-Normalization and Subsampling:
+Normalization and Subsampling
 ------------------------------
 
 +----------------------------+---------------------+---------------------------------------------+
@@ -109,7 +109,7 @@ Normalization and Subsampling:
 +----------------------------+---------------------+---------------------------------------------+
 
 
-Contigs:
+Contigs
 --------
 
 +----------------------------+---------------------+---------------------------------------------+
@@ -126,7 +126,7 @@ Outputs
 =======
 
 
-01_QC:
+01_QC
 ------
 
 MultiQC report of Illumina pre-processing fastq files::
@@ -137,7 +137,7 @@ Nanopore report of each nanopore fastq file::
 
    {sample}_nanopore_report.html
 
-2_CLEAN_DATA:
+2_CLEAN_DATA
 -------------
 
 Clean Illumina fastq files (not normalized) for subsampled and total reads::
@@ -150,7 +150,7 @@ Clean Nanopore fastq files (not normalized) for subsampled and total reads::
    {sample}_clean.sub.fastq
    {sample}_clean.tot.fastq
 
-3_CONTIGS:
+3_CONTIGS
 ----------
 
 
@@ -169,7 +169,7 @@ Quast report of (Spades) or (Spades + Canu)  assembly::
    {sample}_quast_report.sub.txt
    {sample}_quast_report.tot.txt
 
-4_vOTUs:
+4_vOTUs
 --------
 
 All assembled scaffolds::
@@ -182,7 +182,7 @@ Representatives contigs after clustering::
    merged_scaffolds.sub_95-80.fna
    merged_scaffolds.tot_95-80.fna
 
-5_VIRAL_ID:
+5_VIRAL_ID
 -----------
 
 High confidence viral contigs::
@@ -205,7 +205,7 @@ Low confidence open reading frames (ORFs)::
    low_confidence_ORFs.sub.fasta
    low_confidence_ORFs.tot.fasta
 
-6_MAPPING:
+6_MAPPING
 ----------
 
 Sorted bam files of sample clean reads mapped to high confidence contigs::
@@ -245,8 +245,6 @@ Abundance tables in BIOM JSON format::
 Contigs summary table::
 
    vOTU_summary.txt
-
-
 
 Support
 =======
