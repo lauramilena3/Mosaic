@@ -52,6 +52,7 @@ rule getAbundancesPE:
 						df_tpmean=pd.merge(positive, df_tpmean, on='contig', how='outer')
 				filename=confidence+ "_confidence_vOTU_abundance_table." + sampling + ".txt"
 				df_tpmean=df_tpmean.fillna(0)
+				df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)        
 				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=True, header=False)
 rule getAbundancesSE:	
 	input:
@@ -105,6 +106,7 @@ rule getAbundancesSE:
 						df_tpmean=pd.merge(positive, df_tpmean, on='contig', how='outer')
 				filename=confidence+ "_confidence_vOTU_abundance_table." + sampling + ".txt"
 				df_tpmean=df_tpmean.fillna(0)
+				df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)        
 				df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=True, header=False)
 
 rule tabletoBIOM:
