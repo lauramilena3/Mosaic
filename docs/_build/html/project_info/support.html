@@ -87,8 +87,25 @@
 <p class="caption"><span class="caption-text">Project Info</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cluster Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#config-file">Config File</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#outputs">Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#config-file">Config File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-end">Single End</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#general">General:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nanopore">Nanopore:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trimmomatic">Trimmomatic:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleaning">Cleaning:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#normalization-and-subsampling">Normalization and Subsampling:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contigs">Contigs:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#outputs">Outputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#qc">01_QC:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clean-data">2_CLEAN_DATA:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3_CONTIGS:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#votus">4_vOTUs:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#viral-id">5_VIRAL_ID:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapping">6_MAPPING:</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="#support">Support</a></li>
 </ul>
 
@@ -173,12 +190,17 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </pre></div>
 </div>
 <p>Below, you can find all the variables, and their default values.</p>
-<p>General:</p>
+<div class="section" id="single-end">
+<h2>Single End<a class="headerlink" href="#single-end" title="Permalink to this headline">¶</a></h2>
+<p>Mosaic automatically detects the Illumina input file. Please note that Spades does not support metagenomic assembly for SE files. Hence, Mosaic assembles SE reads using Spades single-cell flag.</p>
+</div>
+<div class="section" id="general">
+<h2>General:<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
+<col width="30%" />
 <col width="22%" />
-<col width="25%" />
-<col width="53%" />
+<col width="48%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -213,12 +235,14 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </tr>
 </tbody>
 </table>
-<p>Nanopore:</p>
+</div>
+<div class="section" id="nanopore">
+<h2>Nanopore:<a class="headerlink" href="#nanopore" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="25%" />
-<col width="24%" />
-<col width="51%" />
+<col width="30%" />
+<col width="22%" />
+<col width="48%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -237,7 +261,9 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </tr>
 </tbody>
 </table>
-<p>Trimmomatic:</p>
+</div>
+<div class="section" id="trimmomatic">
+<h2>Trimmomatic:<a class="headerlink" href="#trimmomatic" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="30%" />
@@ -273,29 +299,219 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </tr>
 </tbody>
 </table>
-<p>Cleaning:
-contaminants_list: “GCF_000819615.1”
-adapters_file: “NexteraPE-PE.fa”</p>
-<p>Normalization and Subsampling
-min_norm: “2”
-max_norm: “100”
-max_subsample: “20000000”</p>
-<p>Contig
-min_len: “1000”
-min_cov: “2”</p>
+</div>
+<div class="section" id="cleaning">
+<h2>Cleaning:<a class="headerlink" href="#cleaning" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>contaminants_list</td>
+<td>“GCF_000819615”</td>
+<td>List of contaminants RefSeq accesion IDs
+Eg: “GCF_000819615 GCA_000929915.1”</td>
+</tr>
+<tr class="row-odd"><td>adapters_file</td>
+<td>“NexteraPE-PE.fa”</td>
+<td>Adapter file for barcode removal
+Please note that if you use other adapters
+you need to add them to pipes/db/adapters</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="normalization-and-subsampling">
+<h2>Normalization and Subsampling:<a class="headerlink" href="#normalization-and-subsampling" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>min_norm</td>
+<td>“2”</td>
+<td>Minimum normalization coverage</td>
+</tr>
+<tr class="row-odd"><td>max_norm</td>
+<td>“100”</td>
+<td>Maximum normalization coverage</td>
+</tr>
+<tr class="row-even"><td>max_subsample</td>
+<td>“20000000”</td>
+<td>Maximum number of reads for subsampling</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="contigs">
+<h2>Contigs:<a class="headerlink" href="#contigs" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="22%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>min_len</td>
+<td>“1000”</td>
+<td>Minimum contig length</td>
+</tr>
+<tr class="row-odd"><td>min_cov</td>
+<td>“2”</td>
+<td>Minimum contig coverage</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="outputs">
 <h1>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="qc">
+<h2>01_QC:<a class="headerlink" href="#qc" title="Permalink to this headline">¶</a></h2>
+<p>MultiQC report of Illumina pre-processing fastq files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pre_processing_multiqc_report</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>Nanopore report of each nanopore fastq file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_nanopore_report</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clean-data">
+<h2>2_CLEAN_DATA:<a class="headerlink" href="#clean-data" title="Permalink to this headline">¶</a></h2>
+<p>Clean Illumina fastq files (not normalized) for subsampled and total reads:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_unpaired_clean</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fastq</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_unpaired_clean</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fastq</span>
+</pre></div>
+</div>
+<p>Clean Nanopore fastq files (not normalized) for subsampled and total reads:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_clean</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fastq</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_clean</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fastq</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>3_CONTIGS:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Assembled Spades scaffolds:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_spades_filtered_scaffolds</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_spades_filtered_scaffolds</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Assembled Canu scaffolds, error corrected with Pilon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_canu_filtered_scaffolds</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_canu_filtered_scaffolds</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Quast report of (Spades) or (Spades + Canu)  assembly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_quast_report</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">txt</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_quast_report</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="votus">
+<h2>4_vOTUs:<a class="headerlink" href="#votus" title="Permalink to this headline">¶</a></h2>
+<p>All assembled scaffolds:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">merged_scaffolds</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">merged_scaffolds</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Representatives contigs after clustering:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">merged_scaffolds</span><span class="o">.</span><span class="n">sub_95</span><span class="o">-</span><span class="mf">80.</span><span class="n">fna</span>
+<span class="n">merged_scaffolds</span><span class="o">.</span><span class="n">tot_95</span><span class="o">-</span><span class="mf">80.</span><span class="n">fna</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viral-id">
+<h2>5_VIRAL_ID:<a class="headerlink" href="#viral-id" title="Permalink to this headline">¶</a></h2>
+<p>High confidence viral contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">high_confidence</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">high_confidence</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Low confidence viral contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">low_confidence</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">low_confidence</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>High confidence open reading frames (ORFs):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">high_confidence_ORFs</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">high_confidence_ORFs</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+<p>Low confidence open reading frames (ORFs):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">low_confidence_ORFs</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">fasta</span>
+<span class="n">low_confidence_ORFs</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">fasta</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mapping">
+<h2>6_MAPPING:<a class="headerlink" href="#mapping" title="Permalink to this headline">¶</a></h2>
+<p>Sorted bam files of sample clean reads mapped to high confidence contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_high_confidence_sorted</span><span class="o">.</span><span class="n">sub_filtered</span><span class="o">.</span><span class="n">bam</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_high_confidence_sorted</span><span class="o">.</span><span class="n">tot_filtered</span><span class="o">.</span><span class="n">bam</span>
+</pre></div>
+</div>
+<p>Sorted bam files of sample clean reads mapped to low confidence contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_low_confidence_sorted</span><span class="o">.</span><span class="n">sub_filtered</span><span class="o">.</span><span class="n">bam</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_low_confidence_sorted</span><span class="o">.</span><span class="n">tot_filtered</span><span class="o">.</span><span class="n">bam</span>
+</pre></div>
+</div>
+<p>Indexed bam files of sample clean reads mapped to high confidence contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_high_confidence_sorted</span><span class="o">.</span><span class="n">sub_filtered</span><span class="o">.</span><span class="n">bam</span><span class="o">.</span><span class="n">bai</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_high_confidence_sorted</span><span class="o">.</span><span class="n">tot_filtered</span><span class="o">.</span><span class="n">bam</span><span class="o">.</span><span class="n">bai</span>
+</pre></div>
+</div>
+<p>Indexed bam files of sample clean reads mapped to low confidence contigs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_low_confidence_sorted</span><span class="o">.</span><span class="n">sub_filtered</span><span class="o">.</span><span class="n">bam</span><span class="o">.</span><span class="n">bai</span>
+<span class="p">{</span><span class="n">sample</span><span class="p">}</span><span class="n">_low_confidence_sorted</span><span class="o">.</span><span class="n">tot_filtered</span><span class="o">.</span><span class="n">bam</span><span class="o">.</span><span class="n">bai</span>
+</pre></div>
+</div>
+<p>Abundance tables in txt format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">high_confidence_vOTU_abundance_table</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">high_confidence_vOTU_abundance_table</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">low_confidence_vOTU_abundance_table</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">low_confidence_vOTU_abundance_table</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>Abundance tables in BIOM JSON format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">high_confidence_vOTU_abundance_table_json</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">biom</span>
+<span class="n">high_confidence_vOTU_abundance_table_json</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">biom</span>
+<span class="n">low_confidence_vOTU_abundance_table_json</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">biom</span>
+<span class="n">low_confidence_vOTU_abundance_table_json</span><span class="o">.</span><span class="n">tot</span><span class="o">.</span><span class="n">biom</span>
+</pre></div>
+</div>
+<p>Contigs summary table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vOTU_summary</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="support">
 <h1>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h1>
-<p>The easiest way to get help with the project is to join the #crawler
-channel on Freenode.</p>
-<p>We hang out there and you can get real-time help with your projects.
-The other good way is to open an issue on Github.</p>
-<p>The mailing list at <a class="reference external" href="https://groups.google.com/forum/#!forum/crawler">https://groups.google.com/forum/#!forum/crawler</a> is also available for support.</p>
-<p>Freenode: <a class="reference external" href="irc://freenode.net">freenode</a></p>
-<p>Github: <a class="reference external" href="http://github.com/example/crawler/issues">github_page</a></p>
+<p>The easiest way to get help with the project is to send an email to <a class="reference external" href="mailto:lm&#46;forero10&#37;&#52;&#48;uniandes&#46;edu&#46;co">lm<span>&#46;</span>forero10<span>&#64;</span>uniandes<span>&#46;</span>edu<span>&#46;</span>co</a>.
+The other good way is to open an issue on Mosaic’s Github page at <a class="reference external" href="https://github.com/lauramilena3/Mosaic/issues">https://github.com/lauramilena3/Mosaic/issues</a>.</p>
 </div>
 
 
