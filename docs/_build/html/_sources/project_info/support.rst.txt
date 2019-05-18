@@ -25,6 +25,7 @@ In order to change this values, you can append the desired values to the main co
 Below, you can find all the variables, and their default values.  
 
 General:
+
 +-------------------+---------------------+---------------------------------------------+
 | Name              | Default             | Description                                 |
 +===================+=====================+=============================================+
@@ -43,6 +44,7 @@ General:
 
 
 Nanopore:
+
 +----------------------+---------------------+---------------------------------------------+
 | Name                 | Default             | Description                                 |
 +======================+=====================+=============================================+

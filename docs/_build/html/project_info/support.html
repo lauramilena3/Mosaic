@@ -173,30 +173,70 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </pre></div>
 </div>
 <p>Below, you can find all the variables, and their default values.</p>
-<p>General:
-+——————-+———————+———————————————+
-| Name              | Default             | Description                                 |
-+===================+=====================+=============================================+
-| input_dir         | “data/00_RAW_DATA”  | Input folder with raw data                  |
-+——————-+———————+———————————————+
-| results_dir       | “data”              | Directory for output files                  |
-+——————-+———————+———————————————+
-| operating_system  | “linux”             | Operating system ([linux], [macOs])         |
-+——————-+———————+———————————————+
-| forward_tag       | “R1”                | Forward tag used for Illumina reads         |
-+——————-+———————+———————————————+
-| reverse_tag       | “R2”                | Reverse tag used for Illumina reads         |
-+——————-+———————+———————————————+
-| nanopore_tag      | “nanopore”          | Tag used for Nanopore files                 |
-+——————-+———————+———————————————+</p>
-<p>Nanopore:
-+———————-+———————+———————————————+
-| Name                 | Default             | Description                                 |
-+======================+=====================+=============================================+
-| nanopore_pooled      | “False”             | Nanopore run pooling                        |
-+———————-+———————+———————————————+
-| nanopore_pooled_name | “raw”               | Tag used for pooled Nanopore run            |
-+———————-+———————+———————————————+</p>
+<p>General:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="25%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>input_dir</td>
+<td>“data/00_RAW_DATA”</td>
+<td>Input folder with raw data</td>
+</tr>
+<tr class="row-odd"><td>results_dir</td>
+<td>“data”</td>
+<td>Directory for output files</td>
+</tr>
+<tr class="row-even"><td>operating_system</td>
+<td>“linux”</td>
+<td>Operating system ([linux], [macOs])</td>
+</tr>
+<tr class="row-odd"><td>forward_tag</td>
+<td>“R1”</td>
+<td>Forward tag used for Illumina reads</td>
+</tr>
+<tr class="row-even"><td>reverse_tag</td>
+<td>“R2”</td>
+<td>Reverse tag used for Illumina reads</td>
+</tr>
+<tr class="row-odd"><td>nanopore_tag</td>
+<td>“nanopore”</td>
+<td>Tag used for Nanopore files</td>
+</tr>
+</tbody>
+</table>
+<p>Nanopore:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="24%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>nanopore_pooled</td>
+<td>“False”</td>
+<td>Nanopore run pooling</td>
+</tr>
+<tr class="row-odd"><td>nanopore_pooled_name</td>
+<td>“raw”</td>
+<td>Tag used for pooled Nanopore run</td>
+</tr>
+</tbody>
+</table>
 <p>Trimmomatic:</p>
 <table border="1" class="docutils">
 <colgroup>
