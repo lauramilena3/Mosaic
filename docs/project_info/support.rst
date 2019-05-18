@@ -20,11 +20,11 @@ Many values can be modified depending on user needs. Mosaic’s JSON config file
 
 In order to change this values, you can append the desired values to the main command. For example, in order to change the minimun length of a contig to 2000bp, you can use::
 
-   snakemake -j $nCores --use-conda --config basecalled_data=$fastqDir results_dir=$reusultDir min_len=2000
+   snakemake -j $nCores --use-conda --config min_len=2000 basecalled_data=$fastqDir results_dir=$reusultDir 
 
 Below, you can find all the variables, and their default values.  
 
-
+General:
 +-------------------+---------------------+---------------------------------------------+
 | Name              | Default             | Description                                 |
 +===================+=====================+=============================================+
@@ -38,30 +38,52 @@ Below, you can find all the variables, and their default values.
 +-------------------+---------------------+---------------------------------------------+
 | reverse_tag       | "R2"                | Reverse tag used for Illumina reads         |
 +-------------------+---------------------+---------------------------------------------+
-| nanopore_tag      | "nanopore"          | Tag used for Nanopore reads                 |
+| nanopore_tag      | "nanopore"          | Tag used for Nanopore files                 |
 +-------------------+---------------------+---------------------------------------------+
 
-nanopore_pooled: "True"
-nanopore_pooled_name: "raw"
 
-trimmomatic_leading: "15"
-trimmomatic_trailing: "15"
-trimmomatic_window_size: "4"
-trimmomatic_window_quality: "15"
-trimmomatic_minlen: "50"
+Nanopore:
++----------------------+---------------------+---------------------------------------------+
+| Name                 | Default             | Description                                 |
++======================+=====================+=============================================+
+| nanopore_pooled      | "False"             | Nanopore run pooling                        |
++----------------------+---------------------+---------------------------------------------+
+| nanopore_pooled_name | "raw"               | Tag used for pooled Nanopore run            |
++----------------------+---------------------+---------------------------------------------+
 
-#bbnorm
+
+
+Trimmomatic:
+
++----------------------------+---------------------+---------------------------------------------+
+| Name                       | Default             | Description                                 |
++============================+=====================+=============================================+
+| trimmomatic_leading        | "15"                | Leading minimum base quality                |
++----------------------------+---------------------+---------------------------------------------+
+| trimmomatic_trailing       | "15"                | Trailing minimum base quality               |
++----------------------------+---------------------+---------------------------------------------+
+| trimmomatic_window_size    | "4"                 | Window size                                 |
++----------------------------+---------------------+---------------------------------------------+
+| trimmomatic_window_quality | "15"                | Window minimum quality                      |
++----------------------------+---------------------+---------------------------------------------+
+| trimmomatic_minlen         | "50"                | Read minimum length                         |
++----------------------------+---------------------+---------------------------------------------+
+
+Cleaning:
+contaminants_list: "GCF_000819615.1"
+adapters_file: "NexteraPE-PE.fa"
+
+Normalization and Subsampling
 min_norm: "2" 
 max_norm: "100"
 max_subsample: "20000000"
 
-#Spades and canu assembly
+Contig
 min_len: "1000"
 min_cov: "2"
 
-contaminants_list: "GCF_000819615.1"
-adapters_file: "NexteraPE-PE.fa"
-basecalled_dir: "data/basecalled/"
+
+
 
 Outputs
 =======
