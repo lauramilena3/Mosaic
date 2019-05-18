@@ -111,7 +111,7 @@ rule tabletoBIOM:
 	input:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.txt",
 	output:
-		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table.{sampling}.biom",
+		abundances=dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table_json.{sampling}.biom",
 	message:
 		"Getting vOTU tables"
 	conda:
@@ -119,7 +119,7 @@ rule tabletoBIOM:
 	threads: 1
 	shell:
 		"""
-		touch {output.abundances}
+		biom convert -i {input.abundances} -o {output.abundances} --table-type="OTU table" --to-json		
 		"""
 rule getSummaryTable:
 	input:
