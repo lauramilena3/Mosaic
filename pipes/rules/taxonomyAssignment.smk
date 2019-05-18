@@ -48,6 +48,6 @@ rule clusterTaxonomy:
 		#three changes in code 1) int 2,3) summary remove excluded
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
 		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode MCL \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {output.out_dir} --threads {threads}
 		"""
