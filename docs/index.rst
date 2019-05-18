@@ -9,16 +9,12 @@ Welcome to Mosaic's documentation!
 
 .. toctree::
    :caption: Getting started
-   :name: getting_started
-   :hidden:
    :maxdepth: 1
 
    getting_started/userGuide
 
 .. toctree::
    :caption: Project Info
-   :name: project_info
-   :hidden:
    :maxdepth: 1
 
    project_info/support
@@ -27,5 +23,5 @@ Welcome to Mosaic's documentation!
 Indices and tables
 ==================
 
-:ref:`getting_started`
-:ref:`project_info`
+* :ref:`getting_started`
+* :ref:`project_info`
