@@ -169,15 +169,40 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 <h1>Config File<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h1>
 <p>Many values can be modified depending on user needs. Mosaic’s JSON config file allows the user to select types of data and thresholds used for the analysis depending on their needs. This file may be used as supplementary material to replicate the analyses. Using this, plus the conda JSON files describing all dependencies versions, we expect the users to consistently retrieve the same results independent on the machine.</p>
 <p>In order to change this values, you can append the desired values to the main command. For example, in order to change the minimun length of a contig to 2000bp, you can use:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>snakemake -j $nCores --use-conda --config basecalled_data=$fastqDir results_dir=$reusultDir min_len=2000
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>snakemake -j $nCores --use-conda --config min_len=2000 basecalled_data=$fastqDir results_dir=$reusultDir
 </pre></div>
 </div>
 <p>Below, you can find all the variables, and their default values.</p>
+<p>General:
++——————-+———————+———————————————+
+| Name              | Default             | Description                                 |
++===================+=====================+=============================================+
+| input_dir         | “data/00_RAW_DATA”  | Input folder with raw data                  |
++——————-+———————+———————————————+
+| results_dir       | “data”              | Directory for output files                  |
++——————-+———————+———————————————+
+| operating_system  | “linux”             | Operating system ([linux], [macOs])         |
++——————-+———————+———————————————+
+| forward_tag       | “R1”                | Forward tag used for Illumina reads         |
++——————-+———————+———————————————+
+| reverse_tag       | “R2”                | Reverse tag used for Illumina reads         |
++——————-+———————+———————————————+
+| nanopore_tag      | “nanopore”          | Tag used for Nanopore files                 |
++——————-+———————+———————————————+</p>
+<p>Nanopore:
++———————-+———————+———————————————+
+| Name                 | Default             | Description                                 |
++======================+=====================+=============================================+
+| nanopore_pooled      | “False”             | Nanopore run pooling                        |
++———————-+———————+———————————————+
+| nanopore_pooled_name | “raw”               | Tag used for pooled Nanopore run            |
++———————-+———————+———————————————+</p>
+<p>Trimmomatic:</p>
 <table border="1" class="docutils">
 <colgroup>
+<col width="30%" />
 <col width="22%" />
-<col width="25%" />
-<col width="53%" />
+<col width="48%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -186,49 +211,38 @@ avaliable <a class="reference external" href="https://snakemake.readthedocs.io/e
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>input_dir</td>
-<td>“data/00_RAW_DATA”</td>
-<td>Input folder with raw data</td>
+<tr class="row-even"><td>trimmomatic_leading</td>
+<td>“15”</td>
+<td>Leading minimum base quality</td>
 </tr>
-<tr class="row-odd"><td>results_dir</td>
-<td>“data”</td>
-<td>Directory for output files</td>
+<tr class="row-odd"><td>trimmomatic_trailing</td>
+<td>“15”</td>
+<td>Trailing minimum base quality</td>
 </tr>
-<tr class="row-even"><td>operating_system</td>
-<td>“linux”</td>
-<td>Operating system ([linux], [macOs])</td>
+<tr class="row-even"><td>trimmomatic_window_size</td>
+<td>“4”</td>
+<td>Window size</td>
 </tr>
-<tr class="row-odd"><td>forward_tag</td>
-<td>“R1”</td>
-<td>Forward tag used for Illumina reads</td>
+<tr class="row-odd"><td>trimmomatic_window_quality</td>
+<td>“15”</td>
+<td>Window minimum quality</td>
 </tr>
-<tr class="row-even"><td>reverse_tag</td>
-<td>“R2”</td>
-<td>Reverse tag used for Illumina reads</td>
-</tr>
-<tr class="row-odd"><td>nanopore_tag</td>
-<td>“nanopore”</td>
-<td>Tag used for Nanopore reads</td>
+<tr class="row-even"><td>trimmomatic_minlen</td>
+<td>“50”</td>
+<td>Read minimum length</td>
 </tr>
 </tbody>
 </table>
-<p>nanopore_pooled: “True”
-nanopore_pooled_name: “raw”</p>
-<p>trimmomatic_leading: “15”
-trimmomatic_trailing: “15”
-trimmomatic_window_size: “4”
-trimmomatic_window_quality: “15”
-trimmomatic_minlen: “50”</p>
-<p>#bbnorm
+<p>Cleaning:
+contaminants_list: “GCF_000819615.1”
+adapters_file: “NexteraPE-PE.fa”</p>
+<p>Normalization and Subsampling
 min_norm: “2”
 max_norm: “100”
 max_subsample: “20000000”</p>
-<p>#Spades and canu assembly
+<p>Contig
 min_len: “1000”
 min_cov: “2”</p>
-<p>contaminants_list: “GCF_000819615.1”
-adapters_file: “NexteraPE-PE.fa”
-basecalled_dir: “data/basecalled/”</p>
 </div>
 <div class="section" id="outputs">
 <h1>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h1>
