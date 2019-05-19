@@ -270,6 +270,7 @@ rule extractViralContigs:
 		low_contigs_dup=dirs_dict["VIRAL_DIR"]+ "/low_confidence_dup.{sampling}.fasta",
 		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
 		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_contigs.{sampling}.fasta",
 	message:
 		"Selecting Viral Contigs"
 	conda:
@@ -293,5 +294,6 @@ rule extractViralContigs:
 		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
 		sed -i 's/_/-/g' {output.high_contigs}
 		sed -i 's/_/-/g' {output.low_contigs}
+		cat {output.high_contigs} {output.low_contigs} > {output.all_contigs}
 		"""
 
