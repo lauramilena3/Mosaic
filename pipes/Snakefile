@@ -47,8 +47,8 @@ def inputAll(wildcards):
 	inputs=[]
 	inputs.append(dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html")
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE))
-	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
-	#inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
+	#inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/{confidence}_confidence_vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
+	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
 	if NANOPORE=="True":
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES))
 	return inputs
