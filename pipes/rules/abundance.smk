@@ -76,8 +76,8 @@ rule filterBAM:
 	output:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
-		bam_filtered_high=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted.{sampling}_filtered.bam",
-		bam_filtered_low=dirs_dict["MAPPING_DIR"]+ "/{sample}__high_confidence_sorted.{sampling}_filtered.bam",
+		bam_filtered_high=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted_filtered.{sampling}.bam",
+		bam_filtered_low=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted_filtered.{sampling}.bam",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
@@ -97,7 +97,7 @@ rule filterBAM:
 		"""
 rule getBreadthCoverage:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted.{sampling}_filtered.bam",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
 		contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_lenghts.{sampling}.txt",
 	output:
 		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_genomecov.{sampling}.txt",
