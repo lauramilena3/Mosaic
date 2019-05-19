@@ -1,4 +1,5 @@
 ruleorder: getAbundancesPE > getAbundancesSE
+
 rule getAbundancesPE:
 	input:
 		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_{{confidence}}_confidence_filtered_coverage.{{sampling}}.txt", sample=SAMPLES),
