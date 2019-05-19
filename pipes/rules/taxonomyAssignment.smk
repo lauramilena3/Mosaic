@@ -18,7 +18,7 @@ rule clusterTaxonomy:
 		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
 	output:
 		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}"),
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_genome_file.{sampling}.csv",
+		genome_file=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
 		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"]
