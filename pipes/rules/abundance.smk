@@ -71,8 +71,8 @@ rule mapReadsToContigsSE:
 rule filterBAM:
 	input:
 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
+		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
+		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
 	output:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
