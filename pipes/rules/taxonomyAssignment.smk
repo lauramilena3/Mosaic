@@ -17,11 +17,11 @@ rule clusterTaxonomy:
 	input:
 		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
 	output:
-		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}"),
 		genome_file=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
 		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"]
+		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}"),
 	message:
 		"Clustering viral genomes with vContact2"
 	conda:
@@ -49,5 +49,5 @@ rule clusterTaxonomy:
 		python ./{params.vcontact_dir}/vcontact/utilities/Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
 		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
-		--output-dir {output.out_dir} --threads {threads}
+		--output-dir {params.out_dir} --threads {threads}
 		"""
