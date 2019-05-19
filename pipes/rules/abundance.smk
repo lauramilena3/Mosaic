@@ -1,5 +1,4 @@
 ruleorder: mapReadsToContigsPE > mapReadsToContigsSE
-ruleorder: getAbundancesPE > getAbundancesSE
 
 rule createContigBowtieDb:
 	input:
