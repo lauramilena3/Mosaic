@@ -129,7 +129,7 @@ rule tabletoBIOM:
 rule getSummaryTable:
 	input:
 		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
-		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv" 
+		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv",
 		high_dir=(dirs_dict["VIRAL_DIR"]+ "/high_confidence_vContact.{sampling}/genome_by_genome_overview.csv"),
 		low_dir=(dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.{sampling}/genome_by_genome_overview.csv"),
 		representative_lenghts=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
