@@ -28,6 +28,7 @@ rule mapReadsToContigsPE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	output:
 		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
@@ -97,7 +98,6 @@ rule filterBAM:
 rule getBreadthCoverage:
 	input:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
-		contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_lenghts.{sampling}.txt",
 	output:
 		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_genomecov.{sampling}.txt",
 		cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt",
