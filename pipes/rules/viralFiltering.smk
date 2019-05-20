@@ -294,6 +294,6 @@ rule extractViralContigs:
 		awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
 		sed -i 's/_/-/g' {output.high_contigs}
 		sed -i 's/_/-/g' {output.low_contigs}
-		cat {output.high_contigs} {output.low_contigs} > {output.all_contigs}
+		cat {output.high_contigs} {output.low_contigs} > {output.positive_contigs}
 		"""
 
