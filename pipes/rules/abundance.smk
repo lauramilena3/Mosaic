@@ -90,8 +90,8 @@ rule filterBAM:
 		"""
 		samtools sort {input.bam} -o {output.bam_sorted}
 		bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
-		bamm extract -g {input.high_contigs} -b {output.bam_filtered} > {input.bam_filtered_high}
-		bamm extract -g {input.low_contigs} -b {output.bam_filtered} > {input.bam_filtered_low}
+		bamm extract -g {input.high_contigs} -b {output.bam_filtered} > {output.bam_filtered_high}
+		bamm extract -g {input.low_contigs} -b {output.bam_filtered} > {output.bam_filtered_low}
 		bamm parse -c {output.tpmean_high} -m tpmean -b {output.bam_filtered_high}
 		bamm parse -c {output.tpmean_low} -m tpmean -b {output.bam_filtered_low}
 		"""
