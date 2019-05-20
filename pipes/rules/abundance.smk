@@ -76,9 +76,6 @@ rule filterBAM:
 	output:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
-		bam_filtered_high=dirs_dict["MAPPING_DIR"]+ "/{sample}_high_confidence_sorted_filtered.{sampling}.bam",
-		bam_filtered_low=dirs_dict["MAPPING_DIR"]+ "/{sample}_low_confidence_sorted_filtered.{sampling}.bam",
-		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
 	message:
@@ -90,11 +87,28 @@ rule filterBAM:
 		"""
 		samtools sort {input.bam} -o {output.bam_sorted}
 		bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
-		bamm extract -g {input.high_contigs} -b {output.bam_filtered} > {output.bam_filtered_high}
-		bamm extract -g {input.low_contigs} -b {output.bam_filtered} > {output.bam_filtered_low}
-		bamm parse -c {output.tpmean_high} -m tpmean -b {output.bam_filtered_high}
-		bamm parse -c {output.tpmean_low} -m tpmean -b {output.bam_filtered_low}
 		"""
+
+rule tpmeanPerConfidence:
+	input:
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
+		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
+	output:
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam"
+		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv",
+	params:
+		out_dir=dirs_dict["MAPPING_DIR"]
+	message:
+		"Filtering reads in Bam file with BamM"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env2.yaml"
+	threads: 1
+	shell:
+		"""
+		bamm extract -g {input.contigs} -b {input.bam_filtered} > {output.bam_filtered}
+		bamm parse -c {output.tpmean} -m tpmean -b {output.bam_filtered}
+		"""
+
 rule getBreadthCoverage:
 	input:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
