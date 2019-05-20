@@ -55,30 +55,30 @@ rule multiQC:
 		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
 		"""
 		
-rule trim_adapters_quality_illumina_PE:
-	input:
-		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R1.fastq",
-		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R2.fastq",
-		qc_report=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
-	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
-		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
-		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq")
-	params:
-		adapters=dirs_dict["ADAPTERS_DIR"] + "/" + config['adapters_file']
-	message: 
-		"Trimming Illumina Adapters with Trimmomatic"
-	conda:
-		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	threads: 2
-	shell:
-		"""
-		trimmomatic PE -threads {threads} -phred33 {input.forward} {input.reverse} \
-		{output.forward_paired} {output.forward_unpaired} {output.reverse_paired} {output.reverse_unpaired} \
-		ILLUMINACLIP:{params.adapters}:2:30:10 LEADING:{config[trimmomatic_leading]} TRAILING:{config[trimmomatic_trailing]} \
-		SLIDINGWINDOW:{config[trimmomatic_window_size]}:{config[trimmomatic_window_quality]} MINLEN:{config[trimmomatic_minlen]}
-		"""
+# rule trim_adapters_quality_illumina_PE:
+# 	input:
+# 		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R1.fastq",
+# 		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R2.fastq",
+# 		qc_report=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
+# 	output:
+# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
+# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
+# 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
+# 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq")
+# 	params:
+# 		adapters=dirs_dict["ADAPTERS_DIR"] + "/" + config['adapters_file']
+# 	message: 
+# 		"Trimming Illumina Adapters with Trimmomatic"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+# 	threads: 2
+# 	shell:
+# 		"""
+# 		trimmomatic PE -threads {threads} -phred33 {input.forward} {input.reverse} \
+# 		{output.forward_paired} {output.forward_unpaired} {output.reverse_paired} {output.reverse_unpaired} \
+# 		ILLUMINACLIP:{params.adapters}:2:30:10 LEADING:{config[trimmomatic_leading]} TRAILING:{config[trimmomatic_trailing]} \
+# 		SLIDINGWINDOW:{config[trimmomatic_window_size]}:{config[trimmomatic_window_quality]} MINLEN:{config[trimmomatic_minlen]}
+# 		"""
 
 rule trim_adapters_quality_illumina_SE:
 	input:
@@ -132,14 +132,14 @@ rule getContaminants:
 	shell:
 		"""
 		line=$(echo {CONTAMINANTS})
-        for contaminant in $line
-        do
-        	echo $contaminant
+		for contaminant in $line
+		do
+			echo $contaminant
 			wget $(esearch -db "assembly" -query $contaminant | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 			gunzip -f *$contaminant*gz
 			cat *$contaminant*fna >> {output.contaminants_file}
 			rm *$contaminant*fna
-        done
+		done
 		"""
 
 rule removeContaminants_PE:
