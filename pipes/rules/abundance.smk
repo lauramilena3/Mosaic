@@ -1,4 +1,4 @@
-ruleorder: mapReadsToContigsPE > mapReadsToContigsSE
+# ruleorder: mapReadsToContigsPE > mapReadsToContigsSE
 
 rule createContigBowtieDb:
 	input:
@@ -22,30 +22,30 @@ rule createContigBowtieDb:
 		awk -F' ' '{{print $1"	"$2}}' {output.contigs_info} > {output.contigs_lenght}
 		"""
 
-rule mapReadsToContigsPE:
-	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
-	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
-	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}",
-	message:
-		"Mapping reads to contigs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
-		-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
-		#Sam to Bam
-		samtools view -b -S {output.sam} > {output.bam}
-		"""
+# rule mapReadsToContigsPE:
+# 	input:
+# 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
+# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+# 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
+# 	output:
+# 		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
+# 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
+# 	params:
+# 		contigs=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}",
+# 	message:
+# 		"Mapping reads to contigs"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 4
+# 	shell:
+# 		"""
+# 		bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
+# 		-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
+# 		#Sam to Bam
+# 		samtools view -b -S {output.sam} > {output.bam}
+# 		"""
 rule mapReadsToContigsSE:
 	input:
 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
