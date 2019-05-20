@@ -94,7 +94,7 @@ rule tpmeanPerConfidence:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
 		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
 	output:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam"
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
@@ -111,7 +111,7 @@ rule tpmeanPerConfidence:
 
 rule getBreadthCoverage:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam"
 	output:
 		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_genomecov.{sampling}.txt",
 		cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt",
