@@ -110,6 +110,8 @@ rule asemblyCanuPOOLED:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
 		assembly=dirs_dict["ASSEMBLY_DIR"],
 		sample_list=" ".join(SAMPLES),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
 	shell:
 		"""
@@ -135,6 +137,8 @@ rule asemblyCanu:
 		"Assembling Nanopore reads with Canu"
 	params: 
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
 	shell:
 		"""
