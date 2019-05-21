@@ -78,7 +78,7 @@ rule shortReadAsemblySpadesSE:
 
 rule downloadCanu:
 	output:
-		canu_dir=config['canu_dir'],
+		canu_dir=directory(config['canu_dir']),
 	message:
 		"Installing Canu assembler"
 	threads: 1
