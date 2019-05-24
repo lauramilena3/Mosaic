@@ -96,9 +96,6 @@ rule tpmeanPerConfidence:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
 		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
-	params:
-		out_dir=dirs_dict["MAPPING_DIR"]
-		prefix=dirs_dict["MAPPING_DIR"]
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
