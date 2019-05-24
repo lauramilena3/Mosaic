@@ -92,13 +92,13 @@ rule filterBAM:
 rule tpmeanPerConfidence:
 	input:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
-		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
 	output:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
-		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam.bai",
-		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam.bai",
+		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
+		prefix=dirs_dict["MAPPING_DIR"]
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
@@ -106,17 +106,16 @@ rule tpmeanPerConfidence:
 	threads: 1
 	shell:
 		"""
-		bamm extract -g {input.contigs} -b {input.bam_filtered} > {output.bam_filtered}
 		samtools index {output.bam_filtered}
 		bamm parse -c {output.tpmean} -m tpmean -b {output.bam_filtered}
 		"""
 
 rule getBreadthCoverage:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam"
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
 	output:
-		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_genomecov.{sampling}.txt",
-		cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_filtered_coverage.{sampling}.txt",
+		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_filtered_genomecov.{sampling}.txt",
+		cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_filtered_coverage.{sampling}.txt",
 	message:
 		"Calculating breadth coverage contigs"
 	conda:
