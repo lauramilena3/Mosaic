@@ -112,7 +112,7 @@ rule tabletoBIOM:
 	input:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.{sampling}.txt",
 	output:
-		abundances=dirs_dict["MAPPING_DIR"]+ "vOTU_abundance_table_json.{sampling}.biom",
+		abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom",
 	message:
 		"Getting vOTU tables"
 	conda:
