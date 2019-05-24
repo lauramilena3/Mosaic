@@ -95,7 +95,7 @@ rule tpmeanPerConfidence:
 		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
 	output:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
-		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
