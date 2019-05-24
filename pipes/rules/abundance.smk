@@ -76,6 +76,7 @@ rule filterBAM:
 	output:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam.bai",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
 	message:
@@ -87,6 +88,7 @@ rule filterBAM:
 		"""
 		samtools sort {input.bam} -o {output.bam_sorted}
 		bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+		samtools index {output.bam_sorted}
 		"""
 
 rule tpmeanPerConfidence:
@@ -95,6 +97,7 @@ rule tpmeanPerConfidence:
 		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
 	output:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_sorted_filtered.{sampling}.bam",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_{confidence}_confidence_tpmean.{sampling}.tsv",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"]
