@@ -97,7 +97,7 @@ rule tpmeanPerConfidence:
 		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
 	message:
-		"Filtering reads in Bam file with BamM"
+		"Calculating tpmean depth coverage"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env2.yaml"
 	threads: 1
