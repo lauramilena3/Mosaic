@@ -93,8 +93,7 @@ rule tpmeanPerConfidence:
 	input:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
 	output:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
-		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam.bai",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
 	message:
 		"Calculating tpmean depth coverage"
@@ -103,8 +102,8 @@ rule tpmeanPerConfidence:
 	threads: 1
 	shell:
 		"""
-		samtools index {output.bam_filtered}
-		bamm parse -c {output.tpmean} -m tpmean -b {output.bam_filtered}
+		samtools index {input.bam_filtered}
+		bamm parse -c {output.tpmean} -m tpmean -b {input.bam_filtered}
 		"""
 
 rule getBreadthCoverage:
