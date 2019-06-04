@@ -18,8 +18,7 @@ rule getAbundancesPE:
 		lenght=7000
 		percentage=0.7
 		min_bases=5000
-		SAMPLING=["tot", "sub"]
-		for sampling in SAMPLING:
+		for sampling in SAMPLING_TYPE:
 			df_tpmean=pd.DataFrame()
 			for sample in SAMPLES:
 				#READ NUMBER
@@ -73,8 +72,7 @@ rule getAbundancesSE:
 		lenght=7000
 		percentage=0.7
 		min_bases=5000
-		SAMPLING=["tot", "sub"]
-		for sampling in SAMPLING:
+		for sampling in SAMPLING_TYPE:
 			df_tpmean=pd.DataFrame()
 			for sample in SAMPLES:
 				#READ NUMBER

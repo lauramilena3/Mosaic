@@ -2,6 +2,7 @@ ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE
 ruleorder: removeContaminants_PE > removeContaminants_SE 
 ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE 
 ruleorder: normalizeReads_PE > normalizeReads_SE 
+ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
 
 rule qualityCheckIllumina:
@@ -41,7 +42,7 @@ rule multiQC:
 		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
 		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
 	output:
-		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
+		multiqc=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"
 	params:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
 		html_name="pre_processing_multiqc_report.html",
@@ -117,7 +118,7 @@ rule remove_adapters_quality_nanopore:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
 		NanoFilt -q 10 -l 1000 --headcrop 50 {output.porechopped} > {output.fastq}
-		grep -c "^@" {output.fastq} > {output.size}
+		#grep -c "^@" {output.fastq} > {output.size}
 		"""
 
 rule getContaminants:
@@ -200,12 +201,36 @@ rule removeContaminants_SE:
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
 
-rule postQualityCheckIllumina:
+rule postQualityCheckIlluminaPE:
 	input:
-		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}.fastq"
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",	
 	output:
-		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.html"),
-		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip")
+		html_forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.html"),
+		zipped_forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.zip"),
+		html_reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.html"),
+		zipped_reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.zip"),
+		html_unpaired=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
+		zipped_unpaired=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip"),
+	message: 
+		"Performing fastqQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/QC.yaml"
+#	threads: 1
+	shell:
+		"""
+		fastqc {input.forward_paired}
+		fastqc {input.reverse_paired}
+		fastqc {input.unpaired}
+		"""
+
+rule postQualityCheckIlluminaSE:
+	input:
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
+	output:
+		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
+		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip")
 	message: 
 		"Performing fastqQC statistics"
 	conda:
@@ -215,6 +240,7 @@ rule postQualityCheckIllumina:
 		"""
 		fastqc {input}
 		"""
+
 rule postQualityCheckNanopore:
 	input:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
@@ -234,10 +260,10 @@ rule postQualityCheckNanopore:
 
 rule postMultiQC:
 	input:
-		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
-		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
+		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_unpaired_clean.tot_fastqc.html", sample=SAMPLES),
+		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot.zip", sample=SAMPLES)
 	output:
-		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
+		multiqc=dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"
 	params:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
 		html_name="pre_processing_multiqc_report.html",
@@ -358,15 +384,15 @@ rule normalizeReads_PE:
 	params: 
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm']
-	threads: 1
+	threads: 4
 	resources:
-		mem_mb=4000
+		mem_mb=6000
 	shell:
 		"""
 		#PE
 		#paired
 		bbnorm.sh -Xmx{resources.mem_mb}m ecc in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} \
-		target={params.max_depth} mindepth={params.min_depth}
+		target={params.max_depth} mindepth={params.min_depth} t={threads}
 		#unpaired
 		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth}		
 		"""
@@ -383,13 +409,13 @@ rule normalizeReads_SE:
 	params: 
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm']
-	threads: 1
+	threads: 4
 	resources:
-		mem_mb=4000
+		mem_mb=6000
 	shell:
 		"""
 		#SE
 		#unpaired
-		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth}		
+		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth} t={threads}	
 		"""
 
