@@ -261,7 +261,7 @@ rule postQualityCheckNanopore:
 rule postMultiQC:
 	input:
 		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_unpaired_clean.tot_fastqc.html", sample=SAMPLES),
-		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot.zip", sample=SAMPLES)
+		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip", sample=SAMPLES)
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"
 	params:
