@@ -24,7 +24,7 @@ rule qualityCheckNanopore:
 		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample_nanopore}_nanopore.fastq"
 	output:
 		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot")),
-		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report.html"
+		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html"
 	message: 
 		"Performing nanoQC statistics"
 	conda:
@@ -33,7 +33,7 @@ rule qualityCheckNanopore:
 	shell:
 		"""
 		nanoQC -o {output.nanoqc_dir} {input.raw_fastq}
-		mv {output.nanoqc_dir}/summary.html {output.nanoqc}
+		mv {output.nanoqc_dir}/nanoQC.html {output.nanoqc}
 		"""
 
 rule multiQC:
@@ -200,6 +200,56 @@ rule removeContaminants_SE:
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
 
+rule postQualityCheckIllumina:
+	input:
+		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}.fastq"
+	output:
+		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.html"),
+		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip")
+	message: 
+		"Performing fastqQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/QC.yaml"
+#	threads: 1
+	shell:
+		"""
+		fastqc {input}
+		"""
+rule postQualityCheckNanopore:
+	input:
+		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
+	output:
+		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
+		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html"
+	message: 
+		"Performing nanoQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env3.yaml"
+#	threads: 1
+	shell:
+		"""
+		nanoQC -o {output.nanoqc_dir} {input.fastq}
+		mv {output.nanoqc_dir}/nanoQC.html {output.nanoqc}
+		"""
+
+rule postMultiQC:
+	input:
+		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
+		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
+	output:
+		multiqc=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
+	params:
+		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
+		html_name="pre_processing_multiqc_report.html",
+		multiqc_dir=dirs_dict["QC_DIR"]
+	message: 
+		"Generating MultiQC report"
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/QC.yaml"
+	shell:
+		"""
+		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
+		"""
 rule subsampleReadsIllumina_PE:
 	input:
 		unpaired_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt", sample=SAMPLES),
