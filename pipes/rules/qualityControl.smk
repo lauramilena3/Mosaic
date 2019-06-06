@@ -266,7 +266,7 @@ rule postMultiQC:
 		multiqc=dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"
 	params:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
-		html_name="pre_processing_multiqc_report.html",
+		html_name="postQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
 	message: 
 		"Generating MultiQC report"
