@@ -45,7 +45,7 @@ rule multiQC:
 		multiqc=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"
 	params:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
-		html_name="pre_processing_multiqc_report.html",
+		html_name="preQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
 	message: 
 		"Generating MultiQC report"
@@ -118,7 +118,7 @@ rule remove_adapters_quality_nanopore:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
 		NanoFilt -q 10 -l 1000 --headcrop 50 {output.porechopped} > {output.fastq}
-		#grep -c "^@" {output.fastq} > {output.size}
+		#grep -c "^@" fastq > {output.size}
 		"""
 
 rule getContaminants:
