@@ -60,7 +60,7 @@ rule trim_adapters_quality_illumina_PE:
 	input:
 		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R1.fastq",
 		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R2.fastq",
-		qc_report=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
+		qc_report=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
