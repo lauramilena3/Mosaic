@@ -11,7 +11,12 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		prodigal -i {input.contigs} -o {output.coords} -a {output.aa} -p meta
+		if [ ! -s {params.clusterONE_dir} ]
+		then 		
+			prodigal -i {input.contigs} -o {output.coords} -a {output.aa} -p meta
+		else
+			touch {output.coords} {output.aa}
+		fi
 		"""
 rule clusterTaxonomy:
 	input:
