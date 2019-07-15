@@ -11,7 +11,7 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		if [ ! -s {params.clusterONE_dir} ]
+		if [ ! -s {input.contigs]
 		then 		
 			prodigal -i {input.contigs} -o {output.coords} -a {output.aa} -p meta
 		else
