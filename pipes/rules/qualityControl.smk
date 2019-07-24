@@ -58,8 +58,8 @@ rule multiQC:
 		
 rule trim_adapters_quality_illumina_PE:
 	input:
-		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R1.fastq",
-		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_R2.fastq",
+		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_config['forward_tag'].fastq",
+		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_config['reverse_tag'].fastq",
 		qc_report=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
