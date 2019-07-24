@@ -29,7 +29,6 @@ POOLED=config['nanopore_pooled']
 
 
 READ_TYPES=[config['forward_tag']]
-print(READ_TYPES)
 for fname in os.listdir(RAW_DATA_DIR):
 	if fname.endswith(config['reverse_tag'] + '.fastq'):
 		PAIRED=True
@@ -42,6 +41,8 @@ if POOLED == "True":
 if len(SAMPLES)==1:
 	SAMPLING_TYPE=["tot"]
 
+print(READ_TYPES)
+print(SAMPLES)
 
 #======================================================
 # Rules
