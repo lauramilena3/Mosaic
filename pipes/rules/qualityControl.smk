@@ -207,12 +207,12 @@ rule postQualityCheckIlluminaPE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",	
 	output:
-		html_forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.html"),
-		zipped_forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.zip"),
-		html_reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.html"),
-		zipped_reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.zip"),
-		html_unpaired=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
-		zipped_unpaired=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip"),
+		html_forward=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.html"),
+		zipped_forward=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.zip"),
+		html_reverse=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.html"),
+		zipped_reverse=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.zip"),
+		html_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
+		zipped_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip"),
 	message: 
 		"Performing fastqQC statistics"
 	conda:
@@ -229,8 +229,8 @@ rule postQualityCheckIlluminaSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 	output:
-		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
-		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip")
+		html=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
+		zipped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip")
 	message: 
 		"Performing fastqQC statistics"
 	conda:
@@ -245,7 +245,7 @@ rule postQualityCheckNanopore:
 	input:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 	output:
-		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
+		nanoqc_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
 		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html"
 	message: 
 		"Performing nanoQC statistics"
@@ -260,12 +260,12 @@ rule postQualityCheckNanopore:
 
 rule postMultiQC:
 	input:
-		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_unpaired_clean.tot_fastqc.html", sample=SAMPLES),
-		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip", sample=SAMPLES)
+		html=expand(dirs_dict["CLEAN_DATA_DIR"]+"/{sample}_unpaired_clean.tot_fastqc.html", sample=SAMPLES),
+		zipped=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip", sample=SAMPLES)
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"
 	params:
-		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
+		fastqc_dir=dirs_dict["CLEAN_DATA_DIR"],
 		html_name="postQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
 	message: 
