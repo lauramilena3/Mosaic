@@ -164,7 +164,7 @@ rule removeContaminants_PE:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 1
 	resources:
-		mem_mb=4000
+		mem_mb=48000
 	shell:
 		"""
 		#PE
