@@ -134,6 +134,9 @@ rule getContaminants:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	shell:
 		"""
+		if [ -f {output.contaminants_fasta} ]; then
+    		rm {output.contaminants_fasta}
+		fi
 		line=$(echo {CONTAMINANTS})
 		for contaminant in $line
 		do
