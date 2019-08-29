@@ -123,7 +123,7 @@ rule remove_adapters_quality_nanopore:
 
 rule getContaminants:
 	output:
-		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"},
+		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta",
 		contaminants_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.bitmask",
 		contaminants_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.srprism",
 	message: 
