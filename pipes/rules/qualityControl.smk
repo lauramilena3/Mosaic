@@ -123,7 +123,10 @@ rule remove_adapters_quality_nanopore:
 
 rule getContaminants:
 	output:
-		contaminants_file=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
+		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"}
+		contaminants_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.bitmask"
+		contaminants_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.srprism"
+		
 	message: 
 		"Downloading contaminant genomes"
 	params:
@@ -138,9 +141,12 @@ rule getContaminants:
 			echo $contaminant
 			wget $(esearch -db "assembly" -query $contaminant | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 			gunzip -f *$contaminant*gz
-			cat *$contaminant*fna >> {output.contaminants_file}
+			cat *$contaminant*fna >> {output.contaminants_fasta}
 			rm *$contaminant*fna
 		done
+		bmtool -d {output.contaminants_fasta} -o {output.contaminants_bitmask}  -w 18 -z
+		srprism mkindex -i {output.contaminants_fasta} -o {output.contaminants_srprism} -M 7168
+		makeblastdb -in {output.contaminants_fasta} -dbtype nucl
 		"""
 
 rule removeContaminants_PE:
