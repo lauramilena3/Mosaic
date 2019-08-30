@@ -43,6 +43,7 @@ if len(SAMPLES)==1:
 
 print(READ_TYPES)
 print(SAMPLES)
+print(CONTAMINANTS)
 
 #======================================================
 # Rules
