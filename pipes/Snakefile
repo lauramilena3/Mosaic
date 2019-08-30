@@ -21,7 +21,7 @@ SAMPLING_TYPE=["sub", "tot"]
 SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 
 NANOPORE_SAMPLES=SAMPLES
-CONTAMINANTS=config['contaminants_list']
+CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
 PAIRED=False
 POOLED=config['nanopore_pooled']
