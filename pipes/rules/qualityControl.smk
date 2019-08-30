@@ -125,7 +125,7 @@ rule getContaminants:
 	output:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
 		contaminant_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask",
-		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}..srprism.ss",
+		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
 	message: 
 		"Downloading contaminant genomes"
