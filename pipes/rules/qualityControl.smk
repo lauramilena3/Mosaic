@@ -124,8 +124,8 @@ rule remove_adapters_quality_nanopore:
 rule getContaminants:
 	output:
 		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
-		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta", contaminants=CONTAMINANTS),
-		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta", contaminants=CONTAMINANTS),
+		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),
+		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),
 		contaminant_blastdb=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr", contaminant=CONTAMINANTS),
 	message: 
 		"Downloading contaminant genomes"
