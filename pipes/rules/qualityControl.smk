@@ -137,7 +137,6 @@ rule getContaminants:
 		mem_mb=32000
 	shell:
 		"""
-		echo {wildcards.contaminant}
 		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 		gunzip -f *{wildcards.contaminant}*gz
 		cat *{wildcards.contaminant}*fna >> {output.contaminant_fasta}
