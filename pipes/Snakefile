@@ -64,8 +64,12 @@ def inputAll(wildcards):
 rule all:
 	input:
 		#THA RULES!
-		inputAll
+		#inputAll
 		#TESTING:
+		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
+		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),
+		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),
+		contaminant_blastdb=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr", contaminant=CONTAMINANTS),
 
 # rule qc:
 # 	input:
