@@ -123,32 +123,28 @@ rule remove_adapters_quality_nanopore:
 
 rule getContaminants:
 	output:
-		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta",
-		contaminants_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.bitmask",
-		contaminants_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.srprism",
+		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
+		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta", contaminants=CONTAMINANTS),
+		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta", contaminants=CONTAMINANTS),
+		contaminant_blastdb=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr", contaminant=CONTAMINANTS),
 	message: 
 		"Downloading contaminant genomes"
 	params:
 		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"]
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	resources:
+		mem_mb=32000
 	shell:
 		"""
-		if [ -f {output.contaminants_fasta} ]; then
-    		rm {output.contaminants_fasta}
-		fi
-		line=$(echo {CONTAMINANTS})
-		for contaminant in $line
-		do
-			echo $contaminant
-			wget $(esearch -db "assembly" -query $contaminant | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
-			gunzip -f *$contaminant*gz
-			cat *$contaminant*fna >> {output.contaminants_fasta}
-			rm *$contaminant*fna
-		done
-		bmtool -d {output.contaminants_fasta} -o {output.contaminants_bitmask}  -w 18 -z
-		srprism mkindex -i {output.contaminants_fasta} -o {output.contaminants_srprism} -M 7168
-		makeblastdb -in {output.contaminants_fasta} -dbtype nucl
+		echo {wildcards.contaminant}
+		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
+		gunzip -f *{wildcards.contaminant}*gz
+		cat *{wildcards.contaminant}*fna >> {output.contaminant_fasta}
+		rm *{wildcards.contaminant}*fna
+		bmtool -d {output.contaminant_fasta} -o {output.contaminant_bitmask}  -w 18 -z
+		srprism mkindex -i {output.contaminant_fasta} -o {output.contaminant_srprism} -M {resources.mem_mb}
+		makeblastdb -in {output.contaminant_fasta} -dbtype nucl
 		"""
 
 rule removeContaminants_PE:
