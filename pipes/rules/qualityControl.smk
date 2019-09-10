@@ -212,7 +212,7 @@ rule removeContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 	wildcard_constraints:
-    	contaminant="ˆGCF_"
+		contaminant="ˆGCF_"
 	message: 
 		"Removing contaminants with BMTagger"
 	conda:
