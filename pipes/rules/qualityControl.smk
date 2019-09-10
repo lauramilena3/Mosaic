@@ -1,5 +1,6 @@
 ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE 
-ruleorder: removeContaminants_PE > removeContaminants_SE 
+ruleorder: listContaminants_PE > listContaminants_SE 
+#ruleorder: removeContaminants_PE > removeContaminants_SE 
 ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE 
 ruleorder: normalizeReads_PE > normalizeReads_SE 
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
@@ -178,26 +179,53 @@ rule listContaminants_PE:
 		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
 		"""
 
-rule removeContaminants_SE:
+# rule listContaminants_SE:
+# 	input:
+# 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
+# 		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
+# 	output:
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
+# 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
+# 	message: 
+# 		"Removing contaminants with BBtools"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+# 	threads: 1
+# 	resources:
+# 		mem_mb=4000
+# 	shell:
+# 		"""
+# 		#SE
+# 		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.unpaired} ref={input.contaminants_fasta} k=31 hdist=1 threads={threads} 
+# 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+# 		"""
+
+
+rule removeContaminants_PE:
 	input:
-		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
-		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_forward_paired_clean.tot.txt"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_reverse_paired_clean.tot.txt"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_unpaired_clean.tot.txt",
+		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_singletons.tot.txt",
 	output:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	message: 
-		"Removing contaminants with BBtools"
+		"Removing contaminants with BMTagger"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 1
 	resources:
-		mem_mb=4000
+		mem_mb=48000
 	shell:
 		"""
-		#SE
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.unpaired} ref={input.contaminants_fasta} k=31 hdist=1 threads={threads} 
-		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+		#PE
+		#paired
+		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
+		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
 		"""
+
 
 rule postQualityCheckIlluminaPE:
 	input:
