@@ -158,12 +158,12 @@ rule listContaminants_PE:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_forward_paired.tot.txt"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_reverse_paired.tot.txt"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_unpaired.tot.txt",
-		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_singletons.tot.txt",
-		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_BMTagger"),
-		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_temp")
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-forward_paired.tot.txt"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-reverse_paired.tot.txt"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-unpaired.tot.txt",
+		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-singletons.tot.txt",
+		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger"),
+		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp")
 	wildcard_constraints:
 		contaminant="ˆGCF_"
 	message: 
@@ -205,10 +205,10 @@ rule listContaminants_PE:
 
 rule removeContaminants_PE:
 	input:
-		forward_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_forward_paired.tot.txt", contaminant=CONTAMINANTS),
-		reverse_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_reverse_paired.tot.txt", contaminant=CONTAMINANTS),
-		unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_unpaired.tot.txt", contaminant=CONTAMINANTS),
-		singletons=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_singletons.tot.txt", contaminant=CONTAMINANTS),
+		forward_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-forward_paired.tot.txt", contaminant=CONTAMINANTS),
+		reverse_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-reverse_paired.tot.txt", contaminant=CONTAMINANTS),
+		unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-unpaired.tot.txt", contaminant=CONTAMINANTS),
+		singletons=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-singletons.tot.txt", contaminant=CONTAMINANTS),
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
