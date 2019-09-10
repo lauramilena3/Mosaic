@@ -152,7 +152,6 @@ rule listContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
-		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
 		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
 		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),
 		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),
