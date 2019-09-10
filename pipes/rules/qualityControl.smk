@@ -164,6 +164,8 @@ rule listContaminants_PE:
 		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_singletons.tot.txt",
 		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_BMTagger"),
 		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_temp")
+	wildcard_constraints:
+		contaminant="ˆGCF_"
 	message: 
 		"Removing contaminants with BMTagger"
 	conda:
