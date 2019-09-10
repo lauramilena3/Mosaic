@@ -1,5 +1,5 @@
 ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE 
-ruleorder: listContaminants_PE > listContaminants_SE 
+#ruleorder: listContaminants_PE > listContaminants_SE 
 #ruleorder: removeContaminants_PE > removeContaminants_SE 
 ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE 
 ruleorder: normalizeReads_PE > normalizeReads_SE 
