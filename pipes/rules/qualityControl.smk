@@ -146,23 +146,26 @@ rule getContaminants:
 		makeblastdb -in {output.contaminant_fasta} -dbtype nucl
 		"""
 
-rule removeContaminants_PE:
+rule listContaminants_PE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
 		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
+		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
+		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),
+		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),
+		contaminant_blastdb=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr", contaminant=CONTAMINANTS),
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_singletons.tot.fastq",
-		temp_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_temp_unpaired.fastq",
-		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt"),
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_forward_paired_clean.tot.txt"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_reverse_paired_clean.tot.txt"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_unpaired_clean.tot.txt",
+		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_singletons.tot.txt",
+		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_BMTagger"),
+		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_temp")
 	message: 
-		"Removing contaminants with BBtools"
+		"Removing contaminants with BMTagger"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 1
@@ -172,15 +175,8 @@ rule removeContaminants_PE:
 		"""
 		#PE
 		#paired
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} \
-		outs={output.singletons} ref={input.contaminants_fasta} k=31 hdist=1 threads={threads}
-		grep -c "^@" {output.forward_paired} > {output.paired_size}
-		#unpaired
-		cat {input.forward_unpaired} {input.reverse_unpaired} > {output.temp_unpaired}
-		bbduk.sh -Xmx{resources.mem_mb}m in={output.temp_unpaired} out={output.unpaired} ref={input.contaminants_fasta} k=31 hdist=1 threads={threads} 
-		#singletons
-		cat {output.singletons} >> {output.unpaired}
-		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
+		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
 		"""
 
 rule removeContaminants_SE:
