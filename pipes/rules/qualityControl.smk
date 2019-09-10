@@ -179,7 +179,7 @@ rule listContaminants_PE:
 		#paired
 		mkdir {output.temp_dir}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
-		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
+		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_dir} -X
 		"""
 
 # rule listContaminants_SE:
