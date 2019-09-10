@@ -66,12 +66,9 @@ rule all:
 		#THA RULES!
 		inputAll,
 		#TESTING:
-		contaminant_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta", contaminant=CONTAMINANTS),
-		contaminant_bitmask=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask", contaminant=CONTAMINANTS),
-		contaminant_srprism=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.ss", contaminant=CONTAMINANTS),
-		contaminant_blastdb=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr", contaminant=CONTAMINANTS),
 
-# rule qc:
+
+# rule qc:ç
 # 	input:
 # 		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
 # 		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES)
