@@ -144,6 +144,7 @@ rule getContaminants:
 		cat *{wildcards.contaminant}*fna >> {output.contaminant_fasta}
 		rm *{wildcards.contaminant}*fna
 		bmtool -d {output.contaminant_fasta} -o {output.contaminant_bitmask}  -w 18 -z
+		mkdir 
 		srprism mkindex -i {output.contaminant_fasta} -o {params.contaminant_srprism} -M {resources.mem_mb}
 		makeblastdb -in {output.contaminant_fasta} -dbtype nucl
 		"""
@@ -176,6 +177,7 @@ rule listContaminants_PE:
 		"""
 		#PE
 		#paired
+		mkdir {output.temp_dir}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
 		"""
