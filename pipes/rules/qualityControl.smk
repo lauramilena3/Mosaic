@@ -203,10 +203,10 @@ rule listContaminants_PE:
 
 rule removeContaminants_PE:
 	input:
-		forward_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_forward_paired_clean.tot.txt", contaminant=CONTAMINANTS),
-		reverse_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_reverse_paired_clean.tot.txt", contaminant=CONTAMINANTS),
-		unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_unpaired_clean.tot.txt", contaminant=CONTAMINANTS),
-		singletons=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_{contaminant}_singletons.tot.txt", contaminant=CONTAMINANTS),
+		forward_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_forward_paired_clean.tot.txt", contaminant=CONTAMINANTS),
+		reverse_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_reverse_paired_clean.tot.txt", contaminant=CONTAMINANTS),
+		unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_unpaired_clean.tot.txt", contaminant=CONTAMINANTS),
+		singletons=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}_{contaminant}_singletons.tot.txt", contaminant=CONTAMINANTS),
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
