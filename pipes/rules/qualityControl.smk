@@ -163,7 +163,7 @@ rule listContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-reverse_paired.tot.txt"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-unpaired.tot.txt",
 		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-singletons.tot.txt",
-		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger"),
+		bmtagger_txt=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger.txt",
 		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp")
 	params:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
@@ -180,7 +180,7 @@ rule listContaminants_PE:
 		#paired
 		mkdir {output.temp_dir}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
-		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_dir} -X
+		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_txt}
 		"""
 
 # rule listContaminants_SE:
