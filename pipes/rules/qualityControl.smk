@@ -207,10 +207,9 @@ rule listContaminants_PE:
 
 rule removeContaminants_PE:
 	input:
-		forward_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-forward_paired.tot.txt", contaminant=CONTAMINANTS),
-		reverse_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-reverse_paired.tot.txt", contaminant=CONTAMINANTS),
-		unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-unpaired.tot.txt", contaminant=CONTAMINANTS),
-		singletons=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-singletons.tot.txt", contaminant=CONTAMINANTS),
+		bmtagger_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_paired.txt",
+		bmtagger_unpaired_forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_forward.txt",
+		bmtagger_unpaired_reverse=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_reverse.txt",
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
