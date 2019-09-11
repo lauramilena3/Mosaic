@@ -165,6 +165,8 @@ rule listContaminants_PE:
 		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-singletons.tot.txt",
 		bmtagger_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger"),
 		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp")
+	params:
+		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
 	message: 
 		"Removing contaminants with BMTagger"
 	conda:
@@ -177,7 +179,7 @@ rule listContaminants_PE:
 		#PE
 		#paired
 		mkdir {output.temp_dir}
-		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
+		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_dir} -X
 		"""
 
