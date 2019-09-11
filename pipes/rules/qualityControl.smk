@@ -159,11 +159,9 @@ rule listContaminants_PE:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.idx",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-forward_paired.tot.txt"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-reverse_paired.tot.txt"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-unpaired.tot.txt",
-		singletons=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-singletons.tot.txt",
-		bmtagger_txt=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger.txt",
+		bmtagger_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_paired.txt",
+		bmtagger_unpaired_forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_forward.txt",
+		bmtagger_unpaired_reverse=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_reverse.txt",
 		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp")
 	params:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
@@ -172,15 +170,17 @@ rule listContaminants_PE:
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 1
-	resources:
-		mem_mb=48000
 	shell:
 		"""
 		#PE
 		#paired
 		mkdir {output.temp_dir}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
-		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_txt}
+		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_paired}
+		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
+		-1 {input.forward_unpaired} -o {output.bmtagger_unpaired_forward}
+		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
+		-1 {input.reverse_unpaired} -o {output.bmtagger_unpaired_reverse}
 		"""
 
 # rule listContaminants_SE:
