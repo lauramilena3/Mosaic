@@ -213,14 +213,14 @@ rule removeContaminants_PE:
 		"""
 		#PE
 		#paired
-		cat {wildcard.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
+		cat {wildcards.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
 		iu-remove-ids-from-fastq -i {input.forward_paired} -l {output.bmtagger_paired} -d " "
 		iu-remove-ids-from-fastq -i {input.reverse_paired} -l {output.bmtagger_paired} -d " "
 		#forward
-		cat {wildcard.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
+		cat {wildcards.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
 		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
 		#reverse	
-		cat {wildcard.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
+		cat {wildcards.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
 
