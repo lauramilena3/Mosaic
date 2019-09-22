@@ -253,7 +253,7 @@ rule remove_phiX174_PE:
 		#PE
 		wget $(esearch -db "assembly" -query {params.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 		gunzip -f *{params.contaminant}*gz
-		cat *{params.contaminant}*fna >> {output.phiX_fasta}
+		cat *{params.contaminant}*fna >> {params.phiX_fasta}
 		rm *{params.contaminant}*fna
 		#PAIRED
 		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
