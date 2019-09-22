@@ -213,18 +213,18 @@ rule removeContaminants_PE:
 		"""
 		#PE
 		#paired
-		cat {wildcard.sample}}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
+		cat {wildcard.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
 		iu-remove-ids-from-fastq -i {input.forward_paired} -l {output.bmtagger_paired} -d " "
 		iu-remove-ids-from-fastq -i {input.reverse_paired} -l {output.bmtagger_paired} -d " "
 		#forward
-		cat {wildcard.sample}}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
+		cat {wildcard.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
 		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
 		#reverse	
-		cat {wildcard.sample}}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
+		cat {wildcard.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
 
-rule remove_phiX174:
+rule remove_phiX174_PE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
@@ -238,9 +238,9 @@ rule remove_phiX174:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
-		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/phiX174.fasta"
 	params:
-		contaminant="GCF_000819615.1"
+		contaminant="GCF_000819615.1",
+		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/phiX174.fasta",
 	message: 
 		"Removing phiX174 with BBtools"
 	conda:
