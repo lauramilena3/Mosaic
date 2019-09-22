@@ -162,7 +162,7 @@ rule listContaminants_PE:
 		bmtagger_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_paired.txt",
 		bmtagger_unpaired_forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_forward.txt",
 		bmtagger_unpaired_reverse=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_reverse.txt",
-		temp_dir=directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp")
+		temp_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp"))
 	params:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
 	message: 
@@ -177,45 +177,31 @@ rule listContaminants_PE:
 		mkdir {output.temp_dir}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.forward_paired} -2 {input.reverse_paired} -o {output.bmtagger_paired}
+		#unpaired
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.forward_unpaired} -o {output.bmtagger_unpaired_forward}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.reverse_unpaired} -o {output.bmtagger_unpaired_reverse}
 		"""
 
-# rule listContaminants_SE:
-# 	input:
-# 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
-# 		contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
-# 	output:
-# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-# 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
-# 	message: 
-# 		"Removing contaminants with BBtools"
-# 	conda:
-# 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-# 	threads: 1
-# 	resources:
-# 		mem_mb=4000
-# 	shell:
-# 		"""
-# 		#SE
-# 		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.unpaired} ref={input.contaminants_fasta} k=31 hdist=1 threads={threads} 
-# 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
-# 		"""
-
 
 rule removeContaminants_PE:
 	input:		
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
+		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
+		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
 		bmtagger_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_paired.txt", contaminant=CONTAMINANTS),
 		bmtagger_unpaired_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_forward.txt", contaminant=CONTAMINANTS),
 		bmtagger_unpaired_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_reverse.txt", contaminant=CONTAMINANTS),
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt"),
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
+		bmtagger_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-BMTagger_paired.txt"),
+		bmtagger_unpaired_forward=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_forward.txt"),
+		bmtagger_unpaired_reverse=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_reverse.txt"),
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
+		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
+		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
 	message: 
 		"Removing contaminants with BMTagger"
 	conda:
@@ -227,10 +213,57 @@ rule removeContaminants_PE:
 		"""
 		#PE
 		#paired
-		bmtagger.sh -b {input.contaminant_bitmask} -x {input.contaminant_srprism} -T {output.temp_dir} -q 1 \
-		-1 {input.forward_paired} -2 {input.reverse_paired}-o {output.bmtagger_dir} -X
+		cat {wildcard.sample}}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
+		iu-remove-ids-from-fastq -i {input.forward_paired} -l {output.bmtagger_paired} -d " "
+		iu-remove-ids-from-fastq -i {input.reverse_paired} -l {output.bmtagger_paired} -d " "
+		#forward
+		cat {wildcard.sample}}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
+		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
+		#reverse	
+		cat {wildcard.sample}}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
+		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
 
+rule remove_phiX174:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
+		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
+		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
+	output:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+		forward_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired_clean.tot.fastq"),
+		reverse_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired_clean.tot.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
+		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt"
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
+		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/phiX174.fasta"
+	params:
+		contaminant="GCF_000819615.1"
+	message: 
+		"Removing phiX174 with BBtools"
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	threads: 1
+	resources:
+		mem_mb=4000
+	shell:
+		"""
+		#PE
+		wget $(esearch -db "assembly" -query {params.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
+		gunzip -f *{params.contaminant}*gz
+		cat *{params.contaminant}*fna >> {output.phiX_fasta}
+		rm *{params.contaminant}*fna
+		#PAIRED
+		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
+		grep -c "^@" {output.forward_paired} > {output.paired_size}
+		#UNPAIRED
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
+		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
+		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+		"""
 
 rule postQualityCheckIlluminaPE:
 	input:
