@@ -23,7 +23,7 @@ max_subsample: "20000000"
 min_len: "1000"
 min_cov: "2"
 
-contaminants_list: "GCF_000819615.1"
+contaminants_list: ""
 adapters_file: "NexteraPE-PE.fa"
 basecalled_dir: "data/basecalled/"
 
