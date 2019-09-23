@@ -257,11 +257,11 @@ rule remove_phiX174_PE:
 		cat *{params.contaminant}*fna >> {params.phiX_fasta}
 		rm *{params.contaminant}*fna
 		#PAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
