@@ -184,7 +184,6 @@ rule listContaminants_PE:
 		-1 {input.reverse_unpaired} -o {output.bmtagger_unpaired_reverse}
 		"""
 
-
 rule removeContaminants_PE:
 	input:		
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
@@ -202,6 +201,8 @@ rule removeContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
+	params:
+		clean_data_dir=dirs_dict["CLEAN_DATA_DIR"],
 	message: 
 		"Removing contaminants with BMTagger"
 	conda:
@@ -213,14 +214,14 @@ rule removeContaminants_PE:
 		"""
 		#PE
 		#paired
-		cat {wildcards.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
+		cat {params.clean_data_dir}/{wildcards.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
 		iu-remove-ids-from-fastq -i {input.forward_paired} -l {output.bmtagger_paired} -d " "
 		iu-remove-ids-from-fastq -i {input.reverse_paired} -l {output.bmtagger_paired} -d " "
 		#forward
-		cat {wildcards.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
+		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
 		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
 		#reverse	
-		cat {wildcards.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
+		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
 
