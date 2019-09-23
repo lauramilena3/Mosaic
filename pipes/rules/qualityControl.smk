@@ -231,6 +231,7 @@ rule remove_phiX174_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
+		phiX_fasta= "db/contaminants/GCF_000819615.1.fasta"
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
@@ -239,9 +240,6 @@ rule remove_phiX174_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
-	params:
-		contaminant="GCF_000819615.1",
-		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/phiX174.fasta",
 	message: 
 		"Removing phiX174 with BBtools"
 	conda:
@@ -252,16 +250,12 @@ rule remove_phiX174_PE:
 	shell:
 		"""
 		#PE
-		wget $(esearch -db "assembly" -query {params.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
-		gunzip -f *{params.contaminant}*gz
-		cat *{params.contaminant}*fna >> {params.phiX_fasta}
-		rm *{params.contaminant}*fna
 		#PAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={params.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
