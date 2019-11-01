@@ -1,0 +1,30 @@
+
+srun --time=020:00:00 --ntasks=1 --cpus-per-task=8 --mem=124000 --partition=bigmem --pty bash -i 
+ssh lubuntu@10.61.81.100
+ssh -v server@10.61.81.81
+_________________________________________________________
+conda info --envs
+
+conda env create -n Mosaic -f Mosaic.yaml
+
+source activate Mosaic
+
+conda env update -f=Mosaic.yaml
+conda remove --name Mosaic --all
+
+__________________________________________________________
+kraken2-build --download-taxonomy --db $DBNAME 
+kraken2-build --download-library bacteria --db $DBNAME 
+kraken2-build --build --db $DBNAME
+
+git add -f *
+git commit -m "Adding local repo"
+git push origin master
+
+media/lubuntu/MN01/Mosaic/
+media/lubuntu/HION01/basecalled_data/
+
+snakemake -j 8 --use-conda
+SAMPLES,=glob_wildcards("data/00_basecalled_data/{sample}.fastq")
+
+

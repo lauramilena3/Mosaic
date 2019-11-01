@@ -41,7 +41,7 @@ rule clusterTaxonomy:
 			mv cluster_one-1.0.jar {params.clusterONE_dir}
 		fi
 		if [ ! -d {params.vcontact_dir} ]
-		then
+		the
 			git clone https://bitbucket.org/MAVERICLab/vcontact2/
 			mv vcontact2 tools
 			envir=$( which vcontact | rev | cut -d/ -f3 | rev)
