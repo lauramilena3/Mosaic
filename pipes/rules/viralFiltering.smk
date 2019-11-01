@@ -14,8 +14,8 @@ rule downloadViralTools:
 		then
 			mkdir -p tools
 			cd tools
-			git clone https://github.com/simroux/VirSorter.git
-			cd VirSorter/Scripts
+			git clone https://github.com/simroux/VirSorter.git 
+			cd VirSorter/Scripts 
 			make clean
 			make
 			cd ../../../
@@ -25,7 +25,7 @@ rule downloadViralTools:
 		echo $VF_dir
    		if [ ! -d $VF_dir ]
 		then
-			if [ ! {config[operating_system]} == "linux" ]
+			if [ ! {config[operating_system]} == "linux" ] 
 			then
 				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
 			else
@@ -78,7 +78,7 @@ rule virSorter:
 			--wdir {params.out_folder} \
 			--ncpu {threads} \
 			--data-dir {input.virSorter_db} \
-			--virome
+			--virome  
 		"""
 
 rule virFinder:
@@ -89,7 +89,7 @@ rule virFinder:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R"
-	message:
+	message: 
 		"Scoring virus VirFinder"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
@@ -102,18 +102,18 @@ rule virFinder:
 rule parseViralTable:
 	input:
 		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
-		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
+		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
 	output:
 		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
 		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
 		non_circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_non_circular_list.{sampling}.txt",
 		non_circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_non_circular_list.{sampling}.txt",
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
-		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv"
+		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv" 
 	params:
 		virFinder_script="scripts/virfinder_wrapper.R'",
 		virFinder_dir=config['virFinder_dir']
-	message:
+	message: 
 		"Parsing VirSorter and VirFinder results"
 	threads: 1
 	run:
@@ -123,7 +123,7 @@ rule parseViralTable:
 
 		#VirSorter
 		VS = input.categories
-		with open(VS) as fp:
+		with open(VS) as fp:  
 			line = fp.readline()
 			cnt = 1
 			while line:
@@ -144,10 +144,10 @@ rule parseViralTable:
 					results.loc[contigName, 'type'] = contig_type
 				line = fp.readline()
 				cnt += 1
-
+				
 		#VirFinder
 		VF = input.pvalues
-		with open(VF) as fp:
+		with open(VF) as fp:  
 			line = fp.readline()
 			cnt = 1
 			while line:
@@ -161,7 +161,7 @@ rule parseViralTable:
 					results.loc[contigName, 'VF_pval'] = float(contigPval)
 						#check if circular also
 				line = fp.readline()
-				cnt += 1
+				cnt += 1	
 
 		#filtering DFs
 		df_A_c=results[results['VS_cat']<3][results['circular']=="Y"]
@@ -246,9 +246,9 @@ rule hmmCircularContigs:
 		"""
 		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
-		if [ -s {output.circular_unk_fasta} ]
+		if [ -s {output.circular_unk_fasta} ] 
 		then
-			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta}
+			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.circular_unk_fasta} 
 			cat {output.hmm_out} | grep -v '^#' | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results} || true
 			cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
 		else
@@ -296,3 +296,4 @@ rule extractViralContigs:
 		sed -i 's/_/-/g' {output.low_contigs}
 		cat {output.high_contigs} {output.low_contigs} > {output.positive_contigs}
 		"""
+

@@ -12,7 +12,7 @@ rule getORFs:
 	shell:
 		"""
 		if [ ! -s {input.contigs} ]
-		then 		
+		then
 			prodigal -i {input.contigs} -o {output.coords} -a {output.aa} -p meta
 		else
 			touch {output.coords} {output.aa}
@@ -35,7 +35,7 @@ rule clusterTaxonomy:
 	shell:
 		"""
 		if [ ! -d {params.clusterONE_dir} ]
-		then 
+		then
 			mkdir -p {params.clusterONE_dir}
 			curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 			mv cluster_one-1.0.jar {params.clusterONE_dir}

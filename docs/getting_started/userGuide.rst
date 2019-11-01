@@ -34,7 +34,7 @@ Go into Mosaic directory and create variables for the number of cores, your raw 
 
 Run Mosaic's pipeline with the desired number of cores and choosen directories::
    
-   snakemake -j $nCores --use-conda --config basecalled_data=$fastqDir results_dir=$reusultDir
+   snakemake -j $nCores --use-conda --config input_dir=$fastqDir results_dir=$reusultDir
 
 NOTE: Please notice that every time you run Mosaic: 1) you will need to activate the virtual environment and 2) you need to run it from the Mosaic/pipes folder. If you are using your laptop we suggest you to leave 2 free processors for other system tasks. 
 
