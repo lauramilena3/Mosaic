@@ -70,7 +70,7 @@ rule virSorter:
 		"Classifing contigs with VirSorter"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
-	threads: 8
+	threads: 32
 	shell:
 		"""
 		WD=$(pwd)

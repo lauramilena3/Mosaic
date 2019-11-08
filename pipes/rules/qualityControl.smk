@@ -1,8 +1,8 @@
-ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE 
-#ruleorder: listContaminants_PE > listContaminants_SE 
-#ruleorder: removeContaminants_PE > removeContaminants_SE 
-ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE 
-ruleorder: normalizeReads_PE > normalizeReads_SE 
+ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE
+#ruleorder: listContaminants_PE > listContaminants_SE
+#ruleorder: removeContaminants_PE > removeContaminants_SE
+ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE
+ruleorder: normalizeReads_PE > normalizeReads_SE
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
 
@@ -12,7 +12,7 @@ rule qualityCheckIllumina:
 	output:
 		html=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.html"),
 		zipped=temp(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip")
-	message: 
+	message:
 		"Performing fastqQC statistics"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/QC.yaml"
@@ -27,7 +27,7 @@ rule qualityCheckNanopore:
 	output:
 		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot")),
 		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html"
-	message: 
+	message:
 		"Performing nanoQC statistics"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env3.yaml"
@@ -48,7 +48,7 @@ rule multiQC:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
 		html_name="preQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
-	message: 
+	message:
 		"Generating MultiQC report"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/QC.yaml"
@@ -56,7 +56,7 @@ rule multiQC:
 		"""
 		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
 		"""
-		
+
 rule trim_adapters_quality_illumina_PE:
 	input:
 		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_" + config['forward_tag'] + ".fastq",
@@ -69,7 +69,7 @@ rule trim_adapters_quality_illumina_PE:
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq")
 	params:
 		adapters=dirs_dict["ADAPTERS_DIR"] + "/" + config['adapters_file']
-	message: 
+	message:
 		"Trimming Illumina Adapters with Trimmomatic"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
@@ -90,7 +90,7 @@ rule trim_adapters_quality_illumina_SE:
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 	params:
 		adapters=dirs_dict["ADAPTERS_DIR"] + "/" + config['adapters_file']
-	message: 
+	message:
 		"Trimming Illumina Adapters with Trimmomatic"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
@@ -110,7 +110,7 @@ rule remove_adapters_quality_nanopore:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_porechopped.fastq"),
 		#size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
-	message: 
+	message:
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env3.yaml"
@@ -128,7 +128,7 @@ rule getContaminants:
 		contaminant_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask",
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.idx",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
-	message: 
+	message:
 		"Downloading contaminant genomes"
 	params:
 		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
@@ -165,7 +165,7 @@ rule listContaminants_PE:
 		temp_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp"))
 	params:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
-	message: 
+	message:
 		"Removing contaminants with BMTagger"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
@@ -185,7 +185,7 @@ rule listContaminants_PE:
 		"""
 
 rule removeContaminants_PE:
-	input:		
+	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
@@ -194,29 +194,16 @@ rule removeContaminants_PE:
 		bmtagger_unpaired_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_forward.txt", contaminant=CONTAMINANTS),
 		bmtagger_unpaired_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_reverse.txt", contaminant=CONTAMINANTS),
 	output:
-<<<<<<< HEAD
-		bmtagger_paired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-BMTagger_paired.txt"),
-		bmtagger_unpaired_forward=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_forward.txt"),
-		bmtagger_unpaired_reverse=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_reverse.txt"),
-=======
 		bmtagger_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-BMTagger_paired.txt"),
 		bmtagger_unpaired_forward=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_forward.txt"),
 		bmtagger_unpaired_reverse=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_reverse.txt"),
->>>>>>> b2b93409df8660d0f2b5c3ffbc38e02309ba2188
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
-<<<<<<< HEAD
-		forward_paired_removed=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.removed"),
-		reverse_paired_removed=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.removed"),
-		forward_unpaired_removed=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.removed"),
-		reverse_unpaired_removed=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.removed"),
-=======
->>>>>>> b2b93409df8660d0f2b5c3ffbc38e02309ba2188
 	params:
 		clean_data_dir=dirs_dict["CLEAN_DATA_DIR"],
-	message: 
+	message:
 		"Removing contaminants with BMTagger"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
@@ -233,7 +220,7 @@ rule removeContaminants_PE:
 		#forward
 		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
 		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
-		#reverse	
+		#reverse
 		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
@@ -253,7 +240,7 @@ rule remove_phiX174_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
-	message: 
+	message:
 		"Removing phiX174 with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
@@ -264,11 +251,11 @@ rule remove_phiX174_PE:
 		"""
 		#PE
 		#PAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads} 
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size}
 		"""
@@ -277,7 +264,7 @@ rule postQualityCheckIlluminaPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",	
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 	output:
 		html_forward=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.html"),
 		zipped_forward=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot_fastqc.zip"),
@@ -285,7 +272,7 @@ rule postQualityCheckIlluminaPE:
 		zipped_reverse=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot_fastqc.zip"),
 		html_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
 		zipped_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip"),
-	message: 
+	message:
 		"Performing fastqQC statistics"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/QC.yaml"
@@ -303,7 +290,7 @@ rule postQualityCheckIlluminaSE:
 	output:
 		html=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.html"),
 		zipped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot_fastqc.zip")
-	message: 
+	message:
 		"Performing fastqQC statistics"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/QC.yaml"
@@ -319,7 +306,7 @@ rule postQualityCheckNanopore:
 	output:
 		nanoqc_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
 		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html",
-	message: 
+	message:
 		"Performing nanoQC statistics"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env3.yaml"
@@ -340,7 +327,7 @@ rule postMultiQC:
 		fastqc_dir=dirs_dict["CLEAN_DATA_DIR"],
 		html_name="postQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
-	message: 
+	message:
 		"Generating MultiQC report"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/QC.yaml"
@@ -360,11 +347,11 @@ rule subsampleReadsIllumina_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.fastq",
 		paired_size=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.sub.txt"),
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt"
-	message: 
+	message:
 		"Subsampling Illumina reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	params: 
+	params:
 		max_subsample=int(int(config['max_subsample'])/2),
 		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt",
 		files_paired=dirs_dict["CLEAN_DATA_DIR"] + "/*_paired_clean.tot.txt"
@@ -394,11 +381,11 @@ rule subsampleReadsIllumina_SE:
 	output:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.fastq",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.sub.txt"
-	message: 
+	message:
 		"Subsampling Illumina reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	params: 
+	params:
 		max_subsample=config['max_subsample'],
 		files_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/*_unpaired_clean.tot.txt"
 	threads: 1
@@ -422,11 +409,11 @@ rule subsampleReadsNanopore:
 	output:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.fastq",
 		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.txt",
-	message: 
+	message:
 		"Subsampling Nanopore reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	params: 
+	params:
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm'],
 		sizes=dirs_dict["CLEAN_DATA_DIR"] + "/*_nanopore_clean.tot.txt"
@@ -449,11 +436,11 @@ rule normalizeReads_PE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq",
-	message: 
+	message:
 		"Normalizing reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	params: 
+	params:
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm']
 	threads: 4
@@ -466,7 +453,7 @@ rule normalizeReads_PE:
 		bbnorm.sh -Xmx{resources.mem_mb}m ecc in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} \
 		target={params.max_depth} mindepth={params.min_depth} t={threads}
 		#unpaired
-		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth}		
+		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth}
 		"""
 
 rule normalizeReads_SE:
@@ -474,11 +461,11 @@ rule normalizeReads_SE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq"
 	output:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq"
-	message: 
+	message:
 		"Normalizing reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	params: 
+	params:
 		min_depth=config['min_norm'],
 		max_depth=config['max_norm']
 	threads: 4
@@ -488,6 +475,5 @@ rule normalizeReads_SE:
 		"""
 		#SE
 		#unpaired
-		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth} t={threads}	
+		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth} t={threads}
 		"""
-
