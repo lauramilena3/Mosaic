@@ -1,7 +1,6 @@
 channels:
   - conda-forge
   - bioconda
-  - anaconda
 dependencies:
   - python=2.7
   - lastz =1.0.4
@@ -22,7 +21,7 @@ dependencies:
   - openssl = 1.1.1d
   - biopython =1.74
   - scipy =0.16
-  - numpy =1.15.0
+  - numpy 
   - pip
   - pip:
     - bcbio-gff==0.6.6
