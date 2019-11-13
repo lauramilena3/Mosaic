@@ -6,7 +6,7 @@ dependencies:
   - infernal =1.1.2
   - aragorn =1.2.38
   - muscle =3.8.1551
-  - ucsc-trfbig =377
+#  - ucsc-trfbig =377
   - prodigal =2.6.3
   - diamond =0.9.28
   - blast =2.9.0
@@ -15,6 +15,6 @@ dependencies:
   - perl =5.26.2 #blast
   - nettle = 3.4.1 #blast
   - libgcc-ng =8.2.0
-  - libcurl =7.64.1
+  - libcurl
   - zlib =1.2.11 #
   - openssl = 1.1.1d
