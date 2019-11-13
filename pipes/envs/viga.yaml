@@ -1,0 +1,13 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - lastz =1.0.4
+  - infernal =1.1.2
+  - aragorn =1.2.38
+  - muscle =3.8.1551
+  - ucsc-trfbig =377
+  - prodigal =2.6.3
+  - diamond =0.9.28
+  - blast =2.9.0
+  - hmmer =3.2.1
