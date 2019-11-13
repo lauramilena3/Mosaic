@@ -17,12 +17,12 @@ dependencies:
   - perl =5.26.2 #blast
   - nettle = 3.4.1 #blast
   - libgcc-ng =8.2.0
-  - libcurl
+  - libcurl =7.65.3
   - zlib =1.2.11 #
   - openssl = 1.1.1d
   - biopython =1.74
-  - scipy 
-  - numpy
-  - pip
+  - scipy =1.2.1
+  - numpy =1.16.5
+  - pip =19.3.1
   - pip:
     - bcbio-gff==0.6.6
