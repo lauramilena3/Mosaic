@@ -21,7 +21,7 @@ dependencies:
   - zlib =1.2.11 #
   - openssl = 1.1.1d
   - biopython =1.74
-  - scipy =0.16
+  - scipy 
   - numpy
   - pip
   - pip:
