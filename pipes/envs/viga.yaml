@@ -18,3 +18,5 @@ dependencies:
   - libcurl
   - zlib =1.2.11 #
   - openssl = 1.1.1d
+ - pip:
+    - bcbio-gff==0.6.6
