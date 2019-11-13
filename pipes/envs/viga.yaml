@@ -10,4 +10,9 @@ dependencies:
   - prodigal =2.6.3
   - diamond =0.9.28
   - blast =2.9.0
+  - perl =5.26.2.1 #blast
+  - nettle = 3.4.1 #blast
+  - libgcc-ng =8.2.0
+  - libcurl =7.64.1
+  - zlib =1.2.11 #
   - hmmer =3.2.1
