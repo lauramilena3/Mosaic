@@ -2,6 +2,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=2.7
   - lastz =1.0.4
   - infernal =1.1.2
   - aragorn =1.2.38
