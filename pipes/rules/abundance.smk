@@ -67,12 +67,10 @@ rule mapReadsToContigsSE:
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
 		"""
-		
+
 rule filterBAM:
 	input:
 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
-		high_contigs=dirs_dict["VIRAL_DIR"]+ "/high_confidence.{sampling}.fasta",
-		low_contigs=dirs_dict["VIRAL_DIR"]+ "/low_confidence.{sampling}.fasta",
 	output:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
@@ -122,4 +120,3 @@ rule getBreadthCoverage:
 		bedtools genomecov -dz -ibam {input.bam_filtered} > {output.bam_cov}
 		cut -f 1 {output.bam_cov} | sort| uniq -c | sort -nr | sed -e 's/^[[:space:]]*//' > {output.cov_final}
 		"""
-
