@@ -160,8 +160,8 @@ rule listContaminants_PE:
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
 	output:
 		bmtagger_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_paired.txt",
-		bmtagger_unpaired_forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_forward.txt",
-		bmtagger_unpaired_reverse=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-bmtagger_unpaired_reverse.txt",
+		bmtagger_unpaired_forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_unpaired_forward.txt",
+		bmtagger_unpaired_reverse=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}-BMTagger_unpaired_reverse.txt",
 		temp_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-{contaminant}_temp"))
 	params:
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
@@ -191,12 +191,12 @@ rule removeContaminants_PE:
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
 		bmtagger_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_paired.txt", contaminant=CONTAMINANTS),
-		bmtagger_unpaired_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_forward.txt", contaminant=CONTAMINANTS),
-		bmtagger_unpaired_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-bmtagger_unpaired_reverse.txt", contaminant=CONTAMINANTS),
+		bmtagger_unpaired_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_unpaired_forward.txt", contaminant=CONTAMINANTS),
+		bmtagger_unpaired_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_unpaired_reverse.txt", contaminant=CONTAMINANTS),
 	output:
-		bmtagger_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-BMTagger_paired.txt"),
-		bmtagger_unpaired_forward=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_forward.txt"),
-		bmtagger_unpaired_reverse=(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-all-bmtagger_unpaired_reverse.txt"),
+		bmtagger_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-all-BMTagger_paired.txt"),
+		bmtagger_unpaired_forward=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-all-BMTagger_unpaired_forward.txt"),
+		bmtagger_unpaired_reverse=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}-all-BMTagger_unpaired_reverse.txt"),
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
@@ -218,10 +218,10 @@ rule removeContaminants_PE:
 		iu-remove-ids-from-fastq -i {input.forward_paired} -l {output.bmtagger_paired} -d " "
 		iu-remove-ids-from-fastq -i {input.reverse_paired} -l {output.bmtagger_paired} -d " "
 		#forward
-		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
+		cat {params.clean_data_dir}/{wildcards.sample}*BMTagger_unpaired_forward.txt | sort | uniq > {output.bmtagger_unpaired_forward}
 		iu-remove-ids-from-fastq -i {input.forward_unpaired} -l {output.bmtagger_unpaired_forward} -d " "
 		#reverse
-		cat {params.clean_data_dir}/{wildcards.sample}*bmtagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
+		cat {params.clean_data_dir}/{wildcards.sample}*BMTagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
 		"""
 
