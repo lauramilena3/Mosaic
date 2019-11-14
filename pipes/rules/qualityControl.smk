@@ -54,7 +54,7 @@ rule multiQC:
 		dirs_dict["ENVS_DIR"]+ "/QC.yaml"
 	shell:
 		"""
-		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
+		multiqc -f {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
 		"""
 
 rule trim_adapters_quality_illumina_PE:
@@ -333,7 +333,7 @@ rule postMultiQC:
 		dirs_dict["ENVS_DIR"]+ "/QC.yaml"
 	shell:
 		"""
-		multiqc {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
+		multiqc -f {params.fastqc_dir} -o {params.multiqc_dir} -n {params.html_name}
 		"""
 rule subsampleReadsIllumina_PE:
 	input:
