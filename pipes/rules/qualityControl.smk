@@ -248,7 +248,12 @@ rule removeContaminants_PE:
 		mem_mb=48000
 	shell:
 		"""
-		echo {CONTAMINANTS}
+		if [ -z {CONTAMINANTS} ]
+		then
+      		echo "is empty"
+		else
+      		echo "is NOT empty"
+		fi
 
 		#PE
 		#paired
