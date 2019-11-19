@@ -17,7 +17,7 @@ dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants
 dirs_dict = dict(zip(dir_list, dir_names))
 RULES_DIR = 'rules'
 CONFIDENCE_TYPES=["high", "low"]
-SAMPLING_TYPE=["sub", "tot"]
+SAMPLING_TYPE=config['sampling'].split()
 SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 
 NANOPORE_SAMPLES=SAMPLES
