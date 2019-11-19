@@ -24,10 +24,10 @@ rule qualityCheckIllumina:
 		"""
 rule qualityCheckNanopore:
 	input:
-		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample_nanopore}_nanopore.fastq"
+		raw_fastq=dirs_dict["RAW_DATA_DIR"]+"/{sample_nanopore}_nanopore.fastq",
 	output:
 		nanoqc_dir=temp(directory(dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanoplot")),
-		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html"
+		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",
 	message:
 		"Performing nanoQC statistics"
 	conda:
@@ -42,13 +42,13 @@ rule qualityCheckNanopore:
 rule multiQC:
 	input:
 		html=expand(dirs_dict["RAW_DATA_DIR"]+"/{sample}_{reads}_fastqc.html", sample=SAMPLES, reads=READ_TYPES),
-		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES)
+		zipped=expand(dirs_dict["RAW_DATA_DIR"] + "/{sample}_{reads}_fastqc.zip", sample=SAMPLES, reads=READ_TYPES),
 	output:
-		multiqc=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"
+		multiqc=dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html",
 	params:
 		fastqc_dir=dirs_dict["RAW_DATA_DIR"],
 		html_name="preQC_multiqc_report.html",
-		multiqc_dir=dirs_dict["QC_DIR"]
+		multiqc_dir=dirs_dict["QC_DIR"],
 	message:
 		"Generating MultiQC report"
 	conda:
@@ -123,14 +123,29 @@ rule remove_adapters_quality_nanopore:
 		#grep -c "^@" fastq > {output} size
 		"""
 
-rule getContaminants:
+rule downloadContaminants:
 	output:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
+	message:
+		"Downloading contaminant genomes"
+	params:
+		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
+	shell:
+		"""
+		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
+		gunzip -f *{wildcards.contaminant}*gz
+		cat *{wildcards.contaminant}*fna >> {output.contaminant_fasta}
+		rm *{wildcards.contaminant}*fna
+		"""
+rule getContaminants:
+	input:
+		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
+	output:
 		contaminant_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask",
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.idx",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
 	message:
-		"Downloading contaminant genomes"
+		"Creating contaminant databases"
 	params:
 		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism",
@@ -140,13 +155,9 @@ rule getContaminants:
 		mem_mb=32000
 	shell:
 		"""
-		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
-		gunzip -f *{wildcards.contaminant}*gz
-		cat *{wildcards.contaminant}*fna >> {output.contaminant_fasta}
-		rm *{wildcards.contaminant}*fna
-		bmtool -d {output.contaminant_fasta} -o {output.contaminant_bitmask}  -w 18 -z
-		srprism mkindex -i {output.contaminant_fasta} -o {params.contaminant_srprism} -M {resources.mem_mb}
-		makeblastdb -in {output.contaminant_fasta} -dbtype nucl
+		bmtool -d {input.contaminant_fasta} -o {output.contaminant_bitmask}  -w 18 -z
+		srprism mkindex -i {input.contaminant_fasta} -o {params.contaminant_srprism} -M {resources.mem_mb}
+		makeblastdb -in {input.contaminant_fasta} -dbtype nucl
 		"""
 
 rule listContaminants_PE:
@@ -155,7 +166,6 @@ rule listContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
-		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
 		contaminant_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask",
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.idx",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
