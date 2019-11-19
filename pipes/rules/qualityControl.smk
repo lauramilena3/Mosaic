@@ -141,7 +141,7 @@ rule formatContaminants:
 	input:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
 	output:
-		contaminant_check:temp(dirs_dict["CONTAMINANTS_DIR"] +"check_contaminants.txt"),
+		contaminant_check=temp(dirs_dict["CONTAMINANTS_DIR"] +"check_contaminants.txt"),
 		contaminant_bitmask=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.bitmask",
 		contaminant_srprism=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.srprism.idx",
 		contaminant_blastdb=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta.nhr",
@@ -227,7 +227,7 @@ rule removeContaminants_PE:
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
 		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
-		contaminant_check:(dirs_dict["CONTAMINANTS_DIR"] +"check_contaminants.txt"),
+		contaminant_check=(dirs_dict["CONTAMINANTS_DIR"] +"check_contaminants.txt"),
 		bmtagger_paired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_paired.txt", contaminant=CONTAMINANTS),
 		bmtagger_unpaired_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_unpaired_forward.txt", contaminant=CONTAMINANTS),
 		bmtagger_unpaired_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{{sample}}-{contaminant}-BMTagger_unpaired_reverse.txt", contaminant=CONTAMINANTS),
