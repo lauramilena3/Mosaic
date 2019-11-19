@@ -214,10 +214,7 @@ rule no_contaminants_provided_PE:
 	threads: 1
 	shell:
 		"""
-		ln -s {input.forward_paired} {output.forward_paired}
-		ln -s {input.reverse_paired} {output.reverse_paired}
-		ln -s {input.forward_unpaired} {output.forward_unpaired}
-		ln -s {input.reverse_unpaired} {output.reverse_unpaired}
+
 		"""
 
 rule removeContaminants_PE:
@@ -250,11 +247,11 @@ rule removeContaminants_PE:
 		"""
 		if [ -z {CONTAMINANTS} ]
 		then
-      		echo "is empty"
+			ln -s {input.forward_paired} {output.forward_paired}
+			ln -s {input.reverse_paired} {output.reverse_paired}
+			ln -s {input.forward_unpaired} {output.forward_unpaired}
+			ln -s {input.reverse_unpaired} {output.reverse_unpaired}
 		else
-      		echo "is NOT empty"
-		fi
-
 		#PE
 		#paired
 		cat {params.clean_data_dir}/{wildcards.sample}*BMTagger_paired.txt | sort | uniq > {output.bmtagger_paired}
@@ -266,6 +263,7 @@ rule removeContaminants_PE:
 		#reverse
 		cat {params.clean_data_dir}/{wildcards.sample}*BMTagger_unpaired_reverse.txt | sort | uniq > {output.bmtagger_unpaired_reverse}
 		iu-remove-ids-from-fastq -i {input.reverse_unpaired} -l {output.bmtagger_unpaired_reverse} -d " "
+		fi
 		"""
 
 rule remove_phiX174_PE:
