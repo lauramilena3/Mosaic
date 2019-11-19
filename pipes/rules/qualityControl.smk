@@ -4,6 +4,7 @@ ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE
 ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE
 ruleorder: normalizeReads_PE > normalizeReads_SE
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
+ruleorder: removeContaminants_PE > no_contaminants_provided_PE
 
 
 rule qualityCheckIllumina:
@@ -182,6 +183,30 @@ rule listContaminants_PE:
 		-1 {input.forward_unpaired} -o {output.bmtagger_unpaired_forward}
 		bmtagger.sh -b {input.contaminant_bitmask} -x {params.contaminant_srprism} -T {output.temp_dir} -q 1 \
 		-1 {input.reverse_unpaired} -o {output.bmtagger_unpaired_reverse}
+		"""
+
+rule no_contaminants_provided_PE:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
+		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
+		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
+	output:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
+		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
+		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
+	params:
+		clean_data_dir=dirs_dict["CLEAN_DATA_DIR"],
+	message:
+		"No contaminants provided, creating symlinks to mandatory files"
+	threads: 1
+	shell:
+		"""
+		ln -s {input.forward_paired} {output.forward_paired}
+		ln -s {input.reverse_paired} {output.reverse_paired}
+		ln -s {input.forward_unpaired} {output.forward_unpaired}
+		ln -s {input.reverse_unpaired} {output.reverse_unpaired}
 		"""
 
 rule removeContaminants_PE:
