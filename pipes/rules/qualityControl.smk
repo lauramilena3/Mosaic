@@ -196,27 +196,6 @@ rule listContaminants_PE:
 		-1 {input.reverse_unpaired} -o {output.bmtagger_unpaired_reverse}
 		"""
 
-rule no_contaminants_provided_PE:
-	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
-		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
-		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
-	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.survived"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.survived"),
-		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq.survived",
-		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq.survived",
-	params:
-		clean_data_dir=dirs_dict["CLEAN_DATA_DIR"],
-	message:
-		"No contaminants provided, creating symlinks to mandatory files"
-	threads: 1
-	shell:
-		"""
-
-		"""
-
 rule removeContaminants_PE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
@@ -251,6 +230,9 @@ rule removeContaminants_PE:
 			ln -s {input.reverse_paired} {output.reverse_paired}
 			ln -s {input.forward_unpaired} {output.forward_unpaired}
 			ln -s {input.reverse_unpaired} {output.reverse_unpaired}
+			touch {output.bmtagger_paired}
+			touch {output.bmtagger_unpaired_forward}
+			touch {output.bmtagger_unpaired_reverse}
 		else
 		#PE
 		#paired
