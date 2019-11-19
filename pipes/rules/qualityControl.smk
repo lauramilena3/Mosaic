@@ -280,7 +280,7 @@ rule remove_phiX174_PE:
 		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
 		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
-		grep -c "^@" {output.unpaired} > {output.unpaired_size}
+		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
 		"""
 
 rule postQualityCheckIlluminaPE:
