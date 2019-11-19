@@ -4,7 +4,7 @@ ruleorder: trim_adapters_quality_illumina_PE > trim_adapters_quality_illumina_SE
 ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE
 ruleorder: normalizeReads_PE > normalizeReads_SE
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
-ruleorder: removeContaminants_PE > no_contaminants_provided_PE
+
 
 
 rule qualityCheckIllumina:
