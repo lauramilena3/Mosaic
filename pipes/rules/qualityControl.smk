@@ -160,7 +160,6 @@ rule formatContaminants:
 		bmtool -d {input.contaminant_fasta} -o {output.contaminant_bitmask}  -w 18 -z
 		srprism mkindex -i {input.contaminant_fasta} -o {params.contaminant_srprism} -M {resources.mem_mb}
 		makeblastdb -in {input.contaminant_fasta} -dbtype nucl
-		touch {output.contaminant_check}
 		"""
 
 rule listContaminants_PE:
