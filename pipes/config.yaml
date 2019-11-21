@@ -16,6 +16,8 @@ trimmomatic_window_size: "4"
 trimmomatic_window_quality: "15"
 trimmomatic_minlen: "50"
 
+reference_contigs: ""
+
 #bbnorm
 min_norm: "2"
 max_norm: "100"
