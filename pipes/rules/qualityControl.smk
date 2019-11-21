@@ -130,6 +130,8 @@ rule downloadContaminants:
 		"Downloading contaminant genomes"
 	params:
 		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
 	shell:
 		"""
 		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
