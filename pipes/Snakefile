@@ -71,6 +71,10 @@ rule abundance_from_contigs:
 	input:
 		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
 
+rule clean_reads:
+	input:
+		(dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html")
+
 # rule qc:ç
 # 	input:
 # 		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
