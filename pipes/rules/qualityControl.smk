@@ -344,7 +344,7 @@ rule postQualityCheckNanopore:
 rule postMultiQC:
 	input:
 		html_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_forward_paired_clean.tot_fastqc.html", sample=SAMPLES),
-		zipped_forward=teexpandmp(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_forward_paired_clean.tot_fastqc.zip", sample=SAMPLES),
+		zipped_forward=expand(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_forward_paired_clean.tot_fastqc.zip", sample=SAMPLES),
 		html_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_reverse_paired_clean.tot_fastqc.html", sample=SAMPLES),
 		zipped_reverse=expand(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_reverse_paired_clean.tot_fastqc.zip", sample=SAMPLES),
 		html_unpaired=expand(dirs_dict["CLEAN_DATA_DIR"] + "/post_{sample}_unpaired_clean.tot_fastqc.html", sample=SAMPLES),
