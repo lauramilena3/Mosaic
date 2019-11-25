@@ -13,6 +13,8 @@ configfile: "config.yaml"
 RAW_DATA_DIR =config['input_dir'].rstrip("/")
 RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS_DIR=config['reference_contigs_dir'].rstrip("/")
+REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
+
 if not REFERENCE_CONTIGS_DIR:
 		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 
