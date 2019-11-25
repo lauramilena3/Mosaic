@@ -24,9 +24,8 @@ dirs_dict = dict(zip(dir_list, dir_names))
 RULES_DIR = 'rules'
 CONFIDENCE_TYPES=["high", "low"]
 SAMPLING_TYPE=config['sampling'].split()
-SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
+SAMPLES=""
 
-NANOPORE_SAMPLES=SAMPLES
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
 PAIRED=False
@@ -36,11 +35,15 @@ POOLED=config['nanopore_pooled']
 
 READ_TYPES=[config['forward_tag']]
 if not RAW_DATA_DIR:
+	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 	for fname in os.listdir(RAW_DATA_DIR):
 		if fname.endswith(config['reverse_tag'] + '.fastq'):
 			PAIRED=True
 		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 			NANOPORE=True
+
+NANOPORE_SAMPLES=SAMPLES
+
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
 if POOLED == "True":
