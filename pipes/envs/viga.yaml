@@ -14,6 +14,7 @@ dependencies:
   - blast =2.9.0
   - hmmer =3.2.1
 #Other
+  - mmseqs2=10.6d92c
   - perl =5.26.2 #blast
   - nettle = 3.4.1 #blast
   - libgcc-ng =8.2.0
