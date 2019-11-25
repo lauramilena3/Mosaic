@@ -39,6 +39,7 @@ print("a")
 print(RAW_DATA_DIR + "asd")
 
 if not RAW_DATA_DIR:
+	print("wtf")
 	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 	for fname in os.listdir(RAW_DATA_DIR):
