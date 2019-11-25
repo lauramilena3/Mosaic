@@ -1,5 +1,5 @@
-input_dir: "data/00_RAW_DATA"
-results_dir: "data"
+input_dir: ""
+results_dir: ""
 
 operating_system: "linux"
 forward_tag: "R1"

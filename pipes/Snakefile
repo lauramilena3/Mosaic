@@ -35,11 +35,12 @@ POOLED=config['nanopore_pooled']
 
 
 READ_TYPES=[config['forward_tag']]
-for fname in os.listdir(RAW_DATA_DIR):
-	if fname.endswith(config['reverse_tag'] + '.fastq'):
-		PAIRED=True
-	elif fname.endswith(config['nanopore_tag'] + '.fastq'):
-		NANOPORE=True
+if not RAW_DATA_DIR:
+	for fname in os.listdir(RAW_DATA_DIR):
+		if fname.endswith(config['reverse_tag'] + '.fastq'):
+			PAIRED=True
+		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
+			NANOPORE=True
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
 if POOLED == "True":
