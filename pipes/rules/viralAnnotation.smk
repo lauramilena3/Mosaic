@@ -18,7 +18,7 @@ rule fasta_to_db:
 	input:
 		fasta= "{directory}" + "/{fasta}.fasta"
 	output:
-        index= dirs_dict["ASSEMBLY_DIR"] + "/{fasta}.index"
+		index= dirs_dict["ASSEMBLY_DIR"] + "/{fasta}.index"
 	message:
 		"Creating reference and assembly mmseqs db"
 	conda:
@@ -26,5 +26,5 @@ rule fasta_to_db:
 	threads: 2
 	shell:
 		"""
-        mmseqs createdb {input.fasta} {wildcards.fasta}
+		mmseqs createdb {input.fasta} {wildcards.fasta}
 		"""
