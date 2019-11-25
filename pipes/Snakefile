@@ -36,7 +36,7 @@ READ_TYPES=[config['forward_tag']]
 print("a")
 print(RAW_DATA_DIR + "asd")
 
-if RAW_DATA_DIR =="":
+if not RAW_DATA_DIR == "":
 	print("wtf")
 	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
