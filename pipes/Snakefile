@@ -97,7 +97,6 @@ rule abundance_from_db_contigs:
 rule assembly_vs_references:
 	input:
 		expand(dirs_dict["MMSEQS"]+ "/{references}.index", references=[REFERENCE_CONTIGS, "positive_contigs"]),
-
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
