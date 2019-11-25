@@ -15,6 +15,7 @@ RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS_DIR=config['reference_contigs_dir'].rstrip("/")
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 
+print("0")
 if not REFERENCE_CONTIGS_DIR:
 		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 
@@ -26,12 +27,15 @@ CONFIDENCE_TYPES=["high", "low"]
 SAMPLING_TYPE=config['sampling'].split()
 SAMPLES=""
 
+print("0")
+
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
 PAIRED=False
 POOLED=config['nanopore_pooled']
 
 
+print("0")
 
 READ_TYPES=[config['forward_tag']]
 if not RAW_DATA_DIR:
@@ -54,6 +58,8 @@ if len(SAMPLES)==1:
 print(READ_TYPES)
 print(SAMPLES)
 print(CONTAMINANTS)
+
+print("0")
 
 #======================================================
 # Rules
