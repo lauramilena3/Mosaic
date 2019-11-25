@@ -36,7 +36,7 @@ POOLED=config['nanopore_pooled']
 
 READ_TYPES=[config['forward_tag']]
 print("a")
-print(RAW_DATA_DIR)
+print(RAW_DATA_DIR + "asd")
 
 if not RAW_DATA_DIR:
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
