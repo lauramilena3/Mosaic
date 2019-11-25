@@ -354,7 +354,7 @@ rule postMultiQC:
 	output:
 		multiqc=dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"
 	params:
-		fastqc_dir=dirs_dict["CLEAN_DATA_DIR"] + "/postQC",
+		fastqc_dir=dirs_dict["CLEAN_DATA_DIR"] +  "/postQC",
 		html_name="postQC_multiqc_report.html",
 		multiqc_dir=dirs_dict["QC_DIR"]
 	message:

@@ -16,7 +16,8 @@ trimmomatic_window_size: "4"
 trimmomatic_window_quality: "15"
 trimmomatic_minlen: "50"
 
-reference_contigs: ""
+reference_contigs: "positive_contigs"
+reference_contigs_dir: ""
 
 #bbnorm
 min_norm: "2"
