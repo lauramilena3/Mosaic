@@ -79,7 +79,7 @@ rule abundance_from_db_contigs:
 	input:
 		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
 
-rule assembly_vs_db_contigs:
+rule assembly_vs_references:
 	input:
 		expand(dirs_dict["MMSEQS"]+ "/{references}.index", refereces=[REFERENCE_CONTIGS, "positive_contigs"]),
 
