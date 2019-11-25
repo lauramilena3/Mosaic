@@ -16,9 +16,9 @@
 
 rule fasta_to_db:
 	input:
-		fasta= "{directory}" + "/{fasta}.fasta"
+		fasta= "{directory}" + "/{references}.fasta"
 	output:
-		index= dirs_dict["MMSEQS"] + "/{fasta}.index"
+		index=dirs_dict["MMSEQS"] + "/{references}.index"
 	message:
 		"Creating reference and assembly mmseqs db"
 	conda:
