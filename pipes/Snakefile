@@ -33,8 +33,6 @@ POOLED=config['nanopore_pooled']
 
 
 READ_TYPES=[config['forward_tag']]
-print("a")
-print(RAW_DATA_DIR + "asd")
 
 if not RAW_DATA_DIR == "":
 	print("wtf")
@@ -46,7 +44,6 @@ if not RAW_DATA_DIR == "":
 		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 			NANOPORE=True
 
-print("b")
 
 NANOPORE_SAMPLES=SAMPLES
 
@@ -99,7 +96,7 @@ rule abundance_from_db_contigs:
 
 rule assembly_vs_references:
 	input:
-		expand(dirs_dict["MMSEQS"]+ "/{references}.index", refereces=[REFERENCE_CONTIGS, "positive_contigs"]),
+		expand(dirs_dict["MMSEQS"]+ "/{references}.index", references=[REFERENCE_CONTIGS, "positive_contigs"]),
 
 rule assembly:
 	input:
