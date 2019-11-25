@@ -15,7 +15,6 @@ RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS_DIR=config['reference_contigs_dir'].rstrip("/")
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 
-print("0")
 if not REFERENCE_CONTIGS_DIR:
 		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 
@@ -27,7 +26,6 @@ CONFIDENCE_TYPES=["high", "low"]
 SAMPLING_TYPE=config['sampling'].split()
 SAMPLES=""
 
-print("0")
 
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
@@ -35,9 +33,11 @@ PAIRED=False
 POOLED=config['nanopore_pooled']
 
 
-print("0")
 
 READ_TYPES=[config['forward_tag']]
+print("a")
+print(RAW_DATA_DIR)
+
 if not RAW_DATA_DIR:
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 	for fname in os.listdir(RAW_DATA_DIR):
@@ -45,6 +45,8 @@ if not RAW_DATA_DIR:
 			PAIRED=True
 		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 			NANOPORE=True
+
+print("b")
 
 NANOPORE_SAMPLES=SAMPLES
 
