@@ -12,12 +12,12 @@ configfile: "config.yaml"
 
 RAW_DATA_DIR =config['input_dir'].rstrip("/")
 RESULTS_DIR=config['results_dir'].rstrip("/")
-REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
-if not REFERENCE_CONTIGS:
-		REFERENCE_CONTIGS=RESULTS_DIR + "/05_VIRAL_ID"
+REFERENCE_CONTIGS_DIR=config['reference_contigs_dir'].rstrip("/")
+if not REFERENCE_CONTIGS_DIR:
+		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 
-dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR", "VIRAL_DIR", "MAPPING_DIR", "PROFILE_DIR", "MERGE_DIR"]
-dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", REFERENCE_CONTIGS ,RESULTS_DIR + "/06_MAPPING", "05_ANVIO_PROFILE", "06_MERGED"]
+dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR", "VIRAL_DIR", "MAPPING_DIR", "MMSEQS"]
+dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", REFERENCE_CONTIGS ,RESULTS_DIR + "/05_MAPPING", RESULTS_DIR + "06_MMSEQS"]
 dirs_dict = dict(zip(dir_list, dir_names))
 RULES_DIR = 'rules'
 CONFIDENCE_TYPES=["high", "low"]
@@ -71,26 +71,21 @@ rule all:
 		inputAll,
 		#TESTING:
 
-rule abundance_from_contigs:
-	input:
-		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
-
 rule clean_reads:
 	input:
 		(dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html")
 
-# rule qc:ç
-# 	input:
-# 		dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
-# 		expand(dirs_dict["QC_DIR"] + "/{sample}_nanopore_report.html",sample=NANOPORE_SAMPLES)
-# 		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq", sample=SAMPLES, sampling=SAMPLING_TYPE)
-# 		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq", sample=SAMPLES, sampling=SAMPLING_TYPE)
-# 		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.sub.fastq",sample=NANOPORE_SAMPLES)
+rule abundance_from_db_contigs:
+	input:
+		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
 
-# rule assembly:
-# 	input:
+rule assembly_vs_db_contigs:
+	input:
+		expand(dirs_dict["MMSEQS"]+ "/{references}.index", refereces=[REFERENCE_CONTIGS, "positive_contigs"]),
 
-
+rule assembly:
+	input:
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
 
 
 
@@ -102,3 +97,4 @@ include: os.path.join(RULES_DIR, 'viralFiltering.smk')
 include: os.path.join(RULES_DIR, 'abundance.smk')
 include: os.path.join(RULES_DIR, 'taxonomyAssignment.smk')
 include: os.path.join(RULES_DIR, 'resultsParsing.smk')
+include: os.path.join(RULES_DIR, 'viralAnnotation.smk')
