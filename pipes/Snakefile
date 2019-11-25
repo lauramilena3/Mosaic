@@ -10,7 +10,7 @@ configfile: "config.yaml"
 # Global variables
 #======================================================
 
-RAW_DATA_DIR =config['input_dir'].rstrip("/")
+RAW_DATA_DIR =config['input_dir']
 RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS_DIR=config['reference_contigs_dir'].rstrip("/")
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
@@ -39,6 +39,7 @@ print("a")
 print(RAW_DATA_DIR + "asd")
 
 if not RAW_DATA_DIR:
+	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + config['forward_tag'] + ".fastq")
 	for fname in os.listdir(RAW_DATA_DIR):
 		if fname.endswith(config['reverse_tag'] + '.fastq'):
