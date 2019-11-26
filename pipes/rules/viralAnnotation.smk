@@ -37,7 +37,6 @@ rule get_mmseqs:
 			cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=. ..
 			make -j {threads}
 			make install
-			export PATH=$(pwd)/bin/:$PATH
 		fi
 		"""
 
@@ -50,13 +49,13 @@ rule create_contigs_mmseqs2:
 		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
 		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
-		results_index=dirs_dict["MMSEQS"] + "/search_results.index",
-		results_table=dirs_dict["MMSEQS"] + "/search_results.txt",
+		results_index=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.index",
+		results_table=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.txt",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" + "search_results",
+		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Comparing reference and assembly mmseqs"
@@ -69,7 +68,7 @@ rule create_contigs_mmseqs2:
 		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
 		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
-		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
-		-a --search-type 2 --threads {threads}
-		mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table} --format-output "query,target,evalue,qcov,pident"
+		{params.mmseqs}/mmseqs map {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
+		--start-sens 1 --sens-steps 3 -s 7 --max-accept 1
+		{params.mmseqs}/ convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
