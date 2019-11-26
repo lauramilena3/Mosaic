@@ -14,8 +14,34 @@
 #
 # /home/lmf/apps/Mosaic/pipes/tools/viga/VIGA.py --input /home/lmf/03_COLIPHAGES/FASTA/similar.fasta --diamonddb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_DIAMOND/ --blastdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_BLAST/ --hmmerdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/pvogs/pvogs.hmm --rfamdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads 16
 
+rule get_mmseqs:
+	output:
+		MMseqs2_dir=directory(config['mmseqs_dir']),
+	message:
+		"Downloading MMseqs2"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	threads: 4
+	shell:
+		"""
+		MM_dir={output.MMseqs2_dir}
+		echo $MM_dir
+		if [ ! -d $MM_dir ]
+		then
+			git clone https://github.com/soedinglab/MMseqs2.git
+			cd MMseqs2
+			mkdir build
+			cd build
+			cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=. ..
+			make -j {threads}
+			make install
+			export PATH=$(pwd)/bin/:$PATH
+		fi
+		"""
+
 rule compare_contigs_mmseqs2:
 	input:
+		MMseqs2_dir=directory(config['mmseqs_dir']),
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
 		reference=REFERENCE_CONTIGS
 	output:
