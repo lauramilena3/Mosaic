@@ -27,7 +27,7 @@ min_len: "1000"
 min_cov: "2"
 
 contaminants_list: ""
-adapters_file: "NexteraPE-PE.fa"
+adapters_file: "adapters.fa"
 basecalled_dir: "data/basecalled/"
 
 virSorter_db: "db/VirSorter/virsorter-data"
