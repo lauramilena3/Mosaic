@@ -28,6 +28,8 @@ rule get_mmseqs:
 		echo $MM_dir
 		if [ ! -d $MM_dir ]
 		then
+			mkdir -p tools
+			cd tools
 			git clone https://github.com/soedinglab/MMseqs2.git
 			cd MMseqs2
 			mkdir build
