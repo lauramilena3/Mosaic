@@ -68,5 +68,5 @@ rule compare_contigs_mmseqs2:
 		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
 		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
-		-a -s 7.0 --search-type 2 --threads {threads}
+		-a --search-type 2 --threads {threads}
 		"""
