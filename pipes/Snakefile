@@ -13,8 +13,8 @@ configfile: "config.yaml"
 RAW_DATA_DIR =config['input_dir']
 RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
-REFERENCE_CONTIGS_DIR==os.path.dirname(os.path.abspath(existGDBPath)).rstrip("/")
-REFERENCE_CONTIGS_BASE==os.path.splitext(os.path.basename(os.path.abspath(existGDBPath)))[0]
+REFERENCE_CONTIGS_DIR==os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
+REFERENCE_CONTIGS_BASE==os.path.splitext(os.path.basename(os.path.abspath(REFERENCE_CONTIGS)))[0]
 
 print(REFERENCE_CONTIGS_BASE)
 
