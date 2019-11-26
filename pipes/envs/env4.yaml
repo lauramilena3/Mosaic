@@ -20,5 +20,6 @@ dependencies:
 #  - blast 2.7.1
   - diamond =0.9.24
   - biom-format =2.1.7
+  - taxonkit =0.5.0
   - pip:
     - git+https://bitbucket.org/MAVERICLab/vcontact2/src/master/vcontact/

@@ -72,7 +72,7 @@ rule create_contigs_mmseqs2:
 		mkdir {output.temp_dir}
 		{params.mmseqs}/mmseqs map {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		--start-sens 1 --sens-steps 3 -s 7
-		mmseqs filterdb {params.results_name} {params.best_results_name} --extract-lines 1
+		{params.mmseqs}/mmseqs filterdb {params.results_name} {params.best_results_name} --extract-lines 1
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.best_results_name} {output.results_table}
 
 		"""
