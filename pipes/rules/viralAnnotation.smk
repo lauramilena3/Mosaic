@@ -16,7 +16,7 @@
 
 rule compare_contigs_mmseqs2:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
 		reference=REFERENCE_CONTIGS
 	output:
 		index_representatives=dirs_dict["MMSEQS"] + "/merged_scaffolds_95-80.index",
