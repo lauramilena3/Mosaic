@@ -30,7 +30,7 @@ rule compare_contigs_mmseqs2:
 	message:
 		"Comparing reference and assembly mmseqs"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 4
 	shell:
 		"""
