@@ -24,8 +24,8 @@ rule compare_contigs_mmseqs2:
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp"))
 	params:
-		representative_name="representatives"
-		reference_name=REFERENCE_CONTIGS_BASE
+		representative_name="representatives",
+		reference_name=REFERENCE_CONTIGS_BASE,
 	message:
 		"Comparing reference and assembly mmseqs"
 	conda:

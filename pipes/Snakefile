@@ -102,7 +102,7 @@ rule abundance_from_db_contigs:
 
 rule assembly_vs_references:
 	input:
-		(directory(dirs_dict["MMSEQS"] + "/tmp"))
+		(dirs_dict["MMSEQS"] + "/tmp")
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
