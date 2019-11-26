@@ -54,7 +54,8 @@ rule compare_contigs_mmseqs2:
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" + "search_results"
+		results_name=dirs_dict["MMSEQS"] + "/" + "search_results",
+		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Comparing reference and assembly mmseqs"
 	conda:
@@ -62,10 +63,10 @@ rule compare_contigs_mmseqs2:
 	threads: 4
 	shell:
 		"""
-		mmseqs createdb {input.representatives} {params.representatives_name}
-		mmseqs createdb {input.reference} {params.reference_name}
-		mmseqs createindex {params.reference_name} tmp --search-type 2
+		{params.mmseqs}/mmseqs createdb {input.representatives} {params.representatives_name}
+		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
+		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
-		mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
+		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		-a -s 7.0 --search-type 2 --threads {threads}
 		"""
