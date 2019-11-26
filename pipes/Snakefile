@@ -59,9 +59,15 @@ dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA
 dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", REFERENCE_CONTIGS ,RESULTS_DIR + "/05_MAPPING", RESULTS_DIR + "06_MMSEQS"]
 dirs_dict = dict(zip(dir_list, dir_names))
 
-print("Read Types = " + *READ_TYPES)
-print("Sample Names = " + *SAMPLES)
-print("Contaminants = " + *CONTAMINANTS)
+print("Read Types = " )
+print(*READ_TYPES, sep = ", ")
+
+print("Sample Names = ")
+print(*SAMPLES, sep = ", ")
+
+print("Contaminants = ")
+print(*CONTAMINANTS, sep = ", ")
+
 
 
 #======================================================
