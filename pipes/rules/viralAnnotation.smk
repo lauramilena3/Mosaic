@@ -38,5 +38,5 @@ rule compare_contigs_mmseqs2:
 		mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
 		echo "acá"
-		mmseqs search {params.representatives_name} {params.representatives_name} {params.reference_name} {output.temp_dir} -a -s 0.7 --search-type 2 [--strand 2]
+		mmseqs search {params.representatives_name} {params.representatives_name} {params.reference_name} {output.temp_dir} -a -s 7.0 --search-type 2 [--strand 2]
 		"""
