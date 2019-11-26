@@ -100,9 +100,10 @@ rule abundance_from_db_contigs:
 	input:
 		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
 
-rule assembly_vs_references:
+rule assembly_vs_reference:
 	input:
 		(dirs_dict["MMSEQS"] + "/tmp")
+
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
