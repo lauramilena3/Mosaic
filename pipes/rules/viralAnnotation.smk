@@ -24,7 +24,7 @@ rule compare_contigs_mmseqs2:
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp"))
 	params:
-		representative_name="representatives",
+		representatives_name="representatives",
 		reference_name=REFERENCE_CONTIGS_BASE,
 	message:
 		"Comparing reference and assembly mmseqs"
@@ -33,11 +33,11 @@ rule compare_contigs_mmseqs2:
 	threads: 2
 	shell:
 		"""
-		mmseqs createdb {input.representative} {params.representative_name}
+		mmseqs createdb {input.representatives} {params.representatives_name}
 		mmseqs createdb {input.reference} {params.reference_name}
 		mmseqs createindex {params.reference_name} tmp
 		mkdir {output.temp_dir}
-		mmseqs search representatives {params.representative_name} {params.reference_name} {output.temp_dir} -a -s 0.7
+		mmseqs search representatives {params.representatives_name} {params.reference_name} {output.temp_dir} -a -s 0.7
 
 
 		"""
