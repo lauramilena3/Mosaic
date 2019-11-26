@@ -1,0 +1,6 @@
+RUTH
+srun -N 1 --cpus-per-task=32 --mem 80G --time=72:00:00 --pty bash
+module load anaconda/python3
+source activate Mosaic
+cd ~/Mosaic/Mosaic/pipes/
+snakemake --use-conda --config input_dir=/hpcfs/home/rd.hernandez/DatosRuth-Shotgun/2.VIRUS/Viral_Analysis/00_RAW_READS/ results_dir=/hpcfs/home/rd.hernandez/DatosRuth-Shotgun/2.VIRUS/Viral_Analysis/ forward_tag=R1_001 reverse_tag=R2_001 contaminants_list="GCF_000001405.39 GCF_002263795.1" -k -j 16
