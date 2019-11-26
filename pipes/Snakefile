@@ -14,6 +14,10 @@ RAW_DATA_DIR =config['input_dir']
 RESULTS_DIR=config['results_dir'].rstrip("/")
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 REFERENCE_CONTIGS_DIR==os.path.dirname(os.path.abspath(existGDBPath)).rstrip("/")
+REFERENCE_CONTIGS_BASE==os.path.splitext(os.path.basename(os.path.abspath(existGDBPath)))[0]
+
+print(REFERENCE_CONTIGS_BASE)
+
 POSITIVE_CONTIGS="positive_contigs"
 
 if REFERENCE_CONTIGS_DIR  == "":
@@ -92,7 +96,7 @@ rule abundance_from_db_contigs:
 
 rule assembly_vs_references:
 	input:
-		expand(dirs_dict["MMSEQS"]+ "/{references}.index", references=[REFERENCE_CONTIGS, "positive_contigs"]),
+		(directory(dirs_dict["MMSEQS"] + "/tmp"))
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
