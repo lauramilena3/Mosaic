@@ -60,7 +60,7 @@ rule compare_contigs_mmseqs2:
 		"Comparing reference and assembly mmseqs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
+	threads: 16
 	shell:
 		"""
 		{params.mmseqs}/mmseqs createdb {input.representatives} {params.representatives_name}
