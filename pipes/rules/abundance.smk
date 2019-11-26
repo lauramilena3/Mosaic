@@ -2,13 +2,13 @@ ruleorder: mapReadsToContigsPE > mapReadsToContigsSE
 
 rule createContigBowtieDb:
 	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_contigs.{sampling}.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}.fasta",
 	output:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
-		contigs_info=dirs_dict["VIRAL_DIR"]+ "/positive_contigs.{sampling}.fasta.fai",
-		contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/positive_contigs_lenght.{sampling}.txt",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}.1.bt2",
+		contigs_info=dirs_dict["VIRAL_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}.fasta.fai",
+		contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/" + POSITIVE_CONTIGS + "_lenght.{sampling}.txt",
 	params:
-		prefix=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}",
+		prefix=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}",
 	message:
 		"Creating contig DB with Bowtie2"
 	conda:
@@ -24,7 +24,7 @@ rule createContigBowtieDb:
 
 rule mapReadsToContigsPE:
 	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}.1.bt2",
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -33,7 +33,7 @@ rule mapReadsToContigsPE:
 		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
 	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}",
+		contigs=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}",
 	message:
 		"Mapping reads to contigs"
 	conda:
@@ -48,13 +48,13 @@ rule mapReadsToContigsPE:
 		"""
 rule mapReadsToContigsSE:
 	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}.1.bt2",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}.1.bt2",
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
 		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
 	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/positive_contigs.{sampling}",
+		contigs=dirs_dict["MAPPING_DIR"]+ "/" + POSITIVE_CONTIGS + ".{sampling}",
 	message:
 		"Mapping reads to contigs"
 	conda:

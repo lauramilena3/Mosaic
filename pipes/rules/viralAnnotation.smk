@@ -14,17 +14,30 @@
 #
 # /home/lmf/apps/Mosaic/pipes/tools/viga/VIGA.py --input /home/lmf/03_COLIPHAGES/FASTA/similar.fasta --diamonddb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_DIAMOND/ --blastdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_BLAST/ --hmmerdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/pvogs/pvogs.hmm --rfamdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads 16
 
-rule fasta_to_db:
+rule compare_contigs_mmseqs2:
 	input:
-		fasta= "{directory}" + "/{references}.fasta"
+		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
+		reference=REFERENCE_CONTIGS
 	output:
-		index=dirs_dict["MMSEQS"] + "/{references}.index"
+		index_representatives=dirs_dict["MMSEQS"] + "/merged_scaffolds_95-80.index",
+		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
+		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp"))
+	params:
+		representative_name="representatives"
+		reference_name=REFERENCE_CONTIGS_BASE
 	message:
-		"Creating reference and assembly mmseqs db"
+		"Comparing reference and assembly mmseqs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 2
 	shell:
 		"""
-		mmseqs createdb {input.fasta} {wildcards.fasta}
+		mmseqs createdb {input.representative} {params.representative_name}
+		mmseqs createdb {input.reference} {params.reference_name}
+		mmseqs createindex {params.reference_name} tmp
+		mkdir {output.temp_dir}
+		mmseqs search representatives {params.representative_name} {params.reference_name} {output.temp_dir} -a -s 0.7
+
+
 		"""
