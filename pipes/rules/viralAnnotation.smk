@@ -41,16 +41,18 @@ rule get_mmseqs:
 		fi
 		"""
 
-rule compare_contigs_mmseqs2:
+rule create_contigs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
 		reference=REFERENCE_CONTIGS
 	output:
-		index_representatives=dirs_dict["MMSEQS"] + "/merged_scaffolds_95-80.index",
+		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
 		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
-		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp"))
+		results_index=dirs_dict["MMSEQS"] + "/search_results.index",
+		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
+
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
