@@ -14,7 +14,7 @@ dependencies:
   - blast =2.9.0
   - hmmer =3.2.1
 #Other
-#  - mmseqs2=10.6d92c
+  - mmseqs2=10.6d92c
   - perl =5.26.2 #blast
   - nettle = 3.4.1 #blast
   - libgcc-ng =8.2.0
@@ -27,4 +27,3 @@ dependencies:
   - pip =19.3.1
   - pip:
     - bcbio-gff==0.6.6
-    - git+https://github.com/soedinglab/MMseqs2

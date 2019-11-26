@@ -22,4 +22,3 @@ dependencies:
   - biom-format =2.1.7
   - pip:
     - git+https://bitbucket.org/MAVERICLab/vcontact2/src/master/vcontact/
-#    - git+https://github.com/soedinglab/MMseqs2.git
