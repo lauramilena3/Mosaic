@@ -41,7 +41,7 @@ rule get_mmseqs:
 
 rule compare_contigs_mmseqs2:
 	input:
-		MMseqs2_dir=directory(config['mmseqs_dir']),
+		MMseqs2_dir=(config['mmseqs_dir']),
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
 		reference=REFERENCE_CONTIGS
 	output:
