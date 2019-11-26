@@ -56,7 +56,7 @@ if len(SAMPLES)==1:
 	SAMPLING_TYPE=["tot"]
 
 dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "vOUT_DIR", "VIRAL_DIR", "MAPPING_DIR", "MMSEQS"]
-dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", REFERENCE_CONTIGS ,RESULTS_DIR + "/05_MAPPING", RESULTS_DIR + "06_MMSEQS"]
+dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", RESULTS_DIR + "/04_vOTUs", REFERENCE_CONTIGS ,RESULTS_DIR + "/05_MAPPING", RESULTS_DIR + "/06_MMSEQS"]
 dirs_dict = dict(zip(dir_list, dir_names))
 
 print("Read Types = " )
