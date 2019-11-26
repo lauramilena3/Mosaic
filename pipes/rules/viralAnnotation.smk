@@ -51,8 +51,8 @@ rule create_contigs_mmseqs2:
 		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
 		results_index=dirs_dict["MMSEQS"] + "/search_results.index",
+		results_table=dirs_dict["MMSEQS"] + "/search_results.txt",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
-
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
@@ -71,4 +71,5 @@ rule create_contigs_mmseqs2:
 		mkdir {output.temp_dir}
 		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		-a --search-type 2 --threads {threads}
+		mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table} --format-output "query,target,evalue,qcov,pident"
 		"""
