@@ -37,7 +37,7 @@ rule compare_contigs_mmseqs2:
 		mmseqs createdb {input.reference} {params.reference_name}
 		mmseqs createindex {params.reference_name} tmp
 		mkdir {output.temp_dir}
-		mmseqs search representatives {params.representatives_name} {params.reference_name} {output.temp_dir} -a -s 0.7 --search-type 2
+		mmseqs search  -a -s 0.7 --search-type 2 {params.representatives} {params.representatives_name} {params.reference_name} {output.temp_dir}
 
 
 		"""
