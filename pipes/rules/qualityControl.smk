@@ -141,7 +141,8 @@ rule downloadContaminants:
 		cd {output.contaminant_dir}
 		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 		gunzip -f *gz
-		cat *fna >> ../{output.contaminant_fasta}
+		cat *fna >> {output.contaminant_fasta}
+		mv {output.contaminant_fasta} ..
 		"""
 rule formatContaminants:
 	input:
