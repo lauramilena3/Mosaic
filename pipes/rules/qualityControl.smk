@@ -126,7 +126,7 @@ rule remove_adapters_quality_nanopore:
 rule downloadContaminants:
 	output:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
-		contaminant_dir=temp(directory(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}")),
+		contaminant_dir=temp(directory(dirs_dict["CONTAMINANTS_DIR"] +"/temp_{contaminant}")),
 	message:
 		"Downloading contaminant genomes"
 	params:
