@@ -135,7 +135,7 @@ rule downloadContaminants:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
 	shell:
 		"""
-		mkdir {output.temp_dir}
+		mkdir {output.contaminant_dir}
 		cd {output.temp_dir}
 		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
 		gunzip -f *gz
