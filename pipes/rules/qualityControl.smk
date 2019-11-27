@@ -133,6 +133,8 @@ rule downloadContaminants:
 		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
+	threads:
+		16
 	shell:
 		"""
 		mkdir {output.contaminant_dir}
