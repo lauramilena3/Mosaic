@@ -68,7 +68,6 @@ rule create_contigs_mmseqs2:
 		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
 		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
-		{params.mmseqs}/mmseqs map {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
