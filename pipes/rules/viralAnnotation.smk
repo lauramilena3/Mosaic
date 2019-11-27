@@ -40,7 +40,7 @@ rule get_mmseqs:
 		fi
 		"""
 
-rule create_contigs_mmseqs2:
+rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
@@ -49,6 +49,27 @@ rule create_contigs_mmseqs2:
 		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
 		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
 		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+	params:
+		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+	message:
+		"Creating databases for reference and assembly mmseqs"
+	threads: 4
+	shell:
+		"""
+		{params.mmseqs}/mmseqs createdb {input.representatives} {params.representatives_name}
+		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
+		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
+		"""
+
+rule search_contigs_mmseqs2:
+	input:
+		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
+		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
+		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+	output:
 		results_index=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.index",
 		results_table=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_best_search_results.txt",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
@@ -59,14 +80,9 @@ rule create_contigs_mmseqs2:
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Comparing reference and assembly mmseqs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 16
 	shell:
 		"""
-		{params.mmseqs}/mmseqs createdb {input.representatives} {params.representatives_name}
-		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
-		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 2
 		mkdir {output.temp_dir}
 		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
