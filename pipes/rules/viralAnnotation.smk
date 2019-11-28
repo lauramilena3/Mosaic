@@ -1,18 +1,63 @@
-# cd TOOLS
-# git clone https://github.com/EGTortuero/viga
-# chmod 744 viga/create_dbs.sh viga/VIGA.py
-# ./viga/create_dbs.sh
-#
-# cd pilercr1.06
-# make
-# PILER=/home/lmf/apps/Mosaic/pipes/tools/pilercr1.06
-# PATH=$PILER:$PATH
-# TRF=/home/lmf/apps/Mosaic/pipes/tools/TRF
-# PATH=$TRF:$PATH
-#
-# cd VIGA
-#
-# /home/lmf/apps/Mosaic/pipes/tools/viga/VIGA.py --input /home/lmf/03_COLIPHAGES/FASTA/similar.fasta --diamonddb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_DIAMOND/ --blastdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/RefSeq_Viral_BLAST/ --hmmerdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/pvogs/pvogs.hmm --rfamdb /home/lmf/apps/Mosaic/pipes/tools/viga/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads 16
+rule get_VIGA:
+	output:
+		VIGA_dir=directory(config['viga_dir']),
+		piler_dir=directory(config['piler_dir']),
+		trf_dir=directory(config['trf_dir']),
+	message:
+		"Downloading MMseqs2"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	threads: 4
+	shell:
+		"""
+		mkdir -p tools
+		cd tools
+		git clone --depth 1 https://github.com/EGTortuero/viga.git
+		chmod 744 viga/create_dbs.sh viga/VIGA.py
+		./viga/create_dbs.sh
+		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
+		tar -xzvf pilercr1.06.tar.gz
+		cd pilercr1.06
+		make
+		cd ..
+		mkdir TRF
+		cd TRF
+		wget http://tandem.bu.edu/trf/downloads/trf409.linux64
+		wget http://tandem.bu.edu/irf/downloads/irf307.linux.exe
+		mv trf409.linux64 trf
+		mv irf307.linux.exe irf
+		chmod 744 trf irf
+		"""
+
+rule annotate_VIGA:
+	input:
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}.fasta",
+		VIGA_dir=directory(config['viga_dir']),
+		piler_dir=directory(config['piler_dir']),
+		trf_dir=directory(config['trf_dir']),
+	output:
+		viga_results=dirs_dict["ANNOTATION"] + "/viga_results.txt",
+	params:
+		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	message:
+		"Creating databases for reference and assembly mmseqs"
+	threads: 16
+	shell:
+		"""
+		WD=$(pwd)
+		PILER=$WD/{input.piler_dir}
+		PATH=$PILER:$PATH
+		TRF=$WD/{input.trf_dir}
+		PATH=$TRF:$PATH
+		./{input.viga_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.viga_dir}/databases/RefSeq_Viral_DIAMOND/ \
+		--blastdb {input.viga_dir}/databases/RefSeq_Viral_BLAST/ --hmmerdb {input.viga_dir}/databases/pvogs/pvogs.hmm \
+		--rfamdb {input.viga_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
+		"""
 
 rule get_mmseqs:
 	output:
