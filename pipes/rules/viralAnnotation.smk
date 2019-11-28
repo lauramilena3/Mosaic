@@ -54,9 +54,9 @@ rule annotate_VIGA:
 		PATH=$PILER:$PATH
 		TRF=$WD/{input.trf_dir}
 		PATH=$TRF:$PATH
-		./{input.viga_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.viga_dir}/databases/RefSeq_Viral_DIAMOND/ \
-		--blastdb {input.viga_dir}/databases/RefSeq_Viral_BLAST/ --hmmerdb {input.viga_dir}/databases/pvogs/pvogs.hmm \
-		--rfamdb {input.viga_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
+		./{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/ \
+		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/ --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
+		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
 		"""
 
 rule get_mmseqs:
