@@ -19,16 +19,16 @@ if RESULTS_DIR == "":
 print(RESULTS_DIR)
 
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
-REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
-REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
-
-print(REFERENCE_CONTIGS_DIR)
 
 if REFERENCE_CONTIGS == "":
 	REFERENCE_CONTIGS_BASE="positive_contigs"
+	REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
+else:
+	REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
+	REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
 
-if REFERENCE_CONTIGS_DIR == "":
-		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
+print(REFERENCE_CONTIGS_DIR)
+
 
 
 RULES_DIR = 'rules'

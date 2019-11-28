@@ -75,7 +75,8 @@ rule filterBAM:
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
 	params:
-		out_dir=dirs_dict["MAPPING_DIR"]
+		out_dir=dirs_dict["MAPPING_DIR"],
+		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
@@ -85,6 +86,7 @@ rule filterBAM:
 		"""
 		samtools sort {input.bam} -o {output.bam_sorted}
 		bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+		mv {params.temp_bam_filtered} {output.bam_filtered}
 		"""
 
 rule tpmeanPerConfidence:
