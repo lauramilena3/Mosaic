@@ -32,7 +32,7 @@ rule get_VIGA:
 rule annotate_VIGA:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		VIGA_dir=directory("../" + config['viga_dir']),
+		VIGA_dir=directory(config['viga_dir']),
 		piler_dir=directory(config['piler_dir']),
 		trf_dir=directory(config['trf_dir']),
 	output:
@@ -42,6 +42,7 @@ rule annotate_VIGA:
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
 		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+		VIGA_dir=directory("../" + config['viga_dir']),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
@@ -56,9 +57,9 @@ rule annotate_VIGA:
 		PATH=$TRF:$PATH
 		mkdir tempVIGA
 		cd tempVIGA
-		{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
-		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
-		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
+		{params.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
+		--blastdb {params.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {params.VIGA_dir}/databases/pvogs/pvogs.hmm \
+		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
 		touch {output.viga_results}
 		"""
 
