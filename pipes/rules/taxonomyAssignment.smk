@@ -56,18 +56,24 @@ rule clusterTaxonomy:
 		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
-	# rule taxonomy:
-	# input:
-	# 	contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
-	# output:
-	# 	aa="hola"
-	# message:
-	# 	"Calling ORFs with prodigal"
-	# conda:
-	# 	dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	# threads: 1
-	# shell:
-	# 	"""
-	# 	wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
-	# 	mkdir taxonomy && tar -xxvf taxdump.tar.gz -C taxonomy
-	# 	"""
+	rule taxonomy:
+	input:
+		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
+	output:
+		taxonomy=directory("db/taxonomy")
+	message:
+		"Calling ORFs with prodigal"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+		tar -xzf taxdump.tar.gz -C {output.taxonomy}
+
+		id=10239
+		taxonkit list --data-dir  --ids $id --indent "" > $id.taxid.txt
+
+	 	wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+	 	mkdir taxonomy && tar -xxvf taxdump.tar.gz -C taxonomy
+	 	"""

@@ -12,6 +12,7 @@ configfile: "config.yaml"
 
 RAW_DATA_DIR =config['input_dir']
 RESULTS_DIR=config['results_dir'].rstrip("/")
+
 if RESULTS_DIR == "":
 	RESULTS_DIR=os.path.abspath(os.path.join(RAW_DATA_DIR, os.pardir))
 
@@ -21,14 +22,16 @@ REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
 REFERENCE_CONTIGS_BASE=os.path.splitext(os.path.basename(os.path.abspath(REFERENCE_CONTIGS)))[0]
 
-print(REFERENCE_CONTIGS_BASE)
 
-POSITIVE_CONTIGS="positive_contigs"
+if REFERENCE_CONTIGS == "":
+	REFERENCE_CONTIGS="positive_contigs"
 
-if REFERENCE_CONTIGS_DIR  == "":
+if REFERENCE_CONTIGS_DIR == "":
 		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 
+
 RULES_DIR = 'rules'
+
 CONFIDENCE_TYPES=["high", "low"]
 SAMPLING_TYPE=config['sampling'].split()
 SAMPLES=""
