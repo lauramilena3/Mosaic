@@ -31,7 +31,7 @@ rule get_VIGA:
 
 rule annotate_VIGA:
 	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 		VIGA_dir=directory(config['viga_dir']),
 		piler_dir=directory(config['piler_dir']),
 		trf_dir=directory(config['trf_dir']),
