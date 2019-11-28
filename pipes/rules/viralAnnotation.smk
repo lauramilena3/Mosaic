@@ -54,7 +54,7 @@ rule annotate_VIGA:
 		PATH=$PILER:$PATH
 		TRF=$WD/{input.trf_dir}
 		PATH=$TRF:$PATH
-		./{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/ \
+		./{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/ --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
 		"""
