@@ -20,7 +20,7 @@ print(RESULTS_DIR)
 
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
-REFERENCE_CONTIGS_BASE=os.path.splitext(os.path.basename(os.path.abspath(REFERENCE_CONTIGS)))[0]
+REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
 
 print(REFERENCE_CONTIGS_BASE)
 
