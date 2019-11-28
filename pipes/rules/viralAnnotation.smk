@@ -56,7 +56,7 @@ rule annotate_VIGA:
 		PATH=$TRF:$PATH
 		mkdir tempVIGA
 		cd tempVIGA
-		../{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
+		{input.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
 		touch {output.viga_results}
