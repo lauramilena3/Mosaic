@@ -22,7 +22,7 @@ REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
 REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
 
-print(REFERENCE_CONTIGS_BASE)
+print(REFERENCE_CONTIGS_DIR)
 
 if REFERENCE_CONTIGS == "":
 	REFERENCE_CONTIGS_BASE="positive_contigs"
