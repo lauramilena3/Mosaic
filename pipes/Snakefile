@@ -22,9 +22,10 @@ REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
 REFERENCE_CONTIGS_DIR=os.path.dirname(os.path.abspath(REFERENCE_CONTIGS)).rstrip("/")
 REFERENCE_CONTIGS_BASE=os.path.splitext(os.path.basename(os.path.abspath(REFERENCE_CONTIGS)))[0]
 
+print(REFERENCE_CONTIGS_BASE)
 
 if REFERENCE_CONTIGS == "":
-	REFERENCE_CONTIGS="positive_contigs"
+	REFERENCE_CONTIGS_BASE="positive_contigs"
 
 if REFERENCE_CONTIGS_DIR == "":
 		REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
