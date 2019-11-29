@@ -38,12 +38,19 @@ rule annotate_VIGA:
 	output:
 		viga_results=dirs_dict["ANNOTATION"] + "/viga_results.txt",
 		modifiers=dirs_dict["ANNOTATION"] + "/modifiers.txt",
+		temp_symlink=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta"),
+		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA"),
+		GenBank_file= dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
+		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl",
+		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
+		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
 		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 		VIGA_dir=directory("../" + config['viga_dir']),
+
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
@@ -56,10 +63,11 @@ rule annotate_VIGA:
 		PATH=$PILER:$PATH
 		TRF=$WD/{input.trf_dir}
 		PATH=$TRF:$PATH
-		mkdir -p tempVIGA
-		cd tempVIGA
+		ln -s {input.positive_contigs} .
+		mkdir -p {output.temp_viga_dir}
+		cd {output.temp_viga_dir}
 		touch {output.modifiers}
-		{params.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
+		{params.VIGA_dir}/VIGA.py --input {input.temp_symlink} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {params.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {params.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads}
 		touch {output.viga_results}
