@@ -32,9 +32,9 @@ rule get_VIGA:
 rule annotate_VIGA:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		VIGA_dir=directory(config['viga_dir']),
-		piler_dir=directory(config['piler_dir']),
-		trf_dir=directory(config['trf_dir']),
+		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
+		piler_dir=(config['piler_dir']),
+		trf_dir=(config['trf_dir']),
 	output:
 		modifiers=dirs_dict["ANNOTATION"] + "/modifiers.txt",
 		temp_symlink=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta"),
