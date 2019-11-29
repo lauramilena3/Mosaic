@@ -8,7 +8,7 @@ dependencies:
 #CAT
   - cat =4.3.3
 #VirSorter
-  - mcl =14.137 
+  - mcl =14.137
   - muscle =3.8.1551
   - blast =2.7.1
   - perl-bioperl =1.7.2
@@ -32,6 +32,6 @@ dependencies:
   - r-ggplot2 = 3.1.1
   - r-reshape2 = 1.4.3
   #  - kallisto=0.45.0
-
-
-
+#VIBRANT
+  - prodigal =2.6.3
+  - biopython =1.74
