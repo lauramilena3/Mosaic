@@ -36,11 +36,10 @@ rule annotate_VIGA:
 		piler_dir=directory(config['piler_dir']),
 		trf_dir=directory(config['trf_dir']),
 	output:
-		viga_results=dirs_dict["ANNOTATION"] + "/viga_results.txt",
 		modifiers=dirs_dict["ANNOTATION"] + "/modifiers.txt",
 		temp_symlink=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta"),
-		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA"),
-		GenBank_file= dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
+		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA")),
+		GenBank_file=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
 		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl",
 		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
 		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
@@ -50,7 +49,6 @@ rule annotate_VIGA:
 		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 		VIGA_dir=directory("../" + config['viga_dir']),
-
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
@@ -70,7 +68,6 @@ rule annotate_VIGA:
 		{params.VIGA_dir}/VIGA.py --input {input.temp_symlink} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {params.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {params.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads}
-		touch {output.viga_results}
 		"""
 
 rule get_mmseqs:
