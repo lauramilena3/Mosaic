@@ -37,6 +37,7 @@ rule annotate_VIGA:
 		trf_dir=directory(config['trf_dir']),
 	output:
 		viga_results=dirs_dict["ANNOTATION"] + "/viga_results.txt",
+		modifiers=dirs_dict["ANNOTATION"] + "/modifiers.txt",
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
@@ -57,9 +58,10 @@ rule annotate_VIGA:
 		PATH=$TRF:$PATH
 		mkdir -p tempVIGA
 		cd tempVIGA
+		grep ">" {input.positive_contigs} > {output.modifiers}
 		{params.VIGA_dir}/VIGA.py --input {input.positive_contigs} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {params.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {params.VIGA_dir}/databases/pvogs/pvogs.hmm \
-		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers modifiers.txt --threads {threads}
+		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads}
 		touch {output.viga_results}
 		"""
 
