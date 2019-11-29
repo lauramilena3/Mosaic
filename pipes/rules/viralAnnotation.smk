@@ -61,7 +61,7 @@ rule annotate_VIGA:
 		PATH=$PILER:$PATH
 		TRF=$WD/{input.trf_dir}
 		PATH=$TRF:$PATH
-		ln -s {input.positive_contigs} .
+		ln -sfn {input.positive_contigs} .
 		mkdir -p {output.temp_viga_dir}
 		cd {output.temp_viga_dir}
 		touch {output.modifiers}
