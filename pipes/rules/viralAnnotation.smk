@@ -65,7 +65,7 @@ rule annotate_VIGA:
 		mkdir -p {output.temp_viga_dir}
 		cd {output.temp_viga_dir}
 		touch {output.modifiers}
-		{params.VIGA_dir}/VIGA.py --input {input.temp_symlink} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
+		{params.VIGA_dir}/VIGA.py --input {output.temp_symlink} --diamonddb {params.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {params.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {params.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {params.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads}
 		"""
