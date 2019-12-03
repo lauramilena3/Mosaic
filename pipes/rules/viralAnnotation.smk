@@ -161,9 +161,7 @@ rule get_VIBRANT:
 	output:
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	message:
-		"Downloading MMseqs2"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+		"Downloading VIBRANT"
 	threads: 4
 	shell:
 		"""
@@ -191,9 +189,9 @@ rule annotate_VIBRANT:
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 		VIGA_dir=directory("../" + config['viga_dir']),
 	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	message:
-		"Creating databases for reference and assembly mmseqs"
+		"Annotating contigs with VIBRANT"
 	threads: 16
 	shell:
 		"""
