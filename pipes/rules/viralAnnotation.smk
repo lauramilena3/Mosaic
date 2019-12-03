@@ -161,6 +161,8 @@ rule get_VIBRANT:
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	message:
 		"Downloading VIBRANT"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	threads: 4
 	shell:
 		"""
