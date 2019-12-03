@@ -120,9 +120,10 @@ rule assembly:
 rule annotate_contigs:
 	input:
 		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
+
 rule test_vibrant:
 	input:
-		temp_vibrant==("tempVIBRANT.txt"),
+		temp_vibrant=("tempVIBRANT.txt"),
 
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
 include: os.path.join(RULES_DIR, 'assembly.smk')
