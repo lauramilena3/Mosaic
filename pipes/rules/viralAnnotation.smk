@@ -169,7 +169,8 @@ rule get_VIBRANT:
 		cd tools
 		git clone https://github.com/AnantharamanLab/VIBRANT
 		chmod -R 744 VIBRANT
-		./VIBRANT/databases/VIBRANT_setup.py
+		cd VIBRANT/databases
+		./VIBRANT_setup.py
 		git clone https://github.com/python/cpython
 		cd cpython
 		./configure
