@@ -1,8 +1,8 @@
 rule get_VIGA:
 	output:
-		VIGA_dir=directory(config['viga_dir']),
-		piler_dir=directory(config['piler_dir']),
-		trf_dir=directory(config['trf_dir']),
+		VIGA_dir=directory(os.path.join(workflow.basedir, config['viga_dir'])),
+		piler_dir=directory(os.path.join(workflow.basedir, config['piler_dir'])),
+		trf_dir=directory(os.path.join(workflow.basedir, config['trf_dir'])),
 	message:
 		"Downloading MMseqs2"
 	conda:
