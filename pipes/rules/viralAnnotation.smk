@@ -181,13 +181,14 @@ rule annotate_VIBRANT:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		temp_vibrant=temp("tempVIBRANT.txt"),
+		vibrant=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
 	params:
-		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
-		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
-		VIGA_dir=directory("../" + config['viga_dir']),
+		annotation_dir=(directory(dirs_dict["ANNOTATION"]),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
@@ -195,7 +196,6 @@ rule annotate_VIBRANT:
 	threads: 16
 	shell:
 		"""
-
+		cd {params.annotation_dir}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.positive_contigs} -virome -t 16
-		touch {output.temp_vibrant}
 		"""
