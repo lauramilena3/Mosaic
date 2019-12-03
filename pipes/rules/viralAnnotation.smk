@@ -144,3 +144,33 @@ rule search_contigs_mmseqs2:
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
+rule get_VIBRANT:
+	output:
+		VIGA_dir=directory(config['viga_dir']),
+		piler_dir=directory(config['piler_dir']),
+		trf_dir=directory(config['trf_dir']),
+	message:
+		"Downloading MMseqs2"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	threads: 4
+	shell:
+		"""
+		mkdir -p tools
+		cd tools
+		git clone --depth 1 https://github.com/EGTortuero/viga.git
+		chmod 744 viga/create_dbs.sh viga/VIGA.py
+		./viga/create_dbs.sh
+		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
+		tar -xzvf pilercr1.06.tar.gz
+		cd pilercr1.06
+		make
+		cd ..
+		mkdir TRF
+		cd TRF
+		wget http://tandem.bu.edu/trf/downloads/trf409.linux64
+		wget http://tandem.bu.edu/irf/downloads/irf307.linux.exe
+		mv trf409.linux64 trf
+		mv irf307.linux.exe irf
+		chmod 744 trf irf
+		"""
