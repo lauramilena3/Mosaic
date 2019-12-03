@@ -170,11 +170,11 @@ rule get_VIBRANT:
 		chmod -R 744 VIBRANT
 		cd VIBRANT/databases
 		./VIBRANT_setup.py
-		git clone https://github.com/python/cpython
-		cd cpython
-		./configure
-		make
-		make test
+		#git clone https://github.com/python/cpython
+		#cd cpython
+		#./configure
+		#make
+		#make test
 		"""
 rule annotate_VIBRANT:
 	input:
@@ -195,6 +195,7 @@ rule annotate_VIBRANT:
 	threads: 16
 	shell:
 		"""
+
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.positive_contigs} -virome -t 16
 		touch {output.temp_vibrant}
 		"""
