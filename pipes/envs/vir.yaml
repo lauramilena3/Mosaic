@@ -34,6 +34,4 @@ dependencies:
   #  - kallisto=0.45.0
 #VIBRANT
   - prodigal =2.6.3
-  - pip =19.3.1
-  - pip:
-      - git+https://github.com/python/cpython.git
+  - biopython =1.74
