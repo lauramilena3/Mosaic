@@ -181,7 +181,7 @@ rule annotate_VIBRANT:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		vibrant=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
 	params:
 		annotation_dir=(directory(dirs_dict["ANNOTATION"]),
 	conda:
