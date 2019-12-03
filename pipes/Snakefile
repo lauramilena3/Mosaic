@@ -123,7 +123,7 @@ rule annotate_contigs:
 
 rule test_vibrant:
 	input:
-		temp_vibrant=("tempVIBRANT.txt"),
+		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
 
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
 include: os.path.join(RULES_DIR, 'assembly.smk')
