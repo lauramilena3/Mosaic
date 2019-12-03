@@ -197,6 +197,6 @@ rule annotate_VIBRANT:
 	threads: 16
 	shell:
 		"""
-		../VIBRANT_run.py -i {Microviridae_MH552510.2.faa} -virome -t 16
+		../VIBRANT_run.py -i {input.positive_contigs} -virome -t 16
 		touch {output.temp_vibrant}
 		"""
