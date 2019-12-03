@@ -189,7 +189,7 @@ rule annotate_VIBRANT:
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 		VIGA_dir=directory("../" + config['viga_dir']),
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env3.yaml"
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Annotating contigs with VIBRANT"
 	threads: 16
