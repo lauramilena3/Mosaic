@@ -54,14 +54,13 @@ rule annotate_VIGA:
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
-		"Creating databases for reference and assembly mmseqs"
+		"Annotating contigs with VIGA"
 	threads: 16
 	shell:
 		"""
-		WD=$(pwd)
-		PILER=$WD/{input.piler_dir}
+		PILER={input.piler_dir}
 		PATH=$PILER:$PATH
-		TRF=$WD/{input.trf_dir}
+		TRF={input.trf_dir}
 		PATH=$TRF:$PATH
 		ln -sfn {input.positive_contigs} {output.temp_symlink}
 		mkdir -p {output.temp_viga_dir}
