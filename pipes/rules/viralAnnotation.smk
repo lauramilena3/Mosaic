@@ -183,7 +183,7 @@ rule annotate_VIBRANT:
 	output:
 		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
 	params:
-		annotation_dir=(directory(dirs_dict["ANNOTATION"]),
+		annotation_dir=directory(dirs_dict["ANNOTATION"]),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
