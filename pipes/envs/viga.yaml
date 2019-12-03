@@ -14,9 +14,6 @@ dependencies:
   - diamond =0.9.28
   - blast =2.9.0
   - hmmer =3.2.1
-  - cmake =3.15.5
-  - glibc =2.12.2
-  - xz =5.2.4
 #Other
 #  - mmseqs2=10.6d92c
   - perl =5.26.2 #blast

@@ -2,9 +2,17 @@ channels:
   - conda-forge
   - bioconda
   - biobuilds
-dependencies: 
+dependencies:
   - porechop =0.2.3
+#VIBRANT
+  - prodigal =2.6.3
+  - biopython =1.74
+  - pandas =0.25.3
+  - matplotlib =3.1.2
+  - seaborn =0.9.0
+  - numpy =1.17.3
+  - scikit-learn =0.22
   - pip:
-    - nanoQC==0.9.0 
+    - nanoQC==0.9.0
     - nanofilt==2.3.0
     - quast==5.0.2
