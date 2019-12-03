@@ -44,6 +44,7 @@ rule annotate_VIGA:
 		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
 		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
 		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REFERENCE_CONTIGS_BASE + ".tot.txt",
+		viga_names=dirs_dict["ANNOTATION"] + "/viga_names_" + REFERENCE_CONTIGS_BASE + ".tot.txt",
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
@@ -69,6 +70,17 @@ rule annotate_VIGA:
 		{input.VIGA_dir}/VIGA.py --input {output.temp_symlink} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
 		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads} &> {output.viga_log}
+		cat {output.viga_log}| grep "was renamed as" > {output.viga_names}
+		cat {output.viga_names} | while read line
+		do
+			stringarray=($line)
+			new=${stringarray[-1]}
+			old=${stringarray[1]}
+			sed -i -e "s/${new}\t/${old}\t/g" -e "s/${new}_/${old}_/g" {output.csv}
+			sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" {output.GenBank_file}
+			sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" {output.GenBank_table}
+			sed -i "s/>${new} $/>${old}/g" {output.GenBank_fasta}
+		done
 		"""
 
 rule get_mmseqs:
