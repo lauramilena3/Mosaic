@@ -18,7 +18,7 @@ rule get_VIGA:
 		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
 		tar -xzvf pilercr1.06.tar.gz
 		cd pilercr1.06
-		make
+		#make
 		cd ..
 		mkdir TRF
 		cd TRF
@@ -169,7 +169,7 @@ rule get_VIBRANT:
 		cd tools
 		git clone https://github.com/AnantharamanLab/VIBRANT
 		chmod -R 744 VIBRANT
-		./VIBRANT/databases/VIBRANT_setup.sh
+		./VIBRANT/databases/VIBRANT_setup.py
 		git clone https://github.com/python/cpython
 		cd cpython
 		./configure
