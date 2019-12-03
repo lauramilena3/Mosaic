@@ -74,12 +74,12 @@ rule annotate_VIGA:
 		cat {output.viga_names} | while read line
 		do
 			stringarray=($line)
-			new=${stringarray[-1]}
-			old=${stringarray[1]}
-			sed -i -e "s/${new}\t/${old}\t/g" -e "s/${new}_/${old}_/g" {output.csv}
-			sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" {output.GenBank_file}
-			sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" {output.GenBank_table}
-			sed -i "s/>${new} $/>${old}/g" {output.GenBank_fasta}
+			new=${{stringarray[-1]}}
+			old=${{stringarray[1]}}
+			sed -i -e "s/${{new}}\t/${{old}}\t/g" -e "s/${{new}}_/${{old}}_/g" {output.csv}
+			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_file}
+			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_table}
+			sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
 		done
 		"""
 
