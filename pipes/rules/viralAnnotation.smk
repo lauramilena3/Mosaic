@@ -179,54 +179,54 @@ rule get_VIBRANT:
 		make test
 		make install
 		"""
-rule annotate_VIBRANT:
-	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
-	output:
-		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA")),
-		GenBank_file=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
-		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl",
-		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
-		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
-		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REFERENCE_CONTIGS_BASE + ".tot.txt",
-		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REFERENCE_CONTIGS_BASE + ".tot.txt"),
-	params:
-		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
-		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
-		VIGA_dir=directory("../" + config['viga_dir']),
-	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	message:
-		"Creating databases for reference and assembly mmseqs"
-	threads: 16
-	shell:
-		"""
-		WD=$(pwd)
-		PILER=$WD/{input.piler_dir}
-		PATH=$PILER:$PATH
-		TRF=$WD/{input.trf_dir}
-		PATH=$TRF:$PATH
-		ln -sfn {input.positive_contigs} {output.temp_symlink}
-		mkdir -p {output.temp_viga_dir}
-		cd {output.temp_viga_dir}
-		touch {output.modifiers}
-		{input.VIGA_dir}/VIGA.py --input {output.temp_symlink} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
-		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
-		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads} &> {output.viga_log}
-		cat {output.viga_log}| grep "was renamed as" > {output.viga_names}
-		cat {output.viga_names} | while read line
-		do
-			stringarray=($line)
-			new=${{stringarray[-1]}}
-			old=${{stringarray[1]}}
-			sed -i -e "s/${{new}}\t/${{old}}\t/g" -e "s/${{new}}_/${{old}}_/g" {output.csv}
-			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_file}
-			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_table}
-			sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
-		done
-		"""
-../VIBRANT_run.py -i Microviridae_MH552510.2.faa
-		-virome -t 16
+# rule annotate_VIBRANT:
+# 	input:
+# 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
+# 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
+# 	output:
+# 		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA")),
+# 		GenBank_file=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
+# 		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl",
+# 		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
+# 		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
+# 		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REFERENCE_CONTIGS_BASE + ".tot.txt",
+# 		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REFERENCE_CONTIGS_BASE + ".tot.txt"),
+# 	params:
+# 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
+# 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
+# 		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+# 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+# 		VIGA_dir=directory("../" + config['viga_dir']),
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+# 	message:
+# 		"Creating databases for reference and assembly mmseqs"
+# 	threads: 16
+# 	shell:
+# 		"""
+# 		WD=$(pwd)
+# 		PILER=$WD/{input.piler_dir}
+# 		PATH=$PILER:$PATH
+# 		TRF=$WD/{input.trf_dir}
+# 		PATH=$TRF:$PATH
+# 		ln -sfn {input.positive_contigs} {output.temp_symlink}
+# 		mkdir -p {output.temp_viga_dir}
+# 		cd {output.temp_viga_dir}
+# 		touch {output.modifiers}
+# 		{input.VIGA_dir}/VIGA.py --input {output.temp_symlink} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
+# 		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
+# 		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads} &> {output.viga_log}
+# 		cat {output.viga_log}| grep "was renamed as" > {output.viga_names}
+# 		cat {output.viga_names} | while read line
+# 		do
+# 			stringarray=($line)
+# 			new=${{stringarray[-1]}}
+# 			old=${{stringarray[1]}}
+# 			sed -i -e "s/${{new}}\t/${{old}}\t/g" -e "s/${{new}}_/${{old}}_/g" {output.csv}
+# 			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_file}
+# 			sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_table}
+# 			sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
+# 		done
+# 		"""
+#../VIBRANT_run.py -i Microviridae_MH552510.2.faa
+#		-virome -t 16
