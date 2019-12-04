@@ -55,7 +55,7 @@ rule annotate_VIGA:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
 		"Annotating contigs with VIGA"
-	threads: 16
+	threads: 64
 	shell:
 		"""
 		PILER={input.piler_dir}
@@ -190,7 +190,7 @@ rule annotate_VIBRANT:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Annotating contigs with VIBRANT"
-	threads: 16
+	threads: 32
 	shell:
 		"""
 		cd {params.annotation_dir}
