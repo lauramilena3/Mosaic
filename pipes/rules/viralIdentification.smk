@@ -1,6 +1,6 @@
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.fasta",
+		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
@@ -25,7 +25,7 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.fasta",
+		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
 		virFinder_dir=config['virFinder_dir'],
 	output:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
@@ -43,10 +43,10 @@ rule virFinder:
 
 rule annotate_VIBRANT:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS + ".fasta",
+		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS),
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".{sampling}"),
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 	conda:
