@@ -15,6 +15,7 @@ rule mergeAssembliesHIBRID:
 		"""
 		cat {input.scaffolds_canu} {input.scaffolds_spades} > {output.merged_assembly}
 		"""
+cd 05
 
 rule mergeAssembliesSHORT:
 	input:
@@ -38,6 +39,7 @@ rule vOUTclustering:
 		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.clstr",
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt"
+		representatives_renamed=dirs_dict["vOUT_DIR"] + "/representative_contigs.fasta",
 	message:
 		"Creating vOUTs with stampede"
 	conda:
@@ -48,6 +50,7 @@ rule vOUTclustering:
 		./scripts/stampede-Cluster_genomes.pl -f {input.merged_assembly} -c 80 -i 95
 		cat {output.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
+		ln -s {output.representatives} {output.representatives_renamed}
 		"""
 
 #rule circularizeContigs:

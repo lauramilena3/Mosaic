@@ -1,33 +1,4 @@
-rule get_VIGA:
-	output:
-		VIGA_dir=directory(os.path.join(workflow.basedir, config['viga_dir'])),
-		piler_dir=directory(os.path.join(workflow.basedir, config['piler_dir'])),
-		trf_dir=directory(os.path.join(workflow.basedir, config['trf_dir'])),
-	message:
-		"Downloading MMseqs2"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
-	shell:
-		"""
-		mkdir -p tools
-		cd tools
-		git clone --depth 1 https://github.com/EGTortuero/viga.git
-		chmod 744 viga/create_dbs.sh viga/VIGA.py
-		./viga/create_dbs.sh
-		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
-		tar -xzvf pilercr1.06.tar.gz
-		cd pilercr1.06
-		#make
-		cd ..
-		mkdir TRF
-		cd TRF
-		wget http://tandem.bu.edu/trf/downloads/trf409.linux64
-		wget http://tandem.bu.edu/irf/downloads/irf307.linux.exe
-		mv trf409.linux64 trf
-		mv irf307.linux.exe irf
-		chmod 744 trf irf
-		"""
+
 
 rule annotate_VIGA:
 	input:
@@ -82,32 +53,6 @@ rule annotate_VIGA:
 		done
 		"""
 
-rule get_mmseqs:
-	output:
-		MMseqs2_dir=directory(config['mmseqs_dir']),
-	message:
-		"Downloading MMseqs2"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
-	shell:
-		"""
-		MM_dir={output.MMseqs2_dir}
-		echo $MM_dir
-		if [ ! -d $MM_dir ]
-		then
-			mkdir -p tools
-			cd tools
-			git clone https://github.com/soedinglab/MMseqs2.git
-			cd MMseqs2
-			mkdir build
-			cd build
-			cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=. ..
-			make -j {threads}
-			make install
-		fi
-		"""
-
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
@@ -156,48 +101,3 @@ rule search_contigs_mmseqs2:
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
-rule get_VIBRANT:
-	output:
-		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
-	message:
-		"Downloading VIBRANT"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env5.yaml"
-	threads: 4
-	shell:
-		"""
-		mkdir -p tools
-		cd tools
-		git clone https://github.com/AnantharamanLab/VIBRANT
-		chmod -R 744 VIBRANT
-		cd VIBRANT/databases
-		./VIBRANT_setup.py
-		#git clone https://github.com/python/cpython
-		#cd cpython
-		#./configure
-		#make
-		#make test
-		"""
-rule annotate_VIBRANT:
-	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
-	output:
-		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
-	params:
-		annotation_dir=directory(dirs_dict["ANNOTATION"]),
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env5.yaml"
-	message:
-		"Annotating contigs with VIBRANT"
-	threads: 32
-	shell:
-		"""
-		cd {params.annotation_dir}
-		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.positive_contigs} -virome -t 16
-		"""
-#		vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),

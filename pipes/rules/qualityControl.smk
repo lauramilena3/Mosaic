@@ -123,26 +123,7 @@ rule remove_adapters_quality_nanopore:
 		#grep -c "^@" fastq > {output} size
 		"""
 
-rule downloadContaminants:
-	output:
-		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
-		contaminant_dir=temp(directory(dirs_dict["CONTAMINANTS_DIR"] +"/temp_{contaminant}")),
-	message:
-		"Downloading contaminant genomes"
-	params:
-		contaminants_dir=dirs_dict["CONTAMINANTS_DIR"],
-	conda:
-		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
-	threads:
-		16
-	shell:
-		"""
-		mkdir {output.contaminant_dir}
-		cd {output.contaminant_dir}
-		wget $(esearch -db "assembly" -query {wildcards.contaminant} | esummary | xtract -pattern DocumentSummary -element FtpPath_RefSeq | awk -F"/" '{{print $0"/"$NF"_genomic.fna.gz"}}')
-		gunzip -f *gz
-		cat *fna >> {output.contaminant_fasta}
-		"""
+
 rule formatContaminants:
 	input:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",

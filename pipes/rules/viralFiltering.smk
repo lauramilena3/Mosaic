@@ -1,65 +1,6 @@
-rule downloadViralTools:
-	output:
-		virSorter_dir=directory(config['virSorter_dir']),
-		virFinder_dir=directory(config['virFinder_dir']),
-	message:
-		"Downloading required VirSorter and VirFinder"
-	threads: 1
-	shell:
-		"""
-		#VIRSORTER
-		VS_dir="{config[virSorter_dir]}"
-		echo $VS_dir
-		if [ ! -d $VS_dir ]
-		then
-			mkdir -p tools
-			cd tools
-			git clone https://github.com/simroux/VirSorter.git
-			cd VirSorter/Scripts
-			make clean
-			make
-			cd ../../../
-		fi
-		#VIRFNDER
-		VF_dir="{config[virFinder_dir]}"
-		echo $VF_dir
-   		if [ ! -d $VF_dir ]
-		then
-			if [ ! {config[operating_system]} == "linux" ]
-			then
-				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
-			else
-				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
-			fi
-			mkdir -p {output.virFinder_dir}
-			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
-		fi
-		"""
-
-rule downloadViralDB:
-	output:
-		virSorter_db=directory(config['virSorter_db']),
-	message:
-		"Downloading VirSorter database"
-	threads: 1
-	params:
-		virSorter_db="db/VirSorter"
-	shell:
-		"""
-		VS_db="{config[virSorter_db]}"
-		echo $VS_db
-		if [ ! -d $VS_db ]
-		then
-			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
-			mkdir -p {params.virSorter_db}
-			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
-			rm virsorter-data-v2.tar.gz
-		fi
-		"""
-
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.fasta",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
@@ -84,8 +25,8 @@ rule virSorter:
 
 rule virFinder:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
-		virFinder_dir=config['virFinder_dir']
+		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.fasta",
+		virFinder_dir=config['virFinder_dir'],
 	output:
 		pvalues=dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt"
 	params:
@@ -100,10 +41,36 @@ rule virFinder:
 		Rscript {params.virFinder_script} {input.representatives} {output.pvalues}
 		"""
 
+rule annotate_VIBRANT:
+	input:
+		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS + ".fasta",
+		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
+	output:
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS),
+	params:
+		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
+	message:
+		"Annotating contigs with VIBRANT"
+	threads: 32
+	shell:
+		"""
+		cd {params.annotation_dir}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.positive_contigs} -virome -t {threads}
+		"""
+#		vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+#		vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+
+
 rule parseViralTable:
 	input:
 		pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
+		vibrant=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS),
 	output:
 		circular_H=dirs_dict["VIRAL_DIR"]+ "/high_confidence_circular_list.{sampling}.txt",
 		circular_L=dirs_dict["VIRAL_DIR"]+ "/low_confidence_circular_list.{sampling}.txt",
@@ -112,8 +79,7 @@ rule parseViralTable:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
 		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv"
 	params:
-		virFinder_script="scripts/virfinder_wrapper.R'",
-		virFinder_dir=config['virFinder_dir']
+		vibrant_results=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS,
 	message:
 		"Parsing VirSorter and VirFinder results"
 	threads: 1

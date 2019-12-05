@@ -18,6 +18,7 @@ rule getORFs:
 			touch {output.coords} {output.aa}
 		fi
 		"""
+
 rule clusterTaxonomy:
 	input:
 		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
