@@ -15,7 +15,6 @@ rule mergeAssembliesHIBRID:
 		"""
 		cat {input.scaffolds_canu} {input.scaffolds_spades} > {output.merged_assembly}
 		"""
-cd 05
 
 rule mergeAssembliesSHORT:
 	input:
