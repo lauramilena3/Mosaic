@@ -56,7 +56,7 @@ rule annotate_VIBRANT:
 	threads: 32
 	shell:
 		"""
-		cd {params.annotation_dir}
+		cd {params.viral_dir}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.positive_contigs} -virome -t {threads}
 		"""
 #		vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
