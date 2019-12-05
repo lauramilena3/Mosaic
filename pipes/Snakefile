@@ -19,9 +19,11 @@ if RESULTS_DIR == "":
 print(RESULTS_DIR)
 
 REFERENCE_CONTIGS=config['reference_contigs'].rstrip("/")
+REPRESENTATIVE_CONTIGS=REFERENCE_CONTIGS
 
 if REFERENCE_CONTIGS == "":
 	REFERENCE_CONTIGS_BASE="positive_contigs"
+	REPRESENTATIVE_CONTIGS="representative_contigs"
 	REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/05_VIRAL_ID"
 else:
 	REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
@@ -90,6 +92,8 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
+	inputs.extend(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"))
+	inputs.extend(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv")
 	if NANOPORE=="True":
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
@@ -97,9 +101,7 @@ def inputAll(wildcards):
 
 rule all:
 	input:
-		#THA RULES!
 		inputAll,
-		#TESTING:
 
 rule clean_reads:
 	input:
@@ -119,16 +121,14 @@ rule assembly:
 
 rule annotate_contigs:
 	input:
-		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
-
-rule test_vibrant:
-	input:
+		VIGA_csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
 		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REFERENCE_CONTIGS_BASE + ".tot"),
 
+include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
 include: os.path.join(RULES_DIR, 'assembly.smk')
 include: os.path.join(RULES_DIR, 'vOTUclustering.smk')
-include: os.path.join(RULES_DIR, 'viralFiltering.smk')
+include: os.path.join(RULES_DIR, 'viralIdentification.smk')
 include: os.path.join(RULES_DIR, 'abundance.smk')
 include: os.path.join(RULES_DIR, 'taxonomyAssignment.smk')
 include: os.path.join(RULES_DIR, 'resultsParsing.smk')
