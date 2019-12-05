@@ -93,7 +93,7 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
 	inputs.extend(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REPRESENTATIVE_CONTIGS + ".tot"))
-	inputs.extend(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv")
+	inputs.extend(dirs_dict["VIRAL_DIR"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv")
 	if NANOPORE=="True":
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
@@ -122,7 +122,7 @@ rule assembly:
 rule annotate_contigs:
 	input:
 		VIGA_csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
-		vibrant=directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".tot"),
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".tot"),
 
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
