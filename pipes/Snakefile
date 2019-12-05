@@ -119,9 +119,8 @@ rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
 
-rule annotate_contigs:
-	input:
-		VIGA_csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
+rule annotate_contigs
+#		VIGA_csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".tot"),
 
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
