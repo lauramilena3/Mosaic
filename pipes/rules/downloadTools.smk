@@ -21,12 +21,12 @@ rule downloadContaminants:
 
 rule get_VIBRANT:
 	output:
-		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
+		VIBRANT_dir=directory(os.path.join(workflow.basedir, config['vibrant_dir'])),
 	message:
 		"Downloading VIBRANT"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
-	threads: 4
+	threads: 1
 	shell:
 		"""
 		mkdir -p tools
@@ -35,11 +35,6 @@ rule get_VIBRANT:
 		chmod -R 744 VIBRANT
 		cd VIBRANT/databases
 		./VIBRANT_setup.py
-		#git clone https://github.com/python/cpython
-		#cd cpython
-		#./configure
-		#make
-		#make test
 		"""
 rule get_mmseqs:
 	output:
@@ -48,7 +43,7 @@ rule get_mmseqs:
 		"Downloading MMseqs2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
+	threads: 1
 	shell:
 		"""
 		MM_dir={output.MMseqs2_dir}
@@ -75,7 +70,7 @@ rule get_VIGA:
 		"Downloading MMseqs2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
+	threads: 1
 	shell:
 		"""
 		mkdir -p tools
