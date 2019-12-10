@@ -126,7 +126,7 @@ rule annotate_contigs:
 
 rule runVirSorter:
 	input:
-		dirs_dict["VIRAL_DIR"] + "/virSorter_tot/VIRSorter_global-phage-signal.csv"
+		expand(dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv", sampling=["tot"])
 
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
