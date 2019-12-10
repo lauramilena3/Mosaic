@@ -43,7 +43,7 @@ rule virFinder:
 
 rule annotate_VIBRANT:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS + ".{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".{sampling}"),
