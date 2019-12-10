@@ -106,8 +106,8 @@ rule all:
 
 rule clean_reads:
 	input:
-		(dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html")
-		(dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html")
+		(dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"),
+		(dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"),
 
 rule abundance_from_db_contigs:
 	input:
