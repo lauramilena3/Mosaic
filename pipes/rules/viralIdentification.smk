@@ -46,7 +46,7 @@ rule annotate_VIBRANT:
 		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".{sampling}"),
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 	conda:
