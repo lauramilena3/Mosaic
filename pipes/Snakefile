@@ -23,7 +23,7 @@ REPRESENTATIVE_CONTIGS=REFERENCE_CONTIGS
 
 if REFERENCE_CONTIGS == "":
 	REFERENCE_CONTIGS_BASE="positive_contigs"
-	REPRESENTATIVE_CONTIGS="representative_contigs"
+	REPRESENTATIVE_CONTIGS_BASE="representative_contigs"
 	REFERENCE_CONTIGS_DIR=RESULTS_DIR + "/04_vOTUs"
 else:
 	REFERENCE_CONTIGS_BASE=os.path.basename(os.path.abspath(REFERENCE_CONTIGS)).split(".")[0]
@@ -93,7 +93,7 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
-	inputs.extend(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REPRESENTATIVE_CONTIGS + ".tot"))
+	inputs.extend(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_" +REPRESENTATIVE_CONTIGS_BASE + ".tot"))
 	inputs.extend(dirs_dict["VIRAL_DIR"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv")
 	if NANOPORE=="True":
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
