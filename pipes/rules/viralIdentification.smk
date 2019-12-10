@@ -1,6 +1,6 @@
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
