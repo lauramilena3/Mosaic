@@ -122,7 +122,7 @@ rule assembly:
 
 rule annotate_contigs:
 	input:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS + ".tot"),
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
