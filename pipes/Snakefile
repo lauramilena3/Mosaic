@@ -124,6 +124,10 @@ rule annotate_contigs:
 	input:
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
+rule runVirSorter:
+	input:
+		dirs_dict["VIRAL_DIR"] + "/virSorter_tot/VIRSorter_global-phage-signal.csv"
+
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')
 include: os.path.join(RULES_DIR, 'assembly.smk')
