@@ -260,7 +260,7 @@ rule assemblyStatsILLUMINA:
 	message:
 		"Creating assembly stats with quast"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env5.yaml"
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
 	shell:
 		"""
