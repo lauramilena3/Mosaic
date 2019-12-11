@@ -259,6 +259,8 @@ rule assemblyStatsILLUMINA:
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt"
 	message:
 		"Creating assembly stats with quast"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	threads: 1
 	shell:
 		"""
