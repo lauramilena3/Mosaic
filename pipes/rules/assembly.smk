@@ -15,7 +15,7 @@ rule hybridAsemblySpades:
 	params:
 		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
 		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
-	message: 
+	message:
 		"Assembling hybrid reads with metaSpades"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
@@ -39,7 +39,7 @@ rule shortReadAsemblySpadesPE:
 	params:
 		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
 		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
-	message: 
+	message:
 		"Assembling PE reads with metaSpades"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
@@ -62,7 +62,7 @@ rule shortReadAsemblySpadesSE:
 	params:
 		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
 		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
-	message: 
+	message:
 		"Assembling SE reads with metaSpades"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
@@ -106,7 +106,7 @@ rule asemblyCanuPOOLED:
 		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
-	params: 
+	params:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
 		assembly=dirs_dict["ASSEMBLY_DIR"],
 		sample_list=" ".join(SAMPLES),
@@ -135,7 +135,7 @@ rule asemblyCanu:
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	message:
 		"Assembling Nanopore reads with Canu"
-	params: 
+	params:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
@@ -183,12 +183,12 @@ rule errorCorrectCanuPE:
 		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
 		samtools view -b -S {output.sam_paired} > {output.bam_paired}
 		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
-		samtools index {output.sorted_bam_paired} 
+		samtools index {output.sorted_bam_paired}
 		#unpaired
 		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
 		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
-		samtools index {output.sorted_bam_unpaired} 
+		samtools index {output.sorted_bam_unpaired}
 		#PILON
 		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
 		--outdir {params.pilon_dir}
@@ -220,7 +220,7 @@ rule errorCorrectCanuSE:
 		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
 		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
-		samtools index {output.sorted_bam_unpaired} 
+		samtools index {output.sorted_bam_unpaired}
 		#PILON
 		pilon --genome {input.scaffolds} --unpaired {output.sorted_bam_unpaired} --outdir {params.pilon_dir}
 		cp {params.scaffolds_pilon} {output.scaffolds}
@@ -253,10 +253,10 @@ rule assemblyStatsHYBRID:
 
 rule assemblyStatsILLUMINA:
 	input:
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta")
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
 	output:
-		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{sampling}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt"
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/assembly_statistics_quast_{sampling}"),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt"
 	message:
 		"Creating assembly stats with quast"
 	threads: 1
@@ -271,6 +271,6 @@ rule assemblyStatsILLUMINA:
 			./setup.py install
 			cd ../..
 		fi
-		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir}
+		./{config[quast_dir]}/metaquast.py {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""

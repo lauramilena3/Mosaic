@@ -119,7 +119,8 @@ rule assembly_vs_reference:
 
 rule assembly:
 	input:
-		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE)
+		expand(quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE)
+
 
 rule annotate_contigs:
 	input:
