@@ -107,7 +107,6 @@ rule all:
 rule clean_reads:
 	input:
 		(dirs_dict["QC_DIR"]+ "/postQC_multiqc_report.html"),
-		(dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html"),
 
 rule abundance_from_db_contigs:
 	input:
@@ -120,7 +119,6 @@ rule assembly_vs_reference:
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE),
-		dirs_dict["QC_DIR"]+ "/preQC_multiqc_report.html",
 
 rule annotate_contigs:
 	input:
