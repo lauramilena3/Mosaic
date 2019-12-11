@@ -261,7 +261,7 @@ rule assemblyStatsILLUMINA:
 		"Creating assembly stats with quast"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
-	threads: 1
+	threads: 4
 	shell:
 		"""
 		mkdir -p tools
@@ -273,6 +273,6 @@ rule assemblyStatsILLUMINA:
 			./setup.py install
 			cd ../..
 		fi
-		./{config[quast_dir]}/metaquast.py {input.scaffolds_spades} -o {output.quast_report_dir}
+		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
