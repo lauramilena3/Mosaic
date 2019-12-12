@@ -1,5 +1,3 @@
-
-
 rule annotate_VIGA:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
@@ -56,7 +54,7 @@ rule annotate_VIGA:
 			sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
 			sed -i -e "s/${{new}} /${{old}} /g" {output.viga_topology_temp}
 		done
-		awk  '{print $1 "\t" $6}'  {output.viga_topology_temp} > {output.viga_topology}
+		awk  '{{print $1 "\t" $6}}'  {output.viga_topology_temp} > {output.viga_topology}
 		"""
 
 rule create_dbs_mmseqs2:
