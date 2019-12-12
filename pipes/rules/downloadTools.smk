@@ -81,7 +81,7 @@ rule get_VIGA:
 		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
 		tar -xzvf pilercr1.06.tar.gz
 		cd pilercr1.06
-		#make
+		make
 		cd ..
 		mkdir TRF
 		cd TRF
