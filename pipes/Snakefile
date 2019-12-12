@@ -80,8 +80,11 @@ print(*SAMPLES, sep = ", ")
 print("Contaminants = ")
 print(*CONTAMINANTS, sep = ", ")
 
+print("Reference contigs = ")
+print(REFERENCE_CONTIGS)
 
-
+print("Results Dir = ")
+print(RESULTS_DIR)
 #======================================================
 # Rules
 #======================================================
