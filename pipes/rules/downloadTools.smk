@@ -66,6 +66,7 @@ rule get_VIGA:
 		VIGA_dir=directory(os.path.join(workflow.basedir, config['viga_dir'])),
 		piler_dir=directory(os.path.join(workflow.basedir, config['piler_dir'])),
 		trf_dir=directory(os.path.join(workflow.basedir, config['trf_dir'])),
+		viga_db_dir=directory("tools/databases"),
 	message:
 		"Downloading MMseqs2"
 	conda:
