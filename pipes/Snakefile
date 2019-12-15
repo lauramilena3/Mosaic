@@ -32,7 +32,7 @@ else:
 	REPRESENTATIVE_CONTIGS_DIR=REFERENCE_CONTIGS_DIR
 	if RESULTS_DIR== "":
 		RESULTS_DIR=REFERENCE_CONTIGS_DIR
-		
+
 print(REFERENCE_CONTIGS_DIR)
 
 
@@ -43,6 +43,7 @@ CONFIDENCE_TYPES=["high", "low"]
 SAMPLING_TYPE=config['sampling'].split()
 SAMPLES=""
 
+SRA_list=config['sra_list'].split()
 
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
@@ -133,6 +134,11 @@ rule annotate_contigs:
 rule runVirSorter:
 	input:
 		expand(dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv", sampling=["tot"])
+
+rule getSRA_runs:
+	input:
+		forward=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq", SRA=SRA_list),
+		reverse=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq", SRA=SRA_list),
 
 include: os.path.join(RULES_DIR, 'downloadTools.smk')
 include: os.path.join(RULES_DIR, 'qualityControl.smk')

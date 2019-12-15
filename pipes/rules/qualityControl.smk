@@ -10,8 +10,8 @@ rule download_SRA:
 	input:
 		SRA="{SRA}"
 	output:
-		forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
-		reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
+		forward=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
+		reverse=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq"),
 	params:
 		SRA_dir=dirs_dict["RAW_DATA_DIR"],
 	message:
@@ -24,8 +24,6 @@ rule download_SRA:
 		fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
 		--dumpbase --split-files --clip -N 0 {input.SRA}
 		"""
-
-
 
 rule qualityCheckIllumina:
 	input:
