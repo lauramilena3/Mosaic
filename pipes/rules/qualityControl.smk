@@ -7,8 +7,6 @@ ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
 
 rule download_SRA:
-	input:
-		SRA="{SRA}"
 	output:
 		forward=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
 		reverse=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq"),
@@ -22,7 +20,7 @@ rule download_SRA:
 	shell:
 		"""
 		fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
-		--dumpbase --split-files --clip -N 0 {input.SRA}
+		--dumpbase --split-files --clip -N 0 {wildcards.SRA}
 		"""
 
 rule qualityCheckIllumina:
