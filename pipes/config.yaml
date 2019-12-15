@@ -6,7 +6,6 @@ forward_tag: "R1"
 reverse_tag: "R2"
 sampling: "sub tot"
 nanopore_tag: "nanopore"
-
 nanopore_pooled: "True"
 nanopore_pooled_name: "raw"
 
@@ -17,6 +16,8 @@ trimmomatic_window_quality: "15"
 trimmomatic_minlen: "50"
 
 reference_contigs: ""
+sra_list: ""
+
 
 #bbnorm
 min_norm: "2"
