@@ -6,6 +6,26 @@ ruleorder: normalizeReads_PE > normalizeReads_SE
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
 
+rule download_SRA:
+	input:
+		SRA="{SRA}"
+	output:
+		forward=temp(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
+		reverse=temp(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
+	params:
+		SRA_dir=dirs_dict["RAW_DATA_DIR"],
+	message:
+		"Performing fastqQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/QC.yaml"
+#	threads: 1
+	shell:
+		"""
+		fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
+		--dumpbase --split-files --clip -N 0 {input.SRA}
+		"""
+
+
 
 rule qualityCheckIllumina:
 	input:

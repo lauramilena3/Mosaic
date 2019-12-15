@@ -66,7 +66,6 @@ rule get_VIGA:
 		VIGA_dir=directory(os.path.join(workflow.basedir, config['viga_dir'])),
 		piler_dir=directory(os.path.join(workflow.basedir, config['piler_dir'])),
 		trf_dir=directory(os.path.join(workflow.basedir, config['trf_dir'])),
-		viga_db_dir=directory("tools/databases"),
 	message:
 		"Downloading MMseqs2"
 	conda:
@@ -78,7 +77,9 @@ rule get_VIGA:
 		cd tools
 		git clone --depth 1 https://github.com/EGTortuero/viga.git
 		chmod 744 viga/create_dbs.sh viga/VIGA.py
-		./viga/create_dbs.sh
+		cd viga
+		./create_dbs.sh
+		cd ..
 		wget https://www.drive5.com/pilercr/pilercr1.06.tar.gz --no-check-certificate
 		tar -xzvf pilercr1.06.tar.gz
 		cd pilercr1.06
