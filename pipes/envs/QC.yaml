@@ -8,5 +8,7 @@ dependencies:
   - nanofilt =2.2.0   #python3.6
 #  - quast =5.0.2
   - fastqc =0.11.8    #Java
+# Sra toolkit
   - sratoolkit =2.5.7
+  - perl-xml-libxml =2.0132
 #  - ncbi-genome-download =0.2.9
