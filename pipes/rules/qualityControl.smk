@@ -7,19 +7,19 @@ ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
 
 rule download_SRA:
+	input:
+		sratoolkit="tools/sratoolkit.2.10.0-ubuntu64"
 	output:
 		forward=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq"),
 		reverse=(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq"),
 	params:
 		SRA_dir=dirs_dict["RAW_DATA_DIR"],
 	message:
-		"Performing fastqQC statistics"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/QC.yaml"
+		"Downloading SRA number {SRA}"
 #	threads: 1
 	shell:
 		"""
-		fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
+		{input.sratoolkit}/bin/fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
 		--dumpbase --split-files --clip -N 0 {wildcards.SRA}
 		"""
 

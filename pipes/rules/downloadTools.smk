@@ -1,3 +1,20 @@
+rule get_SRAToolkit:
+	output:
+		SRAToolkit_dir=directory("tools/sratoolkit.2.10.0-ubuntu64"),
+	message:
+		"Downloading VIBRANT"
+	params:
+		tools="tools",
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
+	threads:
+		16
+	shell:
+		"""
+		cd {params.tools}
+		wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.10.0/sratoolkit.2.10.0-ubuntu64.tar.gz
+		tar -xzf sratoolkit.2.10.0-ubuntu64.tar.gz
+		"""
 rule downloadContaminants:
 	output:
 		contaminant_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{contaminant}.fasta",
