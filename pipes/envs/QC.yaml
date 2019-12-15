@@ -2,9 +2,11 @@ channels:
   - conda-forge
   - bioconda
   - biobuilds
+  - daler
 dependencies:
   - multiqc =1.7      #python3.6
   - nanofilt =2.2.0   #python3.6
 #  - quast =5.0.2
   - fastqc =0.11.8    #Java
+  - sratoolkit =2.5.7
 #  - ncbi-genome-download =0.2.9
