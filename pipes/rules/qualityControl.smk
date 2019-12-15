@@ -5,7 +5,6 @@ ruleorder: subsampleReadsIllumina_PE > subsampleReadsIllumina_SE
 ruleorder: normalizeReads_PE > normalizeReads_SE
 ruleorder: postQualityCheckIlluminaPE > postQualityCheckIlluminaSE
 
-
 rule download_SRA:
 	input:
 		sratoolkit="tools/sratoolkit.2.10.0-ubuntu64"
@@ -15,7 +14,7 @@ rule download_SRA:
 	params:
 		SRA_dir=dirs_dict["RAW_DATA_DIR"],
 	message:
-		"Downloading SRA number {SRA}"
+		"Downloading SRA run"
 #	threads: 1
 	shell:
 		"""
