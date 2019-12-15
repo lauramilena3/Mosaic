@@ -21,8 +21,8 @@ rule download_SRA:
 	shell:
 		"""
 		{input.sratoolkit}/bin/fastq-dump --outdir {params.SRA_dir} --skip-technical --readids --read-filter pass \\
-		--dumpbase --split-3 --clip -N 0 {wildcards.SRA}
-		""" 
+		--dumpbase --split-files --clip -N 0 -M 0{wildcards.SRA}
+		"""
 
 rule qualityCheckIllumina:
 	input:
