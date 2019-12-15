@@ -15,6 +15,8 @@ rule download_SRA:
 		SRA_dir=dirs_dict["RAW_DATA_DIR"],
 	message:
 		"Downloading SRA run"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/QC.yaml"
 #	threads: 1
 	shell:
 		"""
