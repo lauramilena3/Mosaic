@@ -60,6 +60,8 @@ if not RAW_DATA_DIR == "":
 			PAIRED=True
 		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
 			NANOPORE=True
+else:
+	RAW_DATA_DIR="00_RAW_DATA"
 
 
 NANOPORE_SAMPLES=SAMPLES
