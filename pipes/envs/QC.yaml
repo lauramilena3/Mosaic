@@ -10,4 +10,5 @@ dependencies:
   - fastqc =0.11.8    #Java
 # Sra toolkit
   - perl-xml-libxml =2.0132
+  - perl-bioperl =1.7.2
 #  - ncbi-genome-download =0.2.9
