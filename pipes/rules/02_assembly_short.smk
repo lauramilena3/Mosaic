@@ -54,7 +54,7 @@ rule assemblyStatsILLUMINA:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/assembly_statistics_quast_{sampling}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt"
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt"
 	message:
 		"Creating assembly stats with quast"
 	conda:
