@@ -168,3 +168,24 @@ rule downloadViralDB:
 			rm virsorter-data-v2.tar.gz
 		fi
 		"""
+rule downloadCanu:
+	output:
+		canu_dir=directory(config['canu_dir']),
+	message:
+		"Installing Canu assembler"
+	threads: 1
+	shell:
+		"""
+		if [ ! -d {output.canu_dir} ]
+		then
+			if [ {config[operating_system]} == "macOs" ]
+			then
+				mkdir -p tools
+				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Darwin-amd64.tar.xz
+			else
+				mkdir -p tools
+				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Linux-amd64.tar.xz
+			fi
+		fi
+		tar -xJf canu-1.8.*.tar.xz -C tools
+		"""
