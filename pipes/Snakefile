@@ -144,18 +144,17 @@ rule getSRA_runs:
 		forward=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq", SRA=SRA_list),
 		reverse=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq", SRA=SRA_list),
 
+
 include: os.path.join(RULES_DIR, '00_download_tools.smk')
-	include: os.path.join(RULES_DIR, '01_quality_control_short.smk')
-
-if NANOPORE=True:
-include: os.path.join(RULES_DIR, '01_quality_control_long.smk')
-include: os.path.join(RULES_DIR, '02_assembly_long.smk')
-else:
-	include: os.path.join(RULES_DIR, '02_assembly_short.smk')
-
+include: os.path.join(RULES_DIR, '01_quality_control_short.smk')
 include: os.path.join(RULES_DIR, 'vOTUclustering.smk')
 include: os.path.join(RULES_DIR, 'viralIdentification.smk')
 include: os.path.join(RULES_DIR, 'abundance.smk')
 include: os.path.join(RULES_DIR, 'taxonomyAssignment.smk')
 include: os.path.join(RULES_DIR, 'resultsParsing.smk')
 include: os.path.join(RULES_DIR, 'viralAnnotation.smk')
+include: os.path.join(RULES_DIR, '02_assembly_short.smk')
+
+if NANOPORE=True:
+include: os.path.join(RULES_DIR, '01_quality_control_long.smk')
+include: os.path.join(RULES_DIR, '02_assembly_long.smk')
