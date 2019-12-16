@@ -156,5 +156,5 @@ include: os.path.join(RULES_DIR, 'viralAnnotation.smk')
 include: os.path.join(RULES_DIR, '02_assembly_short.smk')
 
 if NANOPORE=True:
-include: os.path.join(RULES_DIR, '01_quality_control_long.smk')
-include: os.path.join(RULES_DIR, '02_assembly_long.smk')
+	include: os.path.join(RULES_DIR, '01_quality_control_long.smk')
+	include: os.path.join(RULES_DIR, '02_assembly_long.smk')
