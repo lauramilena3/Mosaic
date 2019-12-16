@@ -1,4 +1,5 @@
 ruleorder: asemblyCanuPOOLED > asemblyCanu
+ruleorder: errorCorrectCanuPE > errorCorrectCanuSE
 
 rule hybridAsemblySpades:
 	input:
