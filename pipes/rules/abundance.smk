@@ -94,7 +94,7 @@ rule tpmeanPerConfidence:
 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
 	output:
 		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam.bai",
-		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM{sample}_tpmean.{sampling}.tsv",
+		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_tpmean.{sampling}.tsv",
 	message:
 		"Calculating tpmean depth coverage"
 	conda:
