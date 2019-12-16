@@ -91,10 +91,10 @@ rule filterBAM:
 
 rule tpmeanPerConfidence:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
 	output:
-		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam.bai",
-		tpmean=dirs_dict["MAPPING_DIR"]+ "/{sample}_tpmean.{sampling}.tsv",
+		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam.bai",
+		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM{sample}_tpmean.{sampling}.tsv",
 	message:
 		"Calculating tpmean depth coverage"
 	conda:
@@ -108,10 +108,10 @@ rule tpmeanPerConfidence:
 
 rule getBreadthCoverage:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
 	output:
-		bam_cov=dirs_dict["MAPPING_DIR"]+ "/{sample}_filtered_genomecov.{sampling}.txt",
-		cov_final=dirs_dict["MAPPING_DIR"]+ "/{sample}_filtered_coverage.{sampling}.txt",
+		bam_cov=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_filtered_genomecov.{sampling}.txt",
+		cov_final=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_filtered_coverage.{sampling}.txt",
 	message:
 		"Calculating breadth coverage contigs"
 	conda:
