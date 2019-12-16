@@ -30,8 +30,8 @@ rule mapReadsToContigsPE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
+		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
+		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
 	params:
 		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}",
 	message:
