@@ -91,6 +91,8 @@ print(REFERENCE_CONTIGS)
 
 print("Results Dir = ")
 print(RESULTS_DIR)
+print("Nanopore = ")
+print(NANOPORE)
 #======================================================
 # Rules
 #======================================================
