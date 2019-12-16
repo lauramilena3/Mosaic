@@ -16,7 +16,6 @@ rule annotate_VIGA:
 		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REFERENCE_CONTIGS_BASE + ".tot.txt"),
 		viga_topology_temp=temp(dirs_dict["ANNOTATION"] + "/viga_topology_temp" + REFERENCE_CONTIGS_BASE + "tot.txt"),
 		viga_topology=(dirs_dict["ANNOTATION"] + "/viga_topology_" + REFERENCE_CONTIGS_BASE + "tot.txt"),
-
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
