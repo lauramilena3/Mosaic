@@ -75,18 +75,18 @@ rule assemblyStatsILLUMINA:
 		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
-		
-	rule mergeAssembliesSHORT:
-		input:
-			scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
-		output:
-			merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
-		message:
-			"Merging assembled contigs"
-		conda:
-			dirs_dict["ENVS_DIR"] + "/env1.yaml"
-		threads: 1
-		shell:
-			"""
-			cat {input.scaffolds_spades} > {output.merged_assembly}
-			"""
+
+rule mergeAssembliesSHORT:
+	input:
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
+	output:
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
+	message:
+		"Merging assembled contigs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		cat {input.scaffolds_spades} > {output.merged_assembly}
+		"""
