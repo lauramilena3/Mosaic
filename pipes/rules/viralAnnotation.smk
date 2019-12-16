@@ -57,7 +57,7 @@ rule annotate_VIGA:
 		done
 		awk  '{{print $1 "\t" $6}}'  {output.viga_topology_temp} > {output.viga_topology}
 		grep -v "gene$" {output.GenBank_table_temp1} > {output.GenBank_table_temp2}
-		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{$1+=-1}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
+		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{{$1+=-1}}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
 		"""
 
 rule create_dbs_mmseqs2:
