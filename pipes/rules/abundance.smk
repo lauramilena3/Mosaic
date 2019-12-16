@@ -51,8 +51,8 @@ rule mapReadsToContigsSE:
 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}.1.bt2",
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
+		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
+		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
 	params:
 		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}",
 	message:
@@ -70,13 +70,13 @@ rule mapReadsToContigsSE:
 
 rule filterBAM:
 	input:
-		bam=dirs_dict["MAPPING_DIR"]+ "/{sample}.{sampling}.bam",
+		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
 	output:
-		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}.bam",
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted_filtered.{sampling}.bam",
+		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
+		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"],
-		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/{sample}_sorted.{sampling}_filtered.bam",
+		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}_filtered.bam",
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
