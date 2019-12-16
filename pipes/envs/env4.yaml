@@ -16,7 +16,7 @@ dependencies:
   - scikit-learn =0.20.3
   - psutil =5.6.2
   - mcl =14.137
-  - pyparsing =2.4.0
+  - pyparsing =2.4.5
 #  - blast 2.7.1
   - diamond =0.9.24
   - biom-format =2.1.7
