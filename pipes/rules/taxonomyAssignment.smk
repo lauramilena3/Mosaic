@@ -23,6 +23,7 @@ rule getORFs:
 rule clusterTaxonomy:
 	input:
 		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
+		clusterONE_dir=config["clusterONE_dir"],
 	output:
 		genome_file=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
@@ -36,15 +37,9 @@ rule clusterTaxonomy:
 	threads: 8
 	shell:
 		"""
-		if [ ! -d {params.clusterONE_dir} ]
-		then
-			mkdir -p {params.clusterONE_dir}
-			curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
-			mv cluster_one-1.0.jar {params.clusterONE_dir}
-		fi
 		Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
 		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
-		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
+		--db 'ProkaryoticViralRefSeq85-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
 

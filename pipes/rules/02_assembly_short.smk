@@ -51,6 +51,7 @@ rule shortReadAsemblySpadesSE:
 
 rule assemblyStatsILLUMINA:
 	input:
+		quast_dir=directory(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_statistics_quast_{sampling}"),
@@ -62,16 +63,7 @@ rule assemblyStatsILLUMINA:
 	threads: 4
 	shell:
 		"""
-		mkdir -p tools
-		if [ ! -d {config[quast_dir]} ]
-		then
-			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-			tar -xzf quast-5.0.2.tar.gz -C tools
-			cd {config[quast_dir]}
-			./setup.py install
-			cd ../..
-		fi
-		./{config[quast_dir]}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir} --threads {threads}
+		{input.quast_dir}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
 
