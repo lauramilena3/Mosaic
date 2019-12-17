@@ -53,6 +53,21 @@ rule get_VIBRANT:
 		cd VIBRANT/databases
 		./VIBRANT_setup.py
 		"""
+rule getQUAST:
+	output:
+		quast_dir=directory(config["quast_dir"])
+	message:
+		"Downloading QUAST"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
+		tar -xzf quast-5.0.2.tar.gz -C tools
+		cd {config[quast_dir]}
+		./setup.py install
+		"""
 rule get_mmseqs:
 	output:
 		MMseqs2_dir=directory(config['mmseqs_dir']),
@@ -110,6 +125,7 @@ rule get_VIGA:
 		mv irf307.linux.exe irf
 		chmod 744 trf irf
 		"""
+
 rule downloadViralTools:
 	output:
 		virSorter_dir=directory(config['virSorter_dir']),
@@ -167,6 +183,18 @@ rule downloadViralDB:
 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
 			rm virsorter-data-v2.tar.gz
 		fi
+		"""
+rule clusterTaxonomy:
+	output:
+		clusterONE_dir=config["clusterONE_dir"],
+	message:
+		"Downloading clusterONE"
+	threads: 8
+	shell:
+		"""
+		mkdir -p {params.clusterONE_dir}
+		curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
+		mv cluster_one-1.0.jar {params.clusterONE_dir}
 		"""
 rule downloadCanu:
 	output:
