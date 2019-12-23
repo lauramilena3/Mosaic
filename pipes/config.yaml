@@ -5,7 +5,7 @@ operating_system: "linux"
 forward_tag: "R1"
 reverse_tag: "R2"
 nanopore_tag: "nanopore"
-nanopore_pooled: "True"
+nanopore_pooled: "False"
 nanopore_pooled_name: "raw"
 
 trimmomatic_leading: "15"
