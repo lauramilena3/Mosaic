@@ -32,7 +32,7 @@ rule remove_adapters_quality_nanopore:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
 		NanoFilt -q 10 -l 1000 --headcrop 50 {output.porechopped} > {output.fastq}
-		grep -c "^@" fastq > {output} size
+		grep -c "^@" {output.fastq} > {output.size}
 		"""
 rule postQualityCheckNanopore:
 	input:
