@@ -22,7 +22,7 @@ rule remove_adapters_quality_nanopore:
 	output:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_porechopped.fastq"),
-		#size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
 	message:
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
@@ -32,7 +32,7 @@ rule remove_adapters_quality_nanopore:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
 		NanoFilt -q 10 -l 1000 --headcrop 50 {output.porechopped} > {output.fastq}
-		#grep -c "^@" fastq > {output} size
+		grep -c "^@" fastq > {output} size
 		"""
 rule postQualityCheckNanopore:
 	input:

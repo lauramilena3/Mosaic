@@ -414,7 +414,7 @@ rule normalizeReads_SE:
 	output:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq"
 	message:
-		"Normalizing reads with BBtools"
+		"Normalizing and error correcting reads with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params:
