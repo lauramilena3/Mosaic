@@ -422,7 +422,7 @@ rule normalizeReads_SE:
 		max_depth=config['max_norm']
 	threads: 4
 	resources:
-		mem_mb=6000
+		mem_mb=12000
 	shell:
 		"""
 		#SE
