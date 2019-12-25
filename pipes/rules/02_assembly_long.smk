@@ -179,7 +179,7 @@ rule errorCorrectCanuSE:
 rule assemblyStatsHYBRID:
 	input:
 		quast_dir=directory(config["quast_dir"]),
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
