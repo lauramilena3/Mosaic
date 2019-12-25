@@ -100,7 +100,7 @@ rule asemblyFlye:
 	shell:
 		"""
 		flye --nano-raw {input.nanopore} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
-		cp {output.scaffolds} {output.scaffolds}
+		cp {output.scaffolds} {output.scaffolds_final}
 		"""
 
 rule errorCorrectPE:
