@@ -1,5 +1,5 @@
 ruleorder: asemblyCanuPOOLED > asemblyCanu
-ruleorder: errorCorrectCanuPE > errorCorrectCanuSE
+ruleorder: errorCorrectPE > errorCorrectSE
 
 rule hybridAsemblySpades:
 	input:
@@ -144,7 +144,7 @@ rule errorCorrectPE:
 		--outdir {params.pilon_dir}
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
-rule errorCorrectCanuSE:
+rule errorCorrectSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
@@ -178,7 +178,7 @@ rule errorCorrectCanuSE:
 
 rule assemblyStatsHYBRID:
 	input:
-		quast_dir=directory(config["quast_dir"]),
+		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
