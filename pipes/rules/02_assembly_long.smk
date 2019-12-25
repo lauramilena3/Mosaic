@@ -149,7 +149,7 @@ rule errorCorrectCanuSE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
 		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
@@ -179,17 +179,17 @@ rule errorCorrectCanuSE:
 rule assemblyStatsHYBRID:
 	input:
 		quast_dir=directory(config["quast_dir"]),
-		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
-		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_statistics_quast_{sampling}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt",
+		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
 	message:
 		"Creating assembly stats with quast"
 	threads: 1
 	shell:
 		"""
-		{input.quast_dir}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
+		{input.quast_dir}/quast.py {input.scaffolds_long} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
 
@@ -197,7 +197,7 @@ rule assemblyStatsHYBRID:
 rule mergeAssembliesHIBRID:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
-		scaffolds_canu=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
 	message:
@@ -207,5 +207,5 @@ rule mergeAssembliesHIBRID:
 	threads: 1
 	shell:
 		"""
-		cat {input.scaffolds_canu} {input.scaffolds_spades} > {output.merged_assembly}
+		cat {input.scaffolds_long} {input.scaffolds_spades} > {output.merged_assembly}
 		"""
