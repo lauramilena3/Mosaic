@@ -178,28 +178,22 @@ rule errorCorrectCanuSE:
 
 rule assemblyStatsHYBRID:
 	input:
+		quast_dir=directory(config["quast_dir"]),
 		scaffolds_canu=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
-		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta")
+		scaffolds_spades=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
 	output:
-		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_{sampling}"),
-		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt"
+		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_statistics_quast_{sampling}"),
+		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_quast_report.{sampling}.txt",
 	message:
 		"Creating assembly stats with quast"
 	threads: 1
 	shell:
 		"""
-		mkdir -p tools
-		if [ ! -d {config[quast_dir]} ]
-		then
-			curl -OL https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz
-			tar -xzf quast-5.0.2.tar.gz -C tools
-			cd {config[quast_dir]}
-			./setup.py install
-			cd ../..
-		fi
-		./{config[quast_dir]}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
+		{input.quast_dir}/quast.py {input.scaffolds_canu} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
+
+
 rule mergeAssembliesHIBRID:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
