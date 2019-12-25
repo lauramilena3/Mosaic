@@ -103,6 +103,7 @@ rule asemblyFlye:
 		cp {output.scaffolds} {output.scaffolds_final}
 		"""
 
+
 rule errorCorrectPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
