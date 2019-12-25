@@ -11,7 +11,7 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		if [ ! -s {input.contigs} ]
+		if [ ! -s {input.positive_contigs} ]
 		then
 			prodigal -i {input.positive_contigs} -o {output.coords} -a {output.aa} -p meta
 		else
