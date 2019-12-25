@@ -61,12 +61,12 @@ rule asemblyCanu:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		canu_dir=config['canu_dir']
 	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/{sample}.contigs.fasta",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
 	message:
 		"Assembling Nanopore reads with Canu"
 	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}"
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
@@ -81,14 +81,34 @@ rule asemblyCanu:
 		sed -i s"/ /_/"g {output.scaffolds_final}
 		"""
 
-rule errorCorrectCanuPE:
+rule asemblyFlye:
+	input:
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
+	output:
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}/{sample}.contigs.fasta",
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
+	message:
+		"Assembling Nanopore reads with Canu"
+	params:
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}",
+		genome_size=:"20m"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		flye --nano-raw {input.nanopore} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --threads {threads}
+		"""
+
+
+rule errorCorrectPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ ASSEMBLER + ".{sampling}.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_filtered_scaffolds.{sampling}.fasta"),
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
 		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
 		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
 		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
