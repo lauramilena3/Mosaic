@@ -9,10 +9,12 @@ rule shortReadAsemblySpadesPE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq",
 	output:
 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/filtered_list.txt")
+		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/filtered_list.txt"),
+		assembly_graph=dirs_dict["ASSEMBLY_DIR"] +"/{sample}_assembly_graph_spades.{sampling}.fastg",
 	params:
 		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
+		assembly_graph=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/assembly_graph.fastg",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}"),
 	message:
 		"Assembling PE reads with metaSpades"
 	conda:
@@ -25,6 +27,7 @@ rule shortReadAsemblySpadesPE:
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
+		assembly_graph.fastg
 		"""
 rule shortReadAsemblySpadesSE:
 	input:
