@@ -1,6 +1,8 @@
 ruleorder: asemblyCanuPOOLED > asemblyCanu
+ruleorder: hybridAsemblySpades > shortReadAsemblySpadesSE
 ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
+
 rule hybridAsemblySpades:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
