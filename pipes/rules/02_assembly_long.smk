@@ -91,7 +91,7 @@ rule asemblyFlye:
 		"Assembling Nanopore reads with Canu"
 	params:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}",
-		genome_size=:"20m"
+		genome_size="20m"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
