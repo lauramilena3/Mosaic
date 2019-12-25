@@ -151,6 +151,11 @@ rule getSRA_runs:
 		forward=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq", SRA=SRA_list),
 		reverse=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq", SRA=SRA_list),
 
+rule taxonomyAssignment:
+	input:
+		genome_file=dirs_dict["VIRAL_DIR"]+ "/low_confidence_vContact.yoy/genome_by_genome_overview.csv",
+
+
 
 include: os.path.join(RULES_DIR, '00_download_tools.smk')
 include: os.path.join(RULES_DIR, '01_quality_control_short.smk')
