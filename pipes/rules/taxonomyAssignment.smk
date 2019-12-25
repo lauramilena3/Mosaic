@@ -46,7 +46,7 @@ rule clusterTaxonomy:
 		# 	cp scripts/summaries.py .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/exports/summaries.py
 		# fi
 		#three changes in code 1) int 2,3) summary remove excluded
-		Gene2Genome.py -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
+		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
 		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
