@@ -1,5 +1,4 @@
 ruleorder: shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
-ruleorder: assemblyStatsILLUMINA
 
 
 rule shortReadAsemblySpadesPE:
