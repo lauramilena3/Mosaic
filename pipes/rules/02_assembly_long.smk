@@ -1,5 +1,5 @@
 ruleorder: asemblyCanuPOOLED > asemblyCanu
-ruleorder: hybridAsemblySpades > shortReadAsemblySpadesSE
+ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE
 ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 
