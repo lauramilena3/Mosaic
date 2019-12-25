@@ -23,6 +23,9 @@ rule remove_adapters_quality_nanopore:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_porechopped.fastq"),
 		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
+	params:
+		headcrop=50,
+		tailcrop=50,
 	message:
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
@@ -31,7 +34,7 @@ rule remove_adapters_quality_nanopore:
 	shell:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
-		NanoFilt -q 10 -l 1000 --headcrop 50 {output.porechopped} > {output.fastq}
+		NanoFilt -q 10 -l 1000 --headcrop {params.headcrop} --tailcrop {params.tailcrop} {output.porechopped} > {output.fastq}
 		grep -c "^@" {output.fastq} > {output.size}
 		"""
 rule postQualityCheckNanopore:
@@ -62,8 +65,6 @@ rule subsampleReadsNanopore:
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	params:
-		min_depth=config['min_norm'],
-		max_depth=config['max_norm'],
 		sizes=dirs_dict["CLEAN_DATA_DIR"] + "/*_nanopore_clean.tot.txt"
 	threads: 1
 	resources:
