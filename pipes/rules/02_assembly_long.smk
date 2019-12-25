@@ -88,7 +88,7 @@ rule asemblyFlye:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}/assembly.fasta",
-		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_flye.{sampling}.fasta"
 	message:
 		"Assembling Nanopore reads with Canu"
 	params:
