@@ -184,7 +184,7 @@ rule downloadViralDB:
 			rm virsorter-data-v2.tar.gz
 		fi
 		"""
-rule clusterTaxonomy:
+rule getClusterONE:
 	output:
 		clusterONE_dir=config["clusterONE_dir"],
 	message:
