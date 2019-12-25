@@ -138,7 +138,6 @@ rule assembly_vs_reference:
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE),
-
 rule annotate_contigs:
 	input:
 		vibrant=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),

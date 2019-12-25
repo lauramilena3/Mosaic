@@ -90,7 +90,7 @@ rule asemblyFlye:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}/assembly.fasta",
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_flye.{sampling}.fasta"
 	message:
-		"Assembling Nanopore reads with Canu"
+		"Assembling Nanopore reads with Flye"
 	params:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_{sample}_{sampling}",
 		genome_size="20m"
@@ -99,7 +99,7 @@ rule asemblyFlye:
 	threads: 4
 	shell:
 		"""
-		flye --nano-raw {input.nanopore} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --threads {threads}
+		flye --nano-raw {input.nanopore} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
 		cp {output.scaffolds} {output.scaffolds}
 		"""
 
