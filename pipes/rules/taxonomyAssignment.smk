@@ -1,9 +1,9 @@
 rule getORFs:
 	input:
-		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 	output:
-		coords=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.coords",
-		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
+		coords=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}.coords",
+		aa=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 	message:
 		"Calling ORFs with prodigal"
 	conda:
@@ -13,7 +13,7 @@ rule getORFs:
 		"""
 		if [ ! -s {input.contigs} ]
 		then
-			prodigal -i {input.contigs} -o {output.coords} -a {output.aa} -p meta
+			prodigal -i {input.positive_contigs} -o {output.coords} -a {output.aa} -p meta
 		else
 			echo "Empty contigs file, no ORFs to detect"
 			touch {output.coords} {output.aa}
@@ -21,13 +21,13 @@ rule getORFs:
 		"""
 rule clusterTaxonomy:
 	input:
-		aa=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_ORFs.{sampling}.fasta",
+		aa=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 	output:
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}/genome_by_genome_overview.csv",
+		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
 		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"],
-		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence_vContact.{sampling}"),
+		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_vContact.{sampling}"),
 	message:
 		"Clustering viral genomes with vContact2"
 	conda:
