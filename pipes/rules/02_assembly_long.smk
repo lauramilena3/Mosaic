@@ -122,7 +122,7 @@ rule errorCorrectRacon_1st:
 		"""
 rule errorCorrectRacon_2nd:
 	input:
-		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
+		corrected1=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
  		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
  		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -142,8 +142,8 @@ rule errorCorrectRacon_2nd:
 		"""
 		{params.racon_merge} {input.forward_paired} {input.reverse_paired} > {output.merged}
 		cat {output.merged} {input.unpaired} > {output.illumina}
-		minimap2 -t {threads} -ax sr {input.scaffolds} {output.illumina} > {output.overlap}
-		racon -t {threads} {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
+		minimap2 -t {threads} -ax sr {input.corrected1} {output.illumina} > {output.overlap}
+		racon -t {threads} {input.nanopore} {output.overlap} {input.corrected1} > {output.corrected}
 		"""
 # rule errorCorrectPE:
 # 	input:
