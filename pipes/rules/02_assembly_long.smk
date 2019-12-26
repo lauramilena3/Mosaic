@@ -105,10 +105,10 @@ rule asemblyFlye:
 rule errorCorrectRacon_1st:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	output:
-		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf"
-		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf",
+		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	message:
 		"Correcting nanopore assembly with Racon, long reads"
 	conda:
