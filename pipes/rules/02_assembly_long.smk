@@ -107,7 +107,7 @@ rule errorCorrectRacon_1st:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	output:
-		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf1",
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_1_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf",
 		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	message:
 		"Correcting nanopore assembly with Racon, long reads"
@@ -116,7 +116,6 @@ rule errorCorrectRacon_1st:
 	threads: 8
 	shell:
 		"""
-
 		minimap2 -t {threads} {input.scaffolds} {input.nanopore} > {output.overlap}
 		racon -t {threads}  {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
 		"""
@@ -129,7 +128,7 @@ rule errorCorrectRacon_2nd:
 	output:
 		merged=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_temp_paired_clean.{sampling}.fastq"),
 		illumina=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_illumina_clean.{sampling}.fastq"),
-		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf2",
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf",
 		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	params:
 		racon_merge="./scripts/merge_illumina_racon.py",
