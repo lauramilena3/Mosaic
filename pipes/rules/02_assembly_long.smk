@@ -143,7 +143,7 @@ rule errorCorrectRacon_2nd:
 		{params.racon_merge} {input.forward_paired} {input.reverse_paired} > {output.merged}
 		cat {output.merged} {input.unpaired} > {output.illumina}
 		minimap2 -t {threads} -ax sr {input.corrected1} {output.illumina} > {output.overlap}
-		racon -t {threads} {input.illumina} {output.overlap} {input.corrected1} > {output.corrected}
+		racon -t {threads} {output.illumina} {output.overlap} {input.corrected1} > {output.corrected}
 		"""
 # rule errorCorrectPE:
 # 	input:
