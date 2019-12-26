@@ -116,8 +116,8 @@ rule errorCorrectRacon_1st:
 	threads: 8
 	shell:
 		"""
-		minimap2 -t 8 {input.scaffolds} {input.nanopore} > {input.overlap}
-		racon -t 8  {input.nanopore} {input.overlap} {input.scaffolds} > {output.corrected}
+		minimap2 -t 8 {input.scaffolds} {input.nanopore} > {output.overlap}
+		racon -t 8  {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
 		"""
 
 # rule errorCorrectPE:
