@@ -6,7 +6,7 @@ channels:
 dependencies:
   - java-jdk =8.0.112
   - hdf5 =1.10.4
-  - numpy
+  - numpy =1.17.3
   - pandas =0.25.3
   - pytables =3.5.1
   - pypandoc =1.4

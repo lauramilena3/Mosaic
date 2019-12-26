@@ -102,50 +102,67 @@ rule asemblyFlye:
 		flye --nano-raw {input.nanopore} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
 		cp {output.scaffolds} {output.scaffolds_final}
 		"""
-
-rule errorCorrectPE:
+rule errorCorrectRacon_1st:
 	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
-		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
-		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
-		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
-		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam.bai",
-		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
-		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
-		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
-		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai"
-	params:
-		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}",
-		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
-		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf"
+		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
 	message:
-		"Correcting nanopore assembly with Pilon"
+		"Correcting nanopore assembly with Racon, long reads"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
+	threads: 8
 	shell:
 		"""
-		bowtie2-build -f {input.scaffolds} {params.db_name}
-		#paired
-		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
-		samtools view -b -S {output.sam_paired} > {output.bam_paired}
-		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
-		samtools index {output.sorted_bam_paired}
-		#unpaired
-		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
-		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
-		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
-		samtools index {output.sorted_bam_unpaired}
-		#PILON
-		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
-		--outdir {params.pilon_dir}
-		cp {params.scaffolds_pilon} {output.scaffolds}
+		minimap2 -t 8 {input.scaffolds} {input.nanopore} > {input.overlap}
+		racon -t 8  {input.nanopore} {input.overlap} {input.scaffolds} > {output.corrected}
 		"""
+
+# rule errorCorrectPE:
+# 	input:
+# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+# 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
+# 	output:
+# 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+# 		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
+# 		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
+# 		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
+# 		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam.bai",
+# 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
+# 		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
+# 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
+# 		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai"
+# 	params:
+# 		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}",
+# 		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
+# 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
+# 	message:
+# 		"Correcting nanopore assembly with Pilon"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 1
+# 	shell:
+# 		"""
+# 		bowtie2-build -f {input.scaffolds} {params.db_name}
+# 		#paired
+# 		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
+# 		samtools view -b -S {output.sam_paired} > {output.bam_paired}
+# 		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
+# 		samtools index {output.sorted_bam_paired}
+# 		#unpaired
+# 		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
+# 		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
+# 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
+# 		samtools index {output.sorted_bam_unpaired}
+# 		#PILON
+# 		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
+# 		--outdir {params.pilon_dir}
+# 		cp {params.scaffolds_pilon} {output.scaffolds}
+# 		"""
 rule errorCorrectSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
