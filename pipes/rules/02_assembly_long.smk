@@ -128,7 +128,7 @@ rule errorCorrectRacon_2nd:
 	output:
 		merged=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_temp_paired_clean.{sampling}.fastq"),
 		illumina=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_illumina_clean.{sampling}.fastq"),
-		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf",
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.sam",
 		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	params:
 		racon_merge="./scripts/merge_illumina_racon.py",
