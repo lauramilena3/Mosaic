@@ -242,7 +242,7 @@ rule assemblyStatsHYBRID:
 	input:
 		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
