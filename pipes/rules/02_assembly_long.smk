@@ -126,7 +126,6 @@ rule errorCorrectRacon_2nd:
  		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
  		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
-		merged=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_temp_paired_clean.{sampling}.fastq"),
 		illumina=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_illumina_clean.{sampling}.fastq"),
 		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.sam",
 		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
@@ -139,10 +138,30 @@ rule errorCorrectRacon_2nd:
 	threads: 8
 	shell:
 		"""
-		{params.racon_merge} {input.forward_paired} {input.reverse_paired} > {output.merged}
-		cat {output.merged} {input.unpaired} > {output.illumina}
+		{params.racon_merge} {input.forward_paired} {input.reverse_paired} {input.unpaired} > {output.illumina}
 		minimap2 -t {threads} -ax sr {input.corrected1} {output.illumina} > {output.overlap}
 		racon -t {threads} {output.illumina} {output.overlap} {input.corrected1} > {output.corrected}
+		"""
+
+rule asemblyFlye2nd:
+	input:
+		corrected_racon=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
+		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+	output:
+		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
+	message:
+		"Assembling Nanopore reads with Flye"
+	params:
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
+		genome_size="20m"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		flye --subassemblies {input.corrected_racon} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
+		cp {output.scaffolds} {output.scaffolds_flye2}
 		"""
 # rule errorCorrectPE:
 # 	input:
