@@ -107,7 +107,7 @@ rule errorCorrectRacon_1st:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	output:
-		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf",
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf1",
 		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
 	message:
 		"Correcting nanopore assembly with Racon, long reads"
@@ -116,10 +116,35 @@ rule errorCorrectRacon_1st:
 	threads: 8
 	shell:
 		"""
-		minimap2 -t 8 {input.scaffolds} {input.nanopore} > {output.overlap}
-		racon -t 8  {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
-		"""
 
+		minimap2 -t {threads} {input.scaffolds} {input.nanopore} > {output.overlap}
+		racon -t {threads}  {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
+		"""
+rule errorCorrectRacon_2nd:
+	input:
+		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+ 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+ 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+	output:
+		merged=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_temp_paired_clean.{sampling}.fastq"),
+		illumina=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_racon_illumina_clean.{sampling}.fastq"),
+		overlap=dirs_dict["ASSEMBLY_DIR"] + "/minimap2_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.paf2",
+		corrected=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
+	params:
+		racon_merge="./scripts/merge_illumina_racon.py",
+	message:
+		"Correcting nanopore assembly with Racon, short reads"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 8
+	shell:
+		"""
+		{params.racon_merge} {input.forward_paired} {input.reverse_paired} > {output.merged}
+		cat {output.merged} {input.unpaired} > {output.illumina}
+		minimap2 -t {threads} -ax sr {input.scaffolds} {output.illumina} > {output.overlap}
+		racon -t {threads} {input.nanopore} {output.overlap} {input.scaffolds} > {output.corrected}
+		"""
 # rule errorCorrectPE:
 # 	input:
 # 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
@@ -172,11 +197,11 @@ rule errorCorrectSE:
 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
 		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
-		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai"
+		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai",
 	params:
 		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}",
 		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
-		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
+		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}",
 	message:
 		"Correcting nanopore assembly with Pilon"
 	conda:
@@ -199,7 +224,7 @@ rule assemblyStatsHYBRID:
 	input:
 		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/racon_{sample}_contigs_1_"+ LONG_ASSEMBLER + ".{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
