@@ -7,7 +7,7 @@ reverse_tag: "R2"
 nanopore_tag: "nanopore"
 nanopore_pooled: "False"
 nanopore_pooled_name: "raw"
-long_assembler: "flye"
+long_assembler: "canu"
 
 trimmomatic_leading: "15"
 trimmomatic_trailing: "15"

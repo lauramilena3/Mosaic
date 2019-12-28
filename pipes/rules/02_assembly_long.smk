@@ -31,10 +31,10 @@ rule hybridAsemblySpades:
 
 rule asemblyCanuPOOLED:
 	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/" + config['nanopore_pooled_name'] + "_nanopore_clean.{sampling}.fastq",
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		canu_dir=config['canu_dir']
 	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/" + config['nanopore_pooled_name'] + "_canu_{sampling}/" +config['nanopore_pooled_name'] + ".contigs.fasta",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/" +config['nanopore_pooled_name'] + ".contigs.fasta",
 		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
 	message:
 		"Assembling Nanopore reads with Canu"
@@ -47,7 +47,7 @@ rule asemblyCanuPOOLED:
 	threads: 4
 	shell:
 		"""
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+		./{config[canu_dir]}/canu genomeSize=45m minReadLength=1000 -p \
 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
@@ -57,6 +57,33 @@ rule asemblyCanuPOOLED:
 			cat {output.scaffolds} | sed s"/ /_/"g  > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
 		done
 		"""
+
+
+rule asemblyCanu:
+	input:
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
+		canu_dir=config['canu_dir']
+	output:
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
+	message:
+		"Assembling Nanopore reads with Canu"
+	params:
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
+		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
+		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
+		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
+		cp {output.scaffolds} {output.scaffolds_final}
+		sed -i s"/ /_/"g {output.scaffolds_final}
+		"""
+
 rule asemblyFlye:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
@@ -117,52 +144,6 @@ rule errorCorrectRacon_2nd:
 		racon -t {threads} {output.illumina} {output.overlap} {input.corrected1} > {output.corrected}
 		"""
 
-rule asemblyFlye2nd:
-	input:
-		corrected_racon=dirs_dict["ASSEMBLY_DIR"] + "/racon_polished_{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta",
-		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
-	output:
-		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
-	message:
-		"Assembling Nanopore reads with Flye"
-	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
-		genome_size="20m"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		flye --subassemblies {input.corrected_racon} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
-		cp {output.scaffolds} {output.scaffolds_flye2}
-		"""
-
-rule asemblyCanu:
-	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
-		canu_dir=config['canu_dir']
-	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
-		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
-	message:
-		"Assembling Nanopore reads with Canu"
-	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
-		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
-		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
-		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
-		cp {output.scaffolds} {output.scaffolds_final}
-		sed -i s"/ /_/"g {output.scaffolds_final}
-		"""
-
 rule errorCorrectPilonPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
@@ -205,6 +186,27 @@ rule errorCorrectPilonPE:
 		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
 		--outdir {params.pilon_dir}
 		cp {params.scaffolds_pilon} {output.scaffolds}
+		"""
+
+rule asemblyFlye2nd:
+	input:
+		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+	output:
+		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
+	message:
+		"Assembling Nanopore reads with Flye"
+	params:
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
+		genome_size="20m"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		flye --subassemblies {input.corrected_scaffolds} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
+		cp {output.scaffolds} {output.scaffolds_flye2}
 		"""
 # rule errorCorrectSE:
 # 	input:
@@ -255,43 +257,6 @@ rule assemblyStatsHYBRID:
 		"""
 		{input.quast_dir}/quast.py {input.scaffolds_long} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
-		"""
-
-rule mapReadstoContigs:
-	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{contigs}.fasta",
-	output:
-		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}_to_{contigs}.sam",
-		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}_to_{contigs}.bam",
-		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}_to_{contigs}.bam",
-		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}_to_{contigs}.bam.bai",
-		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}_to_{contigs}.sam",
-		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}_to_{contigs}.bam",
-		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam",
-		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam.bai",
-	params:
-		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}_to_{contigs}",
-	message:
-		"Correcting nanopore assembly with Pilon"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
-	shell:
-		"""
-		bowtie2-build -f {input.scaffolds} {params.db_name}
-		#paired
-		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
-		samtools view -b -S {output.sam_paired} > {output.bam_paired}
-		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
-		samtools index {output.sorted_bam_paired}
-		#unpaired
-		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
-		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
-		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
-		samtools index {output.sorted_bam_unpaired}
 		"""
 
 rule scoreALE:

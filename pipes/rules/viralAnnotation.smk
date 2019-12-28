@@ -108,3 +108,40 @@ rule search_contigs_mmseqs2:
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
+
+rule mapReadstoContigsPE:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{contigs}.fasta",
+	output:
+		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}_to_{contigs}.sam",
+		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}_to_{contigs}.bam",
+		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}_to_{contigs}.bam",
+		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}_to_{contigs}.bam.bai",
+		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}_to_{contigs}.sam",
+		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}_to_{contigs}.bam",
+		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam",
+		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam.bai",
+	params:
+		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}_to_{contigs}",
+	message:
+		"Correcting nanopore assembly with Pilon"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		bowtie2-build -f {input.scaffolds} {params.db_name}
+		#paired
+		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
+		samtools view -b -S {output.sam_paired} > {output.bam_paired}
+		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
+		samtools index {output.sorted_bam_paired}
+		#unpaired
+		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
+		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
+		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
+		samtools index {output.sorted_bam_unpaired}
+		"""
