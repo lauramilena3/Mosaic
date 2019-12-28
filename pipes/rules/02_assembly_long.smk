@@ -248,13 +248,14 @@ rule assemblyStatsHYBRID:
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
 	message:
 		"Creating assembly stats with quast"
-	threads: 1
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
 	shell:
 		"""
 		{input.quast_dir}/quast.py {input.scaffolds_long} {input.scaffolds_spades} -o {output.quast_report_dir}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
-
 
 rule mergeAssembliesHIBRID:
 	input:
