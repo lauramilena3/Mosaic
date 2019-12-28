@@ -29,34 +29,34 @@ rule hybridAsemblySpades:
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
 		"""
 
-rule asemblyCanuPOOLED:
-	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
-		canu_dir=config['canu_dir']
-	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/" +config['nanopore_pooled_name'] + ".contigs.fasta",
-		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
-	message:
-		"Assembling Nanopore reads with Canu"
-	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
-		assembly=dirs_dict["ASSEMBLY_DIR"],
-		sample_list=" ".join(SAMPLES),
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		./{config[canu_dir]}/canu genomeSize=45m minReadLength=1000 -p \
-		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
-		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
-		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
-		for sample in {params.sample_list}
-		do
-			cat {output.scaffolds} | sed s"/ /_/"g  > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
-		done
-		"""
+# rule asemblyCanuPOOLED:
+# 	input:
+# 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
+# 		canu_dir=config['canu_dir']
+# 	output:
+# 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_canu_{sampling}/" +config['nanopore_pooled_name'] + ".contigs.fasta",
+# 		scaffolds_all=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{{sampling}}.fasta", sample=SAMPLES)
+# 	message:
+# 		"Assembling Nanopore reads with Canu"
+# 	params:
+# 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/"+ config['nanopore_pooled_name']+ "_canu_{sampling}",
+# 		assembly=dirs_dict["ASSEMBLY_DIR"],
+# 		sample_list=" ".join(SAMPLES),
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 4
+# 	shell:
+# 		"""
+# 		./{config[canu_dir]}/canu genomeSize=45m minReadLength=1000 -p \
+# 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
+# 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
+# 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
+# 		-d {params.assembly_dir} -p {config[nanopore_pooled_name]} useGrid=false executiveThreads={threads}
+# 		for sample in {params.sample_list}
+# 		do
+# 			cat {output.scaffolds} | sed s"/ /_/"g  > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
+# 		done
+# 		"""
 
 
 rule asemblyCanu:
