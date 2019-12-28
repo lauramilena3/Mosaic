@@ -8,3 +8,4 @@ dependencies:
     - nanoQC==0.9.0
     - nanofilt==2.3.0
     - quast==5.0.2
+    - git+https://github.com/sc932/ALE
