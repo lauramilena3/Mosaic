@@ -93,6 +93,20 @@ rule get_mmseqs:
 			make install
 		fi
 		"""
+ule get_ALE:
+	output:
+		ALE_dir=directory(config['ALE_dir']),
+	message:
+		"Downloading ALE"
+	threads: 1
+	shell:
+		"""
+		mkdir -p tools
+		cd tools
+		git clone https://github.com/sc932/ALE.git
+		cd ALE/src
+		make
+		"""
 rule get_VIGA:
 	output:
 		VIGA_dir=directory(os.path.join(workflow.basedir, config['viga_dir'])),
