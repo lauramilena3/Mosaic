@@ -93,7 +93,7 @@ rule get_mmseqs:
 			make install
 		fi
 		"""
-ule get_ALE:
+rule get_ALE:
 	output:
 		ALE_dir=directory(config['ALE_dir']),
 	message:
