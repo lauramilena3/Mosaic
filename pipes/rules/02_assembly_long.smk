@@ -244,7 +244,7 @@ rule assemblyStatsHYBRID:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
 	output:
-		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
 	message:
 		"Creating assembly stats with quast"
