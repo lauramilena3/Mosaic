@@ -157,6 +157,9 @@ rule taxonomyAssignment:
 	input:
 		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
 
+rule runALE:
+	input:
+		ale=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_long_read.ale", sample=SAMPLES),
 
 
 include: os.path.join(RULES_DIR, '00_download_tools.smk')
