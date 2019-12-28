@@ -57,32 +57,6 @@ rule asemblyCanuPOOLED:
 			cat {output.scaffolds} | sed s"/ /_/"g  > {params.assembly}/${{sample}}_contigs_canu.{wildcards.sampling}.fasta
 		done
 		"""
-
-rule asemblyCanu:
-	input:
-		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
-		canu_dir=config['canu_dir']
-	output:
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
-		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
-	message:
-		"Assembling Nanopore reads with Canu"
-	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
-		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
-		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
-		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
-		cp {output.scaffolds} {output.scaffolds_final}
-		sed -i s"/ /_/"g {output.scaffolds_final}
-		"""
-
 rule asemblyFlye:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
@@ -163,49 +137,75 @@ rule asemblyFlye2nd:
 		flye --subassemblies {input.corrected_racon} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
 		cp {output.scaffolds} {output.scaffolds_flye2}
 		"""
-# rule errorCorrectPE:
-# 	input:
-# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
-# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
-# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-# 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
-# 	output:
-# 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
-# 		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
-# 		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
-# 		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
-# 		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam.bai",
-# 		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
-# 		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
-# 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
-# 		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai"
-# 	params:
-# 		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}",
-# 		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
-# 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
-# 	message:
-# 		"Correcting nanopore assembly with Pilon"
-# 	conda:
-# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-# 	threads: 1
-# 	shell:
-# 		"""
-# 		bowtie2-build -f {input.scaffolds} {params.db_name}
-# 		#paired
-# 		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
-# 		samtools view -b -S {output.sam_paired} > {output.bam_paired}
-# 		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
-# 		samtools index {output.sorted_bam_paired}
-# 		#unpaired
-# 		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
-# 		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
-# 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
-# 		samtools index {output.sorted_bam_unpaired}
-# 		#PILON
-# 		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
-# 		--outdir {params.pilon_dir}
-# 		cp {params.scaffolds_pilon} {output.scaffolds}
-# 		"""
+
+rule asemblyCanu:
+	input:
+		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
+		canu_dir=config['canu_dir']
+	output:
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
+		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
+	message:
+		"Assembling Nanopore reads with Canu"
+	params:
+		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
+		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
+		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
+		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
+		cp {output.scaffolds} {output.scaffolds_final}
+		sed -i s"/ /_/"g {output.scaffolds_final}
+		"""
+
+rule errorCorrectPilonPE:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_"+ LONG_ASSEMBLER + ".{sampling}.fasta"
+	output:
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+		sam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.sam",
+		bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired.{sampling}.bam",
+		sorted_bam_paired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam",
+		sorted_bam_paired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.{sampling}.bam.bai",
+		sam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.sam",
+		bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired.{sampling}.bam",
+		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam",
+		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}.bam.bai"
+	params:
+		pilon_dir=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}",
+		scaffolds_pilon=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_{sampling}/pilon.fasta"),
+		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}"
+	message:
+		"Correcting nanopore assembly with Pilon"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		bowtie2-build -f {input.scaffolds} {params.db_name}
+		#paired
+		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
+		samtools view -b -S {output.sam_paired} > {output.bam_paired}
+		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
+		samtools index {output.sorted_bam_paired}
+		#unpaired
+		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
+		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
+		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
+		samtools index {output.sorted_bam_unpaired}
+		#PILON
+		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
+		--outdir {params.pilon_dir}
+		cp {params.scaffolds_pilon} {output.scaffolds}
+		"""
 rule errorCorrectSE:
 	input:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -243,6 +243,8 @@ rule assemblyStatsHYBRID:
 		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
