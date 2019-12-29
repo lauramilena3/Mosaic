@@ -184,7 +184,7 @@ rule errorCorrectPilonPE:
 		samtools index {output.sorted_bam_unpaired}
 		#PILON
 		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
-		--outdir {params.pilon_dir}
+		--outdir {params.pilon_dir} --fix bases
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
 
