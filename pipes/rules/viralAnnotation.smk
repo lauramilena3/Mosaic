@@ -127,7 +127,7 @@ rule mapReadstoContigsPE:
 	params:
 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}_to_{contigs}",
 	message:
-		"Correcting nanopore assembly with Pilon"
+		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 1
