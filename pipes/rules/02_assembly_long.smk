@@ -273,7 +273,7 @@ rule scoreALE:
 	threads: 4
 	shell:
 		"""
-		./ALE {input.sorted_bam_paired} {input.scaffolds} {output.ale}
+		.{input.ALE_dir}/src/ALE {input.sorted_bam_paired} {input.scaffolds} {output.ale}
 		"""
 
 rule mergeAssembliesHIBRID:
