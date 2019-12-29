@@ -159,8 +159,24 @@ rule taxonomyAssignment:
 
 rule runALE:
 	input:
-		ale=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_long_read.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_short_read.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_hybrid_assembly.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_long_read.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_WEC_spades_filtered_scaffolds.tot.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_WEC_contigs_canu.tot.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_flye_combined_assembly_WEC.tot.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_racon_WEC_contigs_1_canu.tot.ale", sample=SAMPLES),
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_paired_sorted.tot_to_WEC_canu_corrected_scaffolds.tot.ale", sample=SAMPLES),
 
+
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/hybrid_assembly.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/long_read.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/short_read.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_spades_filtered_scaffolds.tot.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_contigs_canu.tot.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/flye_combined_assembly_WEC.tot.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/racon_WEC_contigs_1_canu.tot.fasta
+# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_canu_corrected_scaffolds.tot.fasta
 
 include: os.path.join(RULES_DIR, '00_download_tools.smk')
 include: os.path.join(RULES_DIR, '01_quality_control_short.smk')
