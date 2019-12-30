@@ -130,17 +130,17 @@ rule mapReadstoContigsPE:
 		"Mapping reads to contigs"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
+	threads: 8
 	shell:
 		"""
-		bowtie2-build -f {input.scaffolds} {params.db_name}
+		bowtie2-build -f {input.scaffolds} {params.db_name} --threads {threads}
 		#paired
-		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired}
+		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired} --threads {threads}
 		samtools view -b -S {output.sam_paired} > {output.bam_paired}
 		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
 		samtools index {output.sorted_bam_paired}
 		#unpaired
-		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired}
+		bowtie2 -x {params.db_name} -U {input.unpaired} -S {output.sam_unpaired} --threads {threads}
 		samtools view -b -S {output.sam_unpaired} > {output.bam_unpaired}
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
 		samtools index {output.sorted_bam_unpaired}
