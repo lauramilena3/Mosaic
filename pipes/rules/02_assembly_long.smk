@@ -185,8 +185,7 @@ rule errorCorrectPilonPE:
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
 		samtools index {output.sorted_bam_unpaired}
 		#PILON
-		envir=$( which pilon | rev | cut -d/ -f3 | rev)
-		exec java -Xmx{resources.mem_mb}m .snakemake/conda/$envir/bin/pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} \
+		pilon -Xmx{resources.mem_mb}m --genome {input.scaffolds} --frags {output.sorted_bam_paired} \
 		--unpaired {output.sorted_bam_unpaired} --outdir {params.pilon_dir}
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
