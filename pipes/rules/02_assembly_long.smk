@@ -169,6 +169,8 @@ rule errorCorrectPilonPE:
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 8
+	resources:
+		mem_mb=16384
 	shell:
 		"""
 		bowtie2-build -f {input.scaffolds} {params.db_name} --threads {threads}
@@ -183,8 +185,9 @@ rule errorCorrectPilonPE:
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
 		samtools index {output.sorted_bam_unpaired}
 		#PILON
-		pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} --unpaired {output.sorted_bam_unpaired} \
-		--outdir {params.pilon_dir} --fix bases
+		envir=$( which pilon | rev | cut -d/ -f3 | rev)
+		exec java -Xmx{resources.mem_mb}m .snakemake/conda/$envir/bin/pilon --genome {input.scaffolds} --frags {output.sorted_bam_paired} \
+		--unpaired {output.sorted_bam_unpaired} --outdir {params.pilon_dir}
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
 
