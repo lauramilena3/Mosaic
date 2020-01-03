@@ -26,6 +26,7 @@ rule remove_adapters_quality_nanopore:
 	params:
 		headcrop=50,
 		tailcrop=50,
+		quality=config['nanopore_quality'],
 	message:
 		"Trimming Nanopore Adapters with Porechop"
 	conda:
@@ -34,7 +35,7 @@ rule remove_adapters_quality_nanopore:
 	shell:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
-		NanoFilt -q 10 -l 1000 --headcrop {params.headcrop} --tailcrop {params.tailcrop} {output.porechopped} > {output.fastq}
+		NanoFilt -q {params.nanopore_quality} -l 1000 --headcrop {params.headcrop} --tailcrop {params.tailcrop} {output.porechopped} > {output.fastq}
 		grep -c "^@" {output.fastq} > {output.size}
 		"""
 rule postQualityCheckNanopore:
