@@ -59,25 +59,27 @@ rule mmseqsTaxonomy:
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
-		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
-		tsv=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
-		table=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
+		mmseqsdir=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_mmseqs"),
+		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
+		tsv=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
+		table=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
 	message:
 		"Taxonomy Assignment with MMseqs2"
 	params:
 		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
+		refDB=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fnaDB")),
+		current_dir=dirs_dict["VIRAL_DIR"],
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 1
 	shell:
 		"""
 		#analyse
-		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.refseq} RefSeqViral.fnaDB
-		{input.mmseqs_dir}/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {input.refseq_taxid}
-		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} positive_contigsDB
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomy positive_contigsDB RefSeqViral.fnaDB taxonomyResult tmp --search-type 2
+		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {params.current_dir}/positive_contigsDB
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomy {params.current_dir}/positive_contigsDB {params.refDB} \
+			{params.current_dir}/taxonomyResult {params.current_dir}/tmp --search-type 2
 		#results
-		{input.mmseqs_dir}/build/bin/mmseqs createtsv positive_contigsDB taxonomyResult {output.tsv}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.table}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.html} --report-mode 1
+		{input.mmseqs_dir}/build/bin/mmseqs createtsv {params.current_dir}/positive_contigsDB {params.current_dir}/taxonomyResult {output.tsv}
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {params.current_dir}/taxonomyResult {output.table}
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {params.current_dir}/taxonomyResult {output.html} --report-mode 1
 	 	"""
