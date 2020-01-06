@@ -59,9 +59,9 @@ rule mmseqsTaxonomy:
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
-		html=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
-		tsv=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
-		table=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
+		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
+		tsv=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
+		table=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
 	message:
 		"Taxonomy Assignment with MMseqs2"
 	params:
