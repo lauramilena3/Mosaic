@@ -82,7 +82,8 @@ rule get_mmseqs:
 		"""
 		#download taxdump
 		cd db
-		mkdir ncbi-taxdump && cd ncbi-taxdump
+		mkdir ncbi-taxdump
+		cd ncbi-taxdump
 		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 		tar -xzvf taxdump.tar.gz
 		#download RefSeqViral
