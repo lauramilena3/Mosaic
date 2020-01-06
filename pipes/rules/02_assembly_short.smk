@@ -52,7 +52,7 @@ rule shortReadAsemblySpadesSE:
 		"""
 rule assemblyStatsILLUMINA:
 	input:
-		quast_dir=directory(config["quast_dir"]),
+		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES)
 	output:
 		quast_report_dir=(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
