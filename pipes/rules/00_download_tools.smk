@@ -71,8 +71,8 @@ rule getQUAST:
 rule get_mmseqs:
 	output:
 		MMseqs2_dir=directory(config['mmseqs_dir']),
-		refseq=directory("db/ncbi-taxdump/RefSeqViral.fna"),
-		refseq_taxid=directory("db/ncbi-taxdump/RefSeqViral.fna.taxidmapping"),
+		refseq=directory(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
+		refseq_taxid=directory(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	message:
 		"Downloading MMseqs2"
 	conda:
