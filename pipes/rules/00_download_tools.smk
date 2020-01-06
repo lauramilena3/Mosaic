@@ -71,6 +71,8 @@ rule getQUAST:
 rule get_mmseqs:
 	output:
 		MMseqs2_dir=directory(config['mmseqs_dir']),
+		refseq=directory("db/ncbi-taxdump/RefSeqViral.fna"),
+		refseq_taxid=directory("db/ncbi-taxdump/RefSeqViral.fna.taxidmapping"),
 	message:
 		"Downloading MMseqs2"
 	conda:
@@ -78,6 +80,15 @@ rule get_mmseqs:
 	threads: 1
 	shell:
 		"""
+		#download taxdump
+		cd db
+		mkdir ncbi-taxdump && cd ncbi-taxdump
+		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+		tar -xzvf taxdump.tar.gz
+		#download RefSeqViral
+		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
+		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
+		cd ..
 		MM_dir={output.MMseqs2_dir}
 		echo $MM_dir
 		if [ ! -d $MM_dir ]
@@ -230,4 +241,26 @@ rule downloadCanu:
 			fi
 		fi
 		tar -xJf canu-1.8.*.tar.xz -C tools
+		"""
+rule get_WiSH:
+	output:
+		WiSH_dir=directory(config['wish_dir']),
+	message:
+		"Downloading WiSH"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	threads: 1
+	shell:
+		"""
+		wish_dir={output.MMseqs2_dir}
+		echo $wish_dir
+		if [ ! -d $wish_dir ]
+		then
+			mkdir -p tools
+			cd tools
+			git clone https://github.com/soedinglab/WIsH.git
+			cd WIsH
+			cmake .
+			make -j {threads}
+		fi
 		"""

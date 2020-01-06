@@ -14,6 +14,7 @@ trimmomatic_trailing: "15"
 trimmomatic_window_size: "4"
 trimmomatic_window_quality: "15"
 trimmomatic_minlen: "50"
+nanopore_quality: "10"
 sampling: "sub tot"
 
 
@@ -48,3 +49,4 @@ trf_dir: "tools/TRF"
 vibrant_dir: "tools/VIBRANT"
 sra_toolkit_dir: "tools/sratoolkit.2.10.0-ubuntu64"
 ALE_dir: "tools/ALE"
+wish_dir: "tools/WiSH"

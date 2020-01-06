@@ -51,25 +51,31 @@ rule clusterTaxonomy:
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
-#
-# rule taxonomy:
-# 	input:
-# 		contigs=dirs_dict["VIRAL_DIR"]+ "/{confidence}_confidence.{sampling}.fasta",
-# 	output:
-# 		taxonomy=directory("db/taxonomy")
-# 	message:
-# 		"Calling ORFs with prodigal"
-# 	conda:
-# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-# 	threads: 1
-# 	shell:
-# 		"""
-# 		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
-# 		tar -xzf taxdump.tar.gz -C {output.taxonomy}
-#
-# 		#id=10239
-# 		#taxonkit list --data-dir  --ids $id --indent "" > $id.taxid.txt
-#
-# 	 	wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
-# 	 	mkdir taxonomy && tar -xxvf taxdump.tar.gz -C taxonomy
-# 	 	"""
+
+rule mmseqsTaxonomy:
+	input:
+		representatives=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		MMseqs2_dir=(config['mmseqs_dir']),
+		refseq=directory("db/ncbi-taxdump/RefSeqViral.fna"),
+		refseq_taxid=directory("db/ncbi-taxdump/RefSeqViral.fna.taxidmapping"),
+	output:
+		html=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
+		tsv=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
+		table=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
+	message:
+		"Calling ORFs with prodigal"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	threads: 1
+	shell:
+		"""
+		#analyse
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.refseq} RefSeqViral.fnaDB
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {input.MMseqs2_taxdir} --tax-mapping-file {input.refseq_taxid}
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.representatives} positive_contigsDB
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomy positive_contigsDB RefSeqViral.fnaDB taxonomyResult tmp --search-type 2
+		#results
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtsv positive_contigsDB taxonomyResult {output.tsv}
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.table}
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.html} --report-mode 1
+	 	"""
