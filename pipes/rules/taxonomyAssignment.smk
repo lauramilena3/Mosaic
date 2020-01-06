@@ -71,7 +71,7 @@ rule mmseqsTaxonomy:
 		"""
 		#analyse
 		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.refseq} RefSeqViral.fnaDB
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {input.MMseqs2_taxdir} --tax-mapping-file {input.refseq_taxid}
+		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {input.refseq_taxid} --tax-mapping-file {input.refseq_taxid}
 		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.representatives} positive_contigsDB
 		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomy positive_contigsDB RefSeqViral.fnaDB taxonomyResult tmp --search-type 2
 		#results
