@@ -86,8 +86,9 @@ rule get_mmseqs:
 		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 		tar -xzvf taxdump.tar.gz
 		#download RefSeqViral
-		blastdbcmd -db ref_viruses_rep_genomes -remote -entry all > {output.refseq}
-		blastdbcmd -db ref_viruses_rep_genomes -remote -entry all -outfmt "%a %T" > {output.refseq_taxid}
+		pwd
+		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
+		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
 		cd ..
 		MM_dir={output.MMseqs2_dir}
 		echo $MM_dir
