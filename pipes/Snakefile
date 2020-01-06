@@ -153,9 +153,13 @@ rule getSRA_runs:
 		forward=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_1.fastq", SRA=SRA_list),
 		reverse=expand(dirs_dict["RAW_DATA_DIR"] + "/{SRA}_pass_2.fastq", SRA=SRA_list),
 
-rule taxonomyAssignment:
+rule taxonomyAssignmentvContact:
 	input:
 		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
+
+rule taxonomyAssignmenMMseqs:
+	input:
+		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".tot.html"),
 
 rule runALE:
 	input:
