@@ -70,11 +70,13 @@ rule getQUAST:
 		"""
 rule get_mmseqs:
 	output:
-		MMseqs2_dir=directory(config['mmseqs_dir']),
+		mmseqs_dir=directory(config['mmseqs_dir']),
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	message:
 		"Downloading MMseqs2"
+	params:
+		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 1
@@ -92,7 +94,7 @@ rule get_mmseqs:
 		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
 		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
 		cd ../..
-		MM_dir={output.MMseqs2_dir}
+		MM_dir={output.mmseqs_dir}
 		echo $MM_dir
 		if [ ! -d $MM_dir ]
 		then
@@ -106,6 +108,8 @@ rule get_mmseqs:
 			make -j {threads}
 			make install
 		fi
+		{output.mmseqs_dir}/build/bin/mmseqs createdb {output.refseq} RefSeqViral.fnaDB
+		{output.mmseqs_dir}/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {output.refseq_taxid}
 		"""
 rule get_ALE:
 	output:
