@@ -63,19 +63,21 @@ rule mmseqsTaxonomy:
 		tsv=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
 		table=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
 	message:
-		"Calling ORFs with prodigal"
+		"Taxonomy Assignment with MMseqs2"
+	params:
+		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 1
 	shell:
 		"""
 		#analyse
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.refseq} RefSeqViral.fnaDB
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {input.refseq_taxid} --tax-mapping-file {input.refseq_taxid}
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb {input.representatives} positive_contigsDB
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomy positive_contigsDB RefSeqViral.fnaDB taxonomyResult tmp --search-type 2
+		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.refseq} RefSeqViral.fnaDB
+		{input.mmseqs_dir}/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {input.refseq_taxid}
+		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} positive_contigsDB
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomy positive_contigsDB RefSeqViral.fnaDB taxonomyResult tmp --search-type 2
 		#results
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtsv positive_contigsDB taxonomyResult {output.tsv}
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.table}
-		/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.html} --report-mode 1
+		{input.mmseqs_dir}/build/bin/mmseqs createtsv positive_contigsDB taxonomyResult {output.tsv}
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.table}
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport RefSeqViral.fnaDB taxonomyResult {output.html} --report-mode 1
 	 	"""
