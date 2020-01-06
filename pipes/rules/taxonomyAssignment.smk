@@ -56,8 +56,8 @@ rule mmseqsTaxonomy:
 	input:
 		representatives=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		MMseqs2_dir=(config['mmseqs_dir']),
-		refseq=("db/ncbi-taxdump/RefSeqViral.fna"),
-		refseq_taxid=("db/ncbi-taxdump/RefSeqViral.fna.taxidmapping"),
+		refseq=directory(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
+		refseq_taxid=directory(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
 		html=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
 		tsv=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_report" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
