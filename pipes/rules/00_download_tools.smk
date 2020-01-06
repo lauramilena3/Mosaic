@@ -91,7 +91,7 @@ rule get_mmseqs:
 		tar xvzf ref_viruses_rep_genomes.tar.gz
 		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
 		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
-		cd ..
+		cd ../..
 		MM_dir={output.MMseqs2_dir}
 		echo $MM_dir
 		if [ ! -d $MM_dir ]
