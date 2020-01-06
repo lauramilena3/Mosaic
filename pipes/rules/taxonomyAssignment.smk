@@ -75,10 +75,10 @@ rule mmseqsTaxonomy:
 		"""
 		#analyse
 		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {output.mmseqsdir}/positive_contigsDB
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomy {output.mmseqsdir}/positive_contigsDB {output.refDB} \
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomy {output.mmseqsdir}/positive_contigsDB {params.refDB} \
 			{output.mmseqsdir}/taxonomyResult {output.mmseqsdir}/tmp --search-type 2
 		#results
 		{input.mmseqs_dir}/build/bin/mmseqs createtsv {output.mmseqsdir}/positive_contigsDB {output.mmseqsdir}/taxonomyResult {output.tsv}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {output.refDB} {output.mmseqsdir}/taxonomyResult {output.table}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {output.refDB} {output.mmseqsdir}/taxonomyResult {output.html} --report-mode 1
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {output.mmseqsdir}/taxonomyResult {output.table}
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {output.mmseqsdir}/taxonomyResult {output.html} --report-mode 1
 	 	"""
