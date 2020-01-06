@@ -82,18 +82,6 @@ rule get_mmseqs:
 	threads: 1
 	shell:
 		"""
-		#download taxdump
-		cd db
-		mkdir -p ncbi-taxdump
-		cd ncbi-taxdump
-		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
-		tar -xzvf taxdump.tar.gz
-		#download RefSeqViral
-		wget ftp://ftp.ncbi.nlm.nih.gov/blast//db/ref_viruses_rep_genomes.tar.gz
-		tar xvzf ref_viruses_rep_genomes.tar.gz
-		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
-		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
-		cd ../..
 		MM_dir={output.mmseqs_dir}
 		echo $MM_dir
 		if [ ! -d $MM_dir ]
@@ -108,9 +96,19 @@ rule get_mmseqs:
 			make -j {threads}
 			make install
 		fi
-		cd ../../..
-		{output.mmseqs_dir}/build/bin/mmseqs createdb {output.refseq} RefSeqViral.fnaDB
-		{output.mmseqs_dir}/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {output.refseq_taxid}
+		#download taxdump
+		cd ../../../db
+		mkdir -p ncbi-taxdump
+		cd ncbi-taxdump
+		wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+		tar -xzvf taxdump.tar.gz
+		#download RefSeqViral
+		wget ftp://ftp.ncbi.nlm.nih.gov/blast//db/ref_viruses_rep_genomes.tar.gz
+		tar xvzf ref_viruses_rep_genomes.tar.gz
+		blastdbcmd -db ref_viruses_rep_genomes -entry all > {output.refseq}
+		blastdbcmd -db ref_viruses_rep_genomes -entry all -outfmt "%a %T" > {output.refseq_taxid}
+		../tools/MMseqs2/build/bin/mmseqs createdb {output.refseq} RefSeqViral.fnaDB
+		../tools/MMseqs2/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {output.refseq_taxid}
 		"""
 rule get_ALE:
 	output:
