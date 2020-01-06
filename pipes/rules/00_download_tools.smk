@@ -108,6 +108,7 @@ rule get_mmseqs:
 			make -j {threads}
 			make install
 		fi
+		cd ../../..
 		{output.mmseqs_dir}/build/bin/mmseqs createdb {output.refseq} RefSeqViral.fnaDB
 		{output.mmseqs_dir}/build/bin/mmseqs createtaxdb RefSeqViral.fnaDB tmp --ncbi-tax-dump {params.taxdump} --tax-mapping-file {output.refseq_taxid}
 		"""
