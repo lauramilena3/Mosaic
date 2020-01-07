@@ -144,6 +144,10 @@ rule annotate_contigs:
 	input:
 		vibrant=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
+rule annotate_VIGAdir:
+	input:
+		genomes_dir=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
+
 rule runVirSorter:
 	input:
 		expand(dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv", sampling=["tot"])
