@@ -275,6 +275,8 @@ rule get_WiSH:
 			cmake .
 			make -j {threads}
 		fi
+		cd ../..
+		mkdir {output.FNA}
 		cd {output.FNA}
 		cat ../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna"; done
 		cd ../..
