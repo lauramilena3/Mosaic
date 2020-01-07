@@ -128,7 +128,7 @@ rule hostID_WIsH:
 	threads: 1
 	shell:
 		"""
-		awk -F '>' '/^>/ {F=sprintf("%s.fasta", $2); print > F;next;} {print F; close(F)}' < {input.representative_fasta} > {output.phages_dir}
+		awk -F '>' '/^>/ {{F=sprintf("%s.fasta", $2); print > F;next;}} {{print F; close(F)}}' < {input.representative_fasta} > {output.phages_dir}
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
 		"""
 
