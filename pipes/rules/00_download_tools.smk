@@ -249,16 +249,22 @@ rule downloadCanu:
 		tar -xJf canu-1.8.*.tar.xz -C tools
 		"""
 rule get_WiSH:
+	input:
+		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
 		WiSH_dir=directory(config['wish_dir']),
+		representative_fasta=directory("db/PATRIC/FNA"),
+		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
+	params:
+		patric_dir="db/PATRIC"
 	message:
 		"Downloading WiSH"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 1
+	threads: 4
 	shell:
 		"""
-		wish_dir={output.MMseqs2_dir}
+		wish_dir={output.WiSH_dir}
 		echo $wish_dir
 		if [ ! -d $wish_dir ]
 		then
@@ -269,4 +275,10 @@ rule get_WiSH:
 			cmake .
 			make -j {threads}
 		fi
+		cd ../../{params.patric_dir}
+		mkdir {output.FNA}
+		cd {output.FNA}
+		cat ../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna"; done
+		cd ../..
+		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
 		"""

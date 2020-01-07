@@ -109,6 +109,54 @@ rule search_contigs_mmseqs2:
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
 
+rule hostID_WiSH:
+	input:
+		wish_dir=(config['wish_dir']),
+		representative_fasta=("db/PATRIC/FNA"),
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
+		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
+	output:
+		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
+		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
+	params:
+		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+	message:
+		"Host finding with WiSH"
+	threads: 1
+	shell:
+		"""
+		awk -F '>' '/^>/ {F=sprintf("%s.fasta", $2); print > F;next;} {print F; close(F)}' < {input.representative_fasta} > {output.phages_dir}
+		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
+		"""
+
+rule search_contigs_mmseqs2:
+	input:
+		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
+		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
+		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+	output:
+		results_index=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.index",
+		results_table=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_best_search_results.txt",
+		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
+	params:
+		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
+	message:
+		"Comparing reference and assembly mmseqs"
+	threads: 16
+	shell:
+		"""
+		mkdir {output.temp_dir}
+		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
+		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
+		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
+		"""
+
 rule mapReadstoContigsPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
