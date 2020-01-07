@@ -255,6 +255,7 @@ rule get_WiSH:
 		WiSH_dir=directory(config['wish_dir']),
 		representative_fasta=directory("db/PATRIC/FNA"),
 		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
+		FNA="db/PATRIC/FNA"
 	params:
 		patric_dir="db/PATRIC"
 	message:
@@ -275,8 +276,6 @@ rule get_WiSH:
 			cmake .
 			make -j {threads}
 		fi
-		cd ../../{params.patric_dir}
-		mkdir {output.FNA}
 		cd {output.FNA}
 		cat ../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna"; done
 		cd ../..
