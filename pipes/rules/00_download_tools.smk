@@ -253,9 +253,8 @@ rule get_WiSH:
 		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
 		WiSH_dir=directory(config['wish_dir']),
-		representative_fasta=directory("db/PATRIC/FNA"),
+		FNA=directory("db/PATRIC/FNA"),
 		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
-		FNA="db/PATRIC/FNA"
 	params:
 		patric_dir="db/PATRIC"
 	message:
