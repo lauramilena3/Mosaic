@@ -248,7 +248,7 @@ rule downloadCanu:
 		fi
 		tar -xJf canu-1.8.*.tar.xz -C tools
 		"""
-rule get_WiSH:
+rule get_WIsH:
 	input:
 		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
@@ -258,7 +258,7 @@ rule get_WiSH:
 	params:
 		patric_dir="db/PATRIC"
 	message:
-		"Downloading WiSH"
+		"Downloading WIsH"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 4

@@ -109,7 +109,7 @@ rule search_contigs_mmseqs2:
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
 
-rule hostID_WiSH:
+rule hostID_WIsH:
 	input:
 		wish_dir=(config['wish_dir']),
 		representative_fasta=("db/PATRIC/FNA"),
@@ -124,7 +124,7 @@ rule hostID_WiSH:
 		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
-		"Host finding with WiSH"
+		"Host finding with WIsH"
 	threads: 1
 	shell:
 		"""
