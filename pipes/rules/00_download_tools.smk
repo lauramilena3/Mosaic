@@ -252,7 +252,7 @@ rule get_WiSH:
 	input:
 		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
-		WiSH_dir=directory(config['wish_dir']),
+		wish_dir=directory(config['wish_dir']),
 		FNA=directory("db/PATRIC/FNA"),
 		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
 	params:
@@ -264,7 +264,7 @@ rule get_WiSH:
 	threads: 4
 	shell:
 		"""
-		wish_dir={output.WiSH_dir}
+		wish_dir={output.wish_dir}
 		echo $wish_dir
 		if [ ! -d $wish_dir ]
 		then
