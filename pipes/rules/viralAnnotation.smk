@@ -132,31 +132,6 @@ rule hostID_WiSH:
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
 		"""
 
-rule search_contigs_mmseqs2:
-	input:
-		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
-		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
-		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
-	output:
-		results_index=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.index",
-		results_table=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_best_search_results.txt",
-		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
-	params:
-		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
-		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
-	message:
-		"Comparing reference and assembly mmseqs"
-	threads: 16
-	shell:
-		"""
-		mkdir {output.temp_dir}
-		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
-		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
-		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
-		"""
-
 rule mapReadstoContigsPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
