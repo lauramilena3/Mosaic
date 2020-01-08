@@ -111,7 +111,7 @@ rule search_contigs_mmseqs2:
 
 rule hostID_WIsH:
 	input:
-		wish_dir=(config['wish_dir']),
+		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
 		representative_fasta=("db/PATRIC/FNA"),
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
@@ -129,7 +129,7 @@ rule hostID_WIsH:
 	shell:
 		"""
 		mkdir {output.phages_dir} && cd {output.phages_dir}
-		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.representative_fasta}  
+		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.representative_fasta}
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
 		"""
 

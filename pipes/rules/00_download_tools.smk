@@ -252,7 +252,7 @@ rule get_WIsH:
 	input:
 		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
-		wish_dir=directory(config['wish_dir']),
+		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
 		FNA=directory("db/PATRIC/FNA"),
 		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
 	params:
