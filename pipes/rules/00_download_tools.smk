@@ -279,6 +279,7 @@ rule get_WIsH:
 		mkdir {output.FNA}
 		cd {output.FNA}
 		COUNTER=1
+		pids={{}}
 		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids+=($!); done;
 		echo ${{pids[@]}}
 		len=${{#pids[@]}}
