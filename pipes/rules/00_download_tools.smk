@@ -278,7 +278,7 @@ rule get_WIsH:
 		mkdir {output.FNA} && cd {output.FNA}
 		COUNTER=1
 		#for i in $(cat < ../../../{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
-		cat ../../../{input.representative_list} | xargs -I {} -n 1 -P 2 wget -qN "ftp://ftp.patricbrc.org/genomes/{}/{}.fna"
+		cat ../../../{input.representative_list} | xargs -I {} -n {treads} -P 200 wget -qN "ftp://ftp.patricbrc.org/genomes/{}/{}.fna"
 		wait
 		#for pid in ${{pids[*]}}; do wait $pid; done
 		"""
