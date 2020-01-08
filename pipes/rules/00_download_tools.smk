@@ -252,7 +252,7 @@ rule get_WIsH:
 	input:
 		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
-		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
+		wish_dir=directory(os.path.join(workflow.basedir, (config['wish_dir']))),
 		FNA=directory("db/PATRIC/FNA"),
 		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
 	params:
@@ -278,7 +278,8 @@ rule get_WIsH:
 		cd ../..
 		mkdir {output.FNA}
 		cd {output.FNA}
-		cat ../../../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done; wait
+		count=1
+		cat ../../../{input.representative_list} | while read i ; do echo $i; count=count+1; echo count; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done; wait
 		sleep 60
 		cd ../../..
 		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
