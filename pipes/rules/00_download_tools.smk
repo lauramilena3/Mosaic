@@ -281,7 +281,7 @@ rule get_WIsH:
 		COUNTER=1
 		declare -a pids
 		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids+=($!); done;
-		echo ${{pids[@]}}
+		#echo ${{pids[@]}}
 		len=${{#pids[@]}}
 		echo $len
 		wait "${{pids[@]}}"
