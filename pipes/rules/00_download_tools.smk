@@ -279,7 +279,7 @@ rule get_WIsH:
 		mkdir {output.FNA}
 		cd {output.FNA}
 		COUNTER=1
-		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids+=($!); echo $!; done;
+		for i in $(cat < ../../../{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids+=($!); echo $!; done;
 		for pid in ${{pids[*]}}; do wait $pid; done
 		cd ../../..
 		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
