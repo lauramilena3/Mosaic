@@ -254,7 +254,7 @@ rule get_WIsH:
 	output:
 		wish_dir=directory(config['wish_dir']),
 		FNA=directory("db/PATRIC/FNA"),
-		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
+		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
 	params:
 		patric_dir="db/PATRIC"
 	message:
@@ -278,7 +278,8 @@ rule get_WIsH:
 		cd ../..
 		mkdir {output.FNA}
 		cd {output.FNA}
-		cat ../../../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done
+		cat ../../../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done; wait
 		cd ../../..
+
 		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
 		"""
