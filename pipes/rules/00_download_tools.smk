@@ -279,7 +279,7 @@ rule get_WIsH:
 		mkdir {output.FNA}
 		cd {output.FNA}
 		COUNTER=1
-		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
+		cat ../../../{input.representative_list} | while read i ; do wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & ;  acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; done
 		jobs
 		wait
 		cd ../../..
