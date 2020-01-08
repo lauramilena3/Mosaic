@@ -279,6 +279,6 @@ rule get_WIsH:
 		mkdir {output.FNA}
 		cd {output.FNA}
 		cat ../../../{input.representative_list} | while read i ; do echo $i; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna"; done
-		cd ../..
+		cd ../../..
 		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
 		"""
