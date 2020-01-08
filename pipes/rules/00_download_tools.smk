@@ -280,7 +280,7 @@ rule get_WIsH:
 		cd {output.FNA}
 		COUNTER=1
 		pids={{}}
-		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids[${{acc}}]=($!); done;
+		cat ../../../{input.representative_list} | while read i ; do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & pids[${{COUNTER}}]=($!); done;
 		echo ${{pids[@]}}
 		len=${{#pids[@]}}
 		echo $len
