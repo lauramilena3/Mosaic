@@ -275,10 +275,10 @@ rule get_WIsH:
 			make -j {threads}
 		fi
 		cd ../..
-		mkdir {output.FNA}
-		cd {output.FNA}
+		#mkdir {output.FNA}
+		#cd {output.FNA}
 		#COUNTER=1
 		#for i in $(cat < ../../../{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
-		cat ../../../{input.representative_list} | xargs -I {{}} -n {threads} -t -P 200 wget -qN "ftp://ftp.patricbrc.org/genomes/{{}}/{{}}.fna"
+		cat {input.representative_list} | xargs -I {{}} -n {threads} -t -P 200 wget -qN "ftp://ftp.patricbrc.org/genomes/{{}}/{{}}.fna" -P {output.FNA}
 		wait
 		"""
