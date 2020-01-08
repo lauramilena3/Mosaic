@@ -129,6 +129,7 @@ rule hostID_WIsH:
 	shell:
 		"""
 		awk -F '>' '/^>/ {{F=sprintf("%s.fasta", $2); print > F;next;}} {{print F; close(F)}}' < {input.representative_fasta} > {output.phages_dir}
+		mkdir {output.results_dir}
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
 		"""
 
