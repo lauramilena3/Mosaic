@@ -260,7 +260,7 @@ rule get_WIsH:
 		"Downloading WIsH"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 4
+	threads: 16
 	shell:
 		"""
 		wish_dir={output.wish_dir}
@@ -279,6 +279,6 @@ rule get_WIsH:
 		#cd {output.FNA}
 		#COUNTER=1
 		#for i in $(cat < ../../../{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
-		cat {input.representative_list} | xargs -I {{}} -n 1 -t -P 1000 wget -qN "ftp://ftp.patricbrc.org/genomes/{{}}/{{}}.fna" -P {output.FNA}
+		cat {input.representative_list} | xargs -I {{}} -n 1 -t -P {threads} wget -qN "ftp://ftp.patricbrc.org/genomes/{{}}/{{}}.fna" -P {output.FNA}
 		wait
 		"""
