@@ -254,7 +254,6 @@ rule get_WIsH:
 	output:
 		wish_dir=directory(os.path.join(workflow.basedir, (config['wish_dir']))),
 		FNA=directory("db/PATRIC/FNA"),
-		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
 	params:
 		patric_dir="db/PATRIC"
 	message:
@@ -282,6 +281,4 @@ rule get_WIsH:
 		for i in $(cat < ../../../{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
 		wait
 		#for pid in ${{pids[*]}}; do wait $pid; done
-		cd ../../..
-		{output.wish_dir}/WIsH -c build -g {output.FNA} -m {output.model_dir}
 		"""
