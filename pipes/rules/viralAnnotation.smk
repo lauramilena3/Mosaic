@@ -134,6 +134,19 @@ rule hostID_WIsH:
 		mkdir {output.results_dir}
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
 		"""
+rule create_WIsH_models:
+	input:
+		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
+		FNA=directory("db/PATRIC/FNA"),
+	output:
+		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
+	message:
+		"Create WIsH bacterial DB"
+	threads: 1
+	shell:
+		"""
+		{input.wish_dir}/WIsH -c build -g {input.FNA} -m {output.model_dir}
+		"""
 
 rule mapReadstoContigsPE:
 	input:
