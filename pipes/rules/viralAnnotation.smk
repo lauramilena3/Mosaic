@@ -125,7 +125,7 @@ rule create_WIsH_models:
 		{input.wish_dir}/WIsH -c build -g {input.FNA} -m {output.model_dir}
 		mkdir {params.model_dir_ln}
 		cd {params.model_dir_ln}
-		ln -s {output.model_dir}/*mm .
+		ln -s ../*.mm .
 		"""
 
 rule hostID_WIsH:
@@ -134,8 +134,8 @@ rule hostID_WIsH:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
 		model_dir=("db/PATRIC/FNA/wish_modelDir"),
 	output:
-		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
-		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
+		results_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir"),
+		phages_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir"),
 	params:
 		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln",
 		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir_ln",
