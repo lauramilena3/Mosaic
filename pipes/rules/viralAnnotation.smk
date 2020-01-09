@@ -133,7 +133,7 @@ rule hostID_WIsH:
 	input:
 		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		model_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_modelDir",
+		model_dir=("db/PATRIC/FNA/wish_modelDir"),
 	output:
 		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
 		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
