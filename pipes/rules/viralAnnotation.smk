@@ -116,7 +116,7 @@ rule create_WIsH_models:
 	output:
 		model_dir=directory("db/PATRIC/FNA/wish_modelDir"),
 	params:
-		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln"
+		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln",
 	message:
 		"Create WIsH bacterial DB"
 	threads: 1
@@ -138,7 +138,7 @@ rule hostID_WIsH:
 		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
 		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
 	params:
-		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln"
+		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln",
 		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir_ln",
 	message:
 		"Host finding with WIsH"
