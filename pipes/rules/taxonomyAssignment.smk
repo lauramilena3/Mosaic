@@ -73,12 +73,12 @@ rule mmseqsTaxonomy:
 		refDB=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fnaDB")),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
-	threads: 1
+	threads: 8
 	shell:
 		"""
 		#analyse
 		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {params.positive_contigsDB}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomy {params.positive_contigsDB} {params.refDB} \
+		{input.mmseqs_dir}/build/bin/mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
 			{params.taxonomyResultDB} {params.tmp} --search-type 2
 		#results
 		{input.mmseqs_dir}/build/bin/mmseqs createtsv {params.positive_contigsDB} {params.taxonomyResultDB} {output.tsv}

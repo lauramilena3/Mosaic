@@ -250,7 +250,7 @@ rule downloadCanu:
 		"""
 rule get_WIsH:
 	input:
-		representative_list="db/PATRIC/unique.txt",
+		representative_list="db/PATRIC/representatives_referece_bacteria_archaea_acc.txt",
 	output:
 		wish_dir=directory(os.path.join(workflow.basedir, (config['wish_dir']))),
 		FNA=directory("db/PATRIC/FNA"),
@@ -275,7 +275,7 @@ rule get_WIsH:
 			make -j {threads}
 		fi
 		cd ../..
-		mkdir {output.FNA}
+		mkdir {output.FNA}it
 		cd {output.FNA}
 		#COUNTER=1
 		#for i in $(cat < ../.{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
