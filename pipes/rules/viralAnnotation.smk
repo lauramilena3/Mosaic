@@ -126,7 +126,7 @@ rule create_WIsH_models:
 		cd {output.model_dir}
 		mkdir {params.model_dir_ln}
 		cd {params.model_dir_ln}
-		ln -s {output.model_dir/*mm} .
+		ln -s {output.model_dir}/*mm .
 		"""
 
 rule hostID_WIsH:
