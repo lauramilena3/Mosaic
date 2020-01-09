@@ -123,7 +123,6 @@ rule create_WIsH_models:
 	shell:
 		"""
 		{input.wish_dir}/WIsH -c build -g {input.FNA} -m {output.model_dir}
-		cd {output.model_dir}
 		mkdir {params.model_dir_ln}
 		cd {params.model_dir_ln}
 		ln -s {output.model_dir}/*mm .
