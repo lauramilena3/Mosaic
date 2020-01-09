@@ -108,38 +108,12 @@ rule search_contigs_mmseqs2:
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 2 --threads {threads}
 		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
-
-rule hostID_WIsH:
-	input:
-		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
-		model_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir",
-	output:
-		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
-		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
-	params:
-		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
-		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
-	message:
-		"Host finding with WIsH"
-	threads: 1
-	shell:
-		"""
-		mkdir {output.phages_dir} && cd {output.phages_dir}
-		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.positive_contigs}
-		ls | wc
-		cd {workflow.basedir}
-		mkdir {output.results_dir}
-		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
-		"""
 rule create_WIsH_models:
 	input:
 		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
 		FNA=directory("db/PATRIC/FNA"),
 	output:
-		model_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish_modelDir"),
+		model_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_modelDir",
 	message:
 		"Create WIsH bacterial DB"
 	threads: 1
@@ -147,6 +121,33 @@ rule create_WIsH_models:
 		"""
 		{input.wish_dir}/WIsH -c build -g {input.FNA} -m {output.model_dir}
 		"""
+rule hostID_WIsH:
+	input:
+		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
+		model_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_modelDir",
+	output:
+		results_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir",
+		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir",
+	params:
+		model_dir_ln=dirs_dict["VIRAL_DIR"] + "/wish_modelDir_ln",
+		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir_ln",
+	message:
+		"Host finding with WIsH"
+	threads: 1
+	shell:
+		"""
+		mkdir -p {params.model_dir_ln}
+		cd {params.model_dir_ln}
+		ln -s {input.model_dir/*mm} .
+		mkdir {output.phages_dir}
+		cd {output.phages_dir}
+		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.positive_contigs}
+		cd {workflow.basedir}
+		mkdir {output.results_dir}
+		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {input.model_dir} -r {output.results_dir} -b
+		"""
+
 
 rule mapReadstoContigsPE:
 	input:
