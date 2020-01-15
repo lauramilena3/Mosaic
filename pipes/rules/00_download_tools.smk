@@ -138,7 +138,7 @@ rule get_VIGA:
 		"""
 		mkdir -p tools
 		cd tools
-		git clone --depth 1 https://github.com/EGTortuero/viga.git
+		git clone --depth 1 https://github.com/lauramilena3/viga.git
 		chmod 744 viga/create_dbs.sh viga/VIGA.py
 		cd viga
 		./create_dbs.sh
