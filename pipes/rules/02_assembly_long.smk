@@ -2,6 +2,7 @@
 #ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
+ruleorder: symlinkPooled>subsampleReadsNanopore
 
 rule symlinkPooled:
 	input:
