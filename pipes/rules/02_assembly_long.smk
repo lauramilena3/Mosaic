@@ -5,7 +5,7 @@ ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 
 rule symlinkPooled:
 	input:
-		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{sampling}.fastq", sample_nanopore=NANOPORE_SAMPLES),
+		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
 	output:
 		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
 	message:
