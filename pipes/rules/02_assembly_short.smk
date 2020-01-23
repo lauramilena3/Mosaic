@@ -28,28 +28,28 @@
 # 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
 # 		assembly_graph.fastg
 # 		"""
-rule shortReadAsemblySpadesSE:
-	input:
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq"
-	output:
-		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/filtered_list.txt")
-	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
-	message:
-		"Assembling SE reads with metaSpades"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 16
-	shell:
-		"""
-		spades.py -s {input.unpaired} -o {params.assembly_dir} \
-		--sc -t {threads} --only-assembler
-		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
-		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
-		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
-		"""
+# rule shortReadAsemblySpadesSE:
+# 	input:
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq"
+# 	output:
+# 		scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+# 		filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/filtered_list.txt")
+# 	params:
+# 		raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
+# 		assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
+# 	message:
+# 		"Assembling SE reads with metaSpades"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 16
+# 	shell:
+# 		"""
+# 		spades.py -s {input.unpaired} -o {params.assembly_dir} \
+# 		--sc -t {threads} --only-assembler
+# 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
+# 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
+# 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
+# 		"""
 rule assemblyStatsILLUMINA:
 	input:
 		quast_dir=(config["quast_dir"]),
