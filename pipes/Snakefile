@@ -109,7 +109,6 @@ def inputAll(wildcards):
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
-	print(inpus)
 	return inputs
 
 rule all:
