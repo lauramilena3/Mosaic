@@ -79,7 +79,7 @@ rule asemblyCanu:
 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
-		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false executiveThreads={threads}
+		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
 		cp {output.scaffolds} {output.scaffolds_final}
 		sed -i s"/ /_/"g {output.scaffolds_final}
 		"""
