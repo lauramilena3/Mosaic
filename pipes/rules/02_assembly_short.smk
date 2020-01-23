@@ -1,4 +1,4 @@
-ruleorder: shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
+#ruleorder: shortReadAsemblySpadesPE > shortReadAsemblySpadesSE
 
 
 # rule shortReadAsemblySpadesPE:
