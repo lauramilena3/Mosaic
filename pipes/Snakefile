@@ -69,6 +69,7 @@ NANOPORE_SAMPLES=SAMPLES
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
 if POOLED == "True":
+	print("Nanopore reads are from a pooled sample")
 	NANOPORE_SAMPLES=config['nanopore_pooled_name']
 if len(SAMPLES)==1:
 	SAMPLING_TYPE=["tot"]
