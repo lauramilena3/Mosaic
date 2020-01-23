@@ -95,8 +95,8 @@ print(RESULTS_DIR)
 print("Nanopore = ")
 print(NANOPORE)
 
-print("Nanopore pooled= ")
-print(POOLED)
+print("Nanopore sampes= ")
+print(NANOPORE_SAMPLES)
 #======================================================
 # Rules
 #======================================================
