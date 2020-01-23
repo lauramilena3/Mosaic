@@ -42,7 +42,8 @@ rule postQualityCheckNanopore:
 	input:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 	output:
-		nanoqc_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
+		nanoqc_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanoqc_post")),
+		nanoplot_dir=temp(directory(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanoplot_post")),
 		nanoqc=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html",
 	message:
 		"Performing nanoQC statistics"
@@ -52,6 +53,7 @@ rule postQualityCheckNanopore:
 	shell:
 		"""
 		nanoQC -o {output.nanoqc_dir} {input.fastq}
+		NanoPlot --fastq {input.fastq} -o {output.nanoplot_dir}
 		mv {output.nanoqc_dir}/nanoQC.html {output.nanoqc}
 		"""
 rule subsampleReadsNanopore:
