@@ -48,9 +48,8 @@ SRA_list=config['sra_list'].split()
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
 PAIRED=False
-POOLED=config['nanopore_pooled']
 READ_TYPES=[config['forward_tag']]
-
+POOLED=config['nanopore_pooled']
 
 if not RAW_DATA_DIR == "":
 	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
@@ -68,7 +67,7 @@ NANOPORE_SAMPLES=SAMPLES
 
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
-if POOLED == "True":
+if POOLED:
 	print("Nanopore reads are from a pooled sample")
 	NANOPORE_SAMPLES=config['nanopore_pooled_name']
 if len(SAMPLES)==1:
