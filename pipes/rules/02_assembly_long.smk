@@ -3,6 +3,21 @@ ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE > shortReadAsemblySpad
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 
+rule symlinkPooled:
+	input:
+		pooled=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{sampling}.fastq",
+	output:
+		expand(nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
+	message:
+		"Creating symbolic links from pooled sample"
+	threads: 11
+	shell:
+		"""
+		for destination in {output}
+		do
+    		ln -s {input.pooled} "$destination"
+		done
+		"""
 rule hybridAsemblySpades:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
