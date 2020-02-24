@@ -16,6 +16,7 @@ dependencies:
   - hmmer =3.2.1
 #Other
 #  - mmseqs2=10.6d92c
+  - cmake =3.16.3
   - perl =5.26.2 #blast
   - nettle = 3.4.1 #blast
   - libgcc-ng =8.2.0
