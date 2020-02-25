@@ -4,7 +4,7 @@ rule virSorter:
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
-		out=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv"
+		out=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
 		results=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/virSorterCategories.txt"
 	params:
 		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
@@ -51,7 +51,7 @@ rule annotate_VIBRANT:
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
 		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.txt",
 		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.fasta",
-		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.txt"
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.txt",
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 		minlen=5000,
@@ -74,7 +74,6 @@ rule annotate_VIBRANT:
 		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
 		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
 		"""
-
 
 rule parseViralTable:
 	input:
