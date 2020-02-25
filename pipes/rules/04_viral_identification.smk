@@ -281,9 +281,9 @@ rule parseViralTable:
 rule hmmCircularContigs:
 	input:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
+		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.fna",
+		edited_fasta=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		circular_unk_fasta=dirs_dict["VIRAL_DIR"]+ "/unknown_circular.{sampling}.fna",
 		coords=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.coords",
 		aa=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.faa",
