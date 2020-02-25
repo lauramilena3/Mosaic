@@ -305,7 +305,7 @@ rule hmmCircularContigs:
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
 		if [ -s {output.circular_unk_fasta} ]
 		then
-			prodigal -i {input.circular_unk_fasta} -o {output.coords} -a {output.aa} -p meta
+			prodigal -i {output.circular_unk_fasta} -o {output.coords} -a {output.aa} -p meta
 			hmmsearch --tblout {output.hmm_out} -E {params.min_eval} {params.hmm} {output.aa}
 			cat {output.hmm_out} | grep -v '^#' | awk '{{ if ( $6 > {params.min_score} ) {{print $1,$3,$5,$6}} }}' > {output.hmm_results} || true
 			cut -d' ' -f1 {output.hmm_results} | sort | uniq > {output.hmm_list}
