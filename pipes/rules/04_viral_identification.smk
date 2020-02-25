@@ -78,7 +78,6 @@ rule annotate_VIBRANT:
 
 rule parseViralTable:
 	input:
-		#pvalues = dirs_dict["VIRAL_DIR"] + "/virFinder_pvalues.{sampling}.txt",
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/virSorterCategories.txt",
 		vibrant=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
 	output:
