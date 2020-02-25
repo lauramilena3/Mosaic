@@ -88,7 +88,6 @@ rule parseViralTable:
 		vibrant_results=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS,
 	message:
 		"Parsing VirSorter and VirFinder results"
-	threads: 1
 	run:
 		import pandas as pd
 
