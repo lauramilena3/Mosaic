@@ -265,18 +265,18 @@ rule parseViralTable:
 		final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
 		final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
 		final['VIRAL']=final['VIRAL'].fillna(value="N")
-
-		viral=final[final["VIRAL"]=="Y"].name.tolist()
-		f=open(output.positive_list, 'w')
-		f.write("\n".join(viral))
-		f.close()
-
-		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N"].name.tolist()
-		f=open(output.circular_unk, 'w')
-		f.write("\n".join(rep_check))
-		f.close()
-
-		final.to_csv(output.viral_table)
+		#
+		# viral=final[final["VIRAL"]=="Y"].name.tolist()
+		# f=open(output.positive_list, 'w')
+		# f.write("\n".join(viral))
+		# f.close()
+		#
+		# rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N"].name.tolist()
+		# f=open(output.circular_unk, 'w')
+		# f.write("\n".join(rep_check))
+		# f.close()
+		#
+		# final.to_csv(output.viral_table)
 
 rule hmmCircularContigs:
 	input:
