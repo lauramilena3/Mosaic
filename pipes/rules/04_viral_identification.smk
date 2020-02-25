@@ -319,9 +319,9 @@ rule hmmCircularContigs:
 		"""
 rule extractViralContigs:
 	input:
-		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		edited_fasta=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.fna",
-		positive_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
+		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
+		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
 	output:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_contigs.{sampling}.fasta",
 		positive_rep_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_rep_contigs.{sampling}.fasta",
