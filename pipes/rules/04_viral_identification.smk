@@ -93,7 +93,7 @@ rule parseViralTable:
 	run:
 		import pandas as pd
 
-		VS="../05_VIRAL_ID/virSorter_tot/virSorterCategories.setxt"
+		VS="../05_VIRAL_ID/virSorter_tot/virSorterCategories.txt"
 		VB_circular = "./vibrant_circular.txt"
 		lenghts="representative_lengths.tot.txt"
 		above4000="VIBRANT_4000_filtered_contigs.tot/VIBRANT_phages_4000_filtered_contigs.tot/4000_filtered_contigs.tot.phages_combined.txt"
