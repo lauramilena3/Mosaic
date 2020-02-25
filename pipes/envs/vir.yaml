@@ -14,6 +14,7 @@ dependencies:
   - perl-bioperl =1.7.2
   - perl-file-which =1.23
   - hmmer =3.1b2
+  - prodigal =2.6.3
   - perl-parallel-forkmanager =2.02
   - perl-list-moreutils =0.428
   - diamond =0.9.14
