@@ -91,195 +91,195 @@ rule parseViralTable:
 		"Parsing VirSorter and VirFinder results"
 	threads: 1
 	run:
-	import pandas as pd
+		import pandas as pd
 
-	VS="../05_VIRAL_ID/virSorter_tot/virSorterCategories.setxt"
-	VB_circular = "./vibrant_circular.txt"
-	lenghts="representative_lengths.tot.txt"
-	above4000="VIBRANT_4000_filtered_contigs.tot/VIBRANT_phages_4000_filtered_contigs.tot/4000_filtered_contigs.tot.phages_combined.txt"
-	below4000="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_phages_4000_filtered_contigs_out.tot/4000_filtered_contigs_out.tot.phages_combined.txt"
-	qualityAbove="VIBRANT_4000_filtered_contigs.tot/VIBRANT_results_4000_filtered_contigs.tot/VIBRANT_genome_quality_4000_filtered_contigs.tot.tsv"
-	qualityBelow="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_results_4000_filtered_contigs_out.tot/VIBRANT_genome_quality_4000_filtered_contigs_out.tot.tsv"
+		VS="../05_VIRAL_ID/virSorter_tot/virSorterCategories.setxt"
+		VB_circular = "./vibrant_circular.txt"
+		lenghts="representative_lengths.tot.txt"
+		above4000="VIBRANT_4000_filtered_contigs.tot/VIBRANT_phages_4000_filtered_contigs.tot/4000_filtered_contigs.tot.phages_combined.txt"
+		below4000="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_phages_4000_filtered_contigs_out.tot/4000_filtered_contigs_out.tot.phages_combined.txt"
+		qualityAbove="VIBRANT_4000_filtered_contigs.tot/VIBRANT_results_4000_filtered_contigs.tot/VIBRANT_genome_quality_4000_filtered_contigs.tot.tsv"
+		qualityBelow="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_results_4000_filtered_contigs_out.tot/VIBRANT_genome_quality_4000_filtered_contigs_out.tot.tsv"
 
-	#VirSorter
-	nameVS=[]
-	catVS=[]
-	circularVS=[]
-	typeVS=[]
+		#VirSorter
+		nameVS=[]
+		catVS=[]
+		circularVS=[]
+		typeVS=[]
 
-	with open(VS) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			circular="N"
-			contig=line.split(">")[1]
-			contigName=contig.split("-")[0].split("VIRSorter_")[1].replace(".", "_")
-			category=float(contig.split("-")[-1].split("_")[1])
-			if category<4:
-				contig_type="Complete phage contigs"
-			else:
-				contig_type="Prophage"
-				category=category-3
-				contigName=contigName.split("_gene")[0]
-			if "-circular" in contig:
-				circular="Y"
-			nameVS.append(contigName)
-			catVS.append(category)
-			circularVS.append(circular)
-			typeVS.append(contig_type)
+		with open(VS) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				circular="N"
+				contig=line.split(">")[1]
+				contigName=contig.split("-")[0].split("VIRSorter_")[1].replace(".", "_")
+				category=float(contig.split("-")[-1].split("_")[1])
+				if category<4:
+					contig_type="Complete phage contigs"
+				else:
+					contig_type="Prophage"
+					category=category-3
+					contigName=contigName.split("_gene")[0]
+				if "-circular" in contig:
+					circular="Y"
+				nameVS.append(contigName)
+				catVS.append(category)
+				circularVS.append(circular)
+				typeVS.append(contig_type)
+				line = fp.readline()
+				cnt += 1
 
-	resultsVS=pd.DataFrame()
-	resultsVS["name"]=nameVS
-	resultsVS["catVS"]=catVS
-	resultsVS["circularVS"]=circularVS
-	resultsVS["typeVS"]=typeVS
-	resultsVS=resultsVS.drop_duplicates(subset=['name'], keep="first")
+		resultsVS=pd.DataFrame()
+		resultsVS["name"]=nameVS
+		resultsVS["catVS"]=catVS
+		resultsVS["circularVS"]=circularVS
+		resultsVS["typeVS"]=typeVS
+		resultsVS=resultsVS.drop_duplicates(subset=['name'], keep="first")
 
-	#VIBRANT
+		#VIBRANT
 
-	nameVB=[]
-	circular_VB=[]
+		nameVB=[]
+		circular_VB=[]
 
-	with open(VB_circular) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			contigName=line.replace(".", "_").rstrip("\n\r")
-			nameVB.append(contigName)
-			circular_VB.append("Y")
+		with open(VB_circular) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				contigName=line.replace(".", "_").rstrip("\n\r")
+				nameVB.append(contigName)
+				circular_VB.append("Y")
+				line = fp.readline()
+				cnt += 1
 
-	circularVB=pd.DataFrame()
-	circularVB["nameVB"]=nameVB
-	circularVB["circularVB"]=circular_VB
+		circularVB=pd.DataFrame()
+		circularVB["nameVB"]=nameVB
+		circularVB["circularVB"]=circular_VB
 
 
-	nameVIBRANT=[]
-	VB_positive=[]
+		nameVIBRANT=[]
+		VB_positive=[]
 
-	with open(above4000) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			if cnt != 1:
-				nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_"))
-				VB_positive.append(1)
+		with open(above4000) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				if cnt != 1:
+					nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_"))
+					VB_positive.append(1)
+				line = fp.readline()
+				cnt += 1
 
-	with open(below4000) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			if cnt != 1:
-				nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_"))
-				VB_positive.append(1)
+		with open(below4000) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				if cnt != 1:
+					nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_"))
+					VB_positive.append(1)
+				line = fp.readline()
+				cnt += 1
 
 
 
-	resultsVIBRANT=pd.DataFrame()
+		resultsVIBRANT=pd.DataFrame()
 
-	resultsVIBRANT["nameVIBRANT"]=nameVIBRANT
-	resultsVIBRANT["VB_positive"]=VB_positive
-	resultsVIBRANT
+		resultsVIBRANT["nameVIBRANT"]=nameVIBRANT
+		resultsVIBRANT["VB_positive"]=VB_positive
+		resultsVIBRANT
 
 
-	nameVIBRANT=[]
-	VB_quality=[]
+		nameVIBRANT=[]
+		VB_quality=[]
 
-	with open(qualityAbove) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			if cnt != 1:
-				quality=line.rstrip("\n\r").replace(".", "_").split("\t")[2]
-				if not quality == "complete circular":
-					nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_").split("\t")[0].split("_fragment")[0])
-					VB_quality.append(line.rstrip("\n\r").replace(".", "_").split("\t")[2].split(" ")[0])
+		with open(qualityAbove) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				if cnt != 1:
+					quality=line.rstrip("\n\r").replace(".", "_").split("\t")[2]
+					if not quality == "complete circular":
+						nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_").split("\t")[0].split("_fragment")[0])
+						VB_quality.append(line.rstrip("\n\r").replace(".", "_").split("\t")[2].split(" ")[0])
+				line = fp.readline()
+				cnt += 1
 
-	with open(qualityBelow) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			if cnt != 1:
-				quality=line.rstrip("\n\r").replace(".", "_").split("\t")[2]
-				if not quality == "complete circular":
-					name=line.rstrip("\n\r").replace(".", "_").split("\t")[0].split("_fragment")[0]
-					nameVIBRANT.append(name)
-					VB_quality.append(line.rstrip("\n\r").replace(".", "_").split("\t")[2].split(" ")[0])
+		with open(qualityBelow) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				if cnt != 1:
+					quality=line.rstrip("\n\r").replace(".", "_").split("\t")[2]
+					if not quality == "complete circular":
+						name=line.rstrip("\n\r").replace(".", "_").split("\t")[0].split("_fragment")[0]
+						nameVIBRANT.append(name)
+						VB_quality.append(line.rstrip("\n\r").replace(".", "_").split("\t")[2].split(" ")[0])
+				line = fp.readline()
+				cnt += 1
 
-	qualityVIBRANT=pd.DataFrame()
+		qualityVIBRANT=pd.DataFrame()
 
-	qualityVIBRANT["nameVIBRANT"]=nameVIBRANT
-	qualityVIBRANT["VB_quality"]=VB_quality
-	qualityVIBRANT
+		qualityVIBRANT["nameVIBRANT"]=nameVIBRANT
+		qualityVIBRANT["VB_quality"]=VB_quality
+		qualityVIBRANT
 
-	#LENGTH
-	nameLEN=[]
-	LEN=[]
+		#LENGTH
+		nameLEN=[]
+		LEN=[]
 
-	with open(lenghts) as fp:
-		line = fp.readline()
-		cnt = 1
-		while line:
-			if cnt != 1:
-				nameLEN.append(line.split("\t")[0].rstrip("\n\r").replace(".", "_"))
-				LEN.append(int(line.split("\t")[1].rstrip("\n\r")))
+		with open(lenghts) as fp:
 			line = fp.readline()
-			cnt += 1
+			cnt = 1
+			while line:
+				if cnt != 1:
+					nameLEN.append(line.split("\t")[0].rstrip("\n\r").replace(".", "_"))
+					LEN.append(int(line.split("\t")[1].rstrip("\n\r")))
+				line = fp.readline()
+				cnt += 1
 
-	resultsLEN=pd.DataFrame()
-	resultsLEN["nameLEN"]=nameLEN
-	resultsLEN["LEN"]=LEN
-	resultsLEN
+		resultsLEN=pd.DataFrame()
+		resultsLEN["nameLEN"]=nameLEN
+		resultsLEN["LEN"]=LEN
+		resultsLEN
 
-	resultsVS=resultsVS.drop_duplicates(subset=['name'], keep="first")
-	qualityVIBRANT=qualityVIBRANT.drop_duplicates(subset=['nameVIBRANT'], keep="first")
+		resultsVS=resultsVS.drop_duplicates(subset=['name'], keep="first")
+		qualityVIBRANT=qualityVIBRANT.drop_duplicates(subset=['nameVIBRANT'], keep="first")
 
-	new_df = pd.merge(resultsLEN, circularVB,  how='left', left_on=['nameLEN'], right_on = ['nameVB'])
-	new_df2 = pd.merge(new_df, qualityVIBRANT,  how='left', left_on=['nameLEN'], right_on = ['nameVIBRANT'])
-	new_df3 = pd.merge(new_df2, resultsVS,  how='left', left_on=['nameLEN'], right_on = ['name'])
-	final = pd.merge(new_df3, resultsVIBRANT,  how='left', left_on=['nameLEN'], right_on = ['nameVIBRANT'])
+		new_df = pd.merge(resultsLEN, circularVB,  how='left', left_on=['nameLEN'], right_on = ['nameVB'])
+		new_df2 = pd.merge(new_df, qualityVIBRANT,  how='left', left_on=['nameLEN'], right_on = ['nameVIBRANT'])
+		new_df3 = pd.merge(new_df2, resultsVS,  how='left', left_on=['nameLEN'], right_on = ['name'])
+		final = pd.merge(new_df3, resultsVIBRANT,  how='left', left_on=['nameLEN'], right_on = ['nameVIBRANT'])
 
 
-	final['catVS'] = final['catVS'].fillna(value=int(4))
-	final["catVS"] = final["catVS"].astype('float')
-	final['circularVS']=final['circularVS'].fillna(value="NA")
-	final['circularVB']=final['circularVB'].fillna(value="NA")
-	final['LEN'] = final['LEN'].fillna(value=float(0))
-	final["LEN"] = final["LEN"].astype('float')
-	final['typeVS']=final['typeVS'].fillna(value="NA")
-	final['VB_positive']=final['VB_positive'].fillna(value=float(0))
+		final['catVS'] = final['catVS'].fillna(value=int(4))
+		final["catVS"] = final["catVS"].astype('float')
+		final['circularVS']=final['circularVS'].fillna(value="NA")
+		final['circularVB']=final['circularVB'].fillna(value="NA")
+		final['LEN'] = final['LEN'].fillna(value=float(0))
+		final["LEN"] = final["LEN"].astype('float')
+		final['typeVS']=final['typeVS'].fillna(value="NA")
+		final['VB_positive']=final['VB_positive'].fillna(value=float(0))
 
-	final.loc[final['catVS'] <= float(2), 'VS_positive'] = float(1)
-	final['VS_positive'] = final['VS_positive'].fillna(value=float(0))
-	final.loc[(final['VS_positive'] == float(1)) & (final['VB_positive'] == float(1)), 'VS_VB'] = float(1)
-	final.loc[((final['VS_positive'] == float(1)) | (final['VB_positive'] == float(1))), 'POSITIVE' ] = "Y"
-	final.loc[((final['circularVB'] == "Y" )| (final['circularVS'] == "Y")), 'CIRCULAR' ] = "Y"
-	final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
-	final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
-	final['VIRAL']=final['VIRAL'].fillna(value="N")
+		final.loc[final['catVS'] <= float(2), 'VS_positive'] = float(1)
+		final['VS_positive'] = final['VS_positive'].fillna(value=float(0))
+		final.loc[(final['VS_positive'] == float(1)) & (final['VB_positive'] == float(1)), 'VS_VB'] = float(1)
+		final.loc[((final['VS_positive'] == float(1)) | (final['VB_positive'] == float(1))), 'POSITIVE' ] = "Y"
+		final.loc[((final['circularVB'] == "Y" )| (final['circularVS'] == "Y")), 'CIRCULAR' ] = "Y"
+		final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
+		final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
+		final['VIRAL']=final['VIRAL'].fillna(value="N")
 
-	viral=final[final["VIRAL"]=="Y"].name.tolist()
-	f=open(output.positive_list, 'w')
-	f.write("\n".join(viral))
-	f.close()
+		viral=final[final["VIRAL"]=="Y"].name.tolist()
+		f=open(output.positive_list, 'w')
+		f.write("\n".join(viral))
+		f.close()
 
-	rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N"].name.tolist()
-	f=open(output.circular_unk, 'w')
-	f.write("\n".join(rep_check))
-	f.close()
+		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N"].name.tolist()
+		f=open(output.circular_unk, 'w')
+		f.write("\n".join(rep_check))
+		f.close()
 
-	final.to_csv(output.viral_table)
+		final.to_csv(output.viral_table)
 
 rule hmmCircularContigs:
 	input:
