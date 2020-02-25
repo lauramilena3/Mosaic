@@ -68,12 +68,12 @@ rule annotate_VIBRANT:
 		seqtk subseq {input.representatives} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
 		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.tot.tsv > {output.vibrant_circular}
+		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
 		"""
-#		vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-#		vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
 
 
 rule parseViralTable:
