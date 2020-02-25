@@ -49,9 +49,9 @@ rule annotate_VIBRANT:
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
-		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.txt",
-		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.fasta",
-		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.txt",
+		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
+		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 		minlen=5000,
@@ -265,18 +265,18 @@ rule parseViralTable:
 		final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
 		final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
 		final['VIRAL']=final['VIRAL'].fillna(value="N")
-		#
-		# viral=final[final["VIRAL"]=="Y"].name.tolist()
-		# f=open(output.positive_list, 'w')
-		# f.write("\n".join(viral))
-		# f.close()
-		#
-		# rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N"].name.tolist()
-		# f=open(output.circular_unk, 'w')
-		# f.write("\n".join(rep_check))
-		# f.close()
-		#
-		# final.to_csv(output.viral_table)
+
+		viral=final[final["VIRAL"]=="Y"].name.tolist()
+		f=open(output.positive_list, 'w')
+		f.write("\n".join(viral))
+		f.close()
+
+		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000) & (final["VIRAL"]=="N")].name.tolist()
+		f=open(output.circular_unk, 'w')
+		f.write("\n".join(rep_check))
+		f.close()
+
+		final.to_csv(output.viral_table)
 
 rule hmmCircularContigs:
 	input:
