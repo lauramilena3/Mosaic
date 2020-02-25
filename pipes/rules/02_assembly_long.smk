@@ -74,7 +74,6 @@ rule hybridAsemblySpades:
 # 		done
 # 		"""
 
-
 rule asemblyCanu:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
