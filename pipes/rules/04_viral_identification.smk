@@ -284,6 +284,7 @@ rule hmmCircularContigs:
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
 	output:
 		edited_fasta=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.fna",
+		circular_unk_fasta=dirs_dict["VIRAL_DIR"]+ "/unknown_circular.{sampling}.fna",
 		coords=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.coords",
 		aa=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.faa",
 		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
