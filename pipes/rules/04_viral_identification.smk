@@ -335,8 +335,5 @@ rule extractViralContigs:
 		"""
 		seqtk subseq {input.edited_fasta} {input.positive_rep_list} > {output.positive_rep_contigs}
 		seqtk subseq {input.edited_fasta} {input.positive_VS_VB_list} >> {output.positive_VS_VB_contigs}
-		#awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
-		#sed -i 's/_/-/g' {output.positive_rep_contigs}
-		#sed -i 's/_/-/g' {output.positive_VS_VB_contigs}
 		cat {output.positive_rep_contigs} {output.positive_VS_VB_contigs} > {output.positive_contigs}
 		"""
