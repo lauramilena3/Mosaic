@@ -63,7 +63,7 @@ rule annotate_VIBRANT:
 	shell:
 		"""
 		cd {params.viral_dir}
-		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
+		grep "^>" {params.representatives} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
 			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
 		seqtk subseq {input.representatives} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
