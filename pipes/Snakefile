@@ -109,7 +109,7 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
 	inputs.append((dirs_dict["VIRAL_DIR"] + "/VIBRANT_" +REPRESENTATIVE_CONTIGS_BASE + ".tot"))
 	inputs.append(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv")
-	inputs.append(expand(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE))
 
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
