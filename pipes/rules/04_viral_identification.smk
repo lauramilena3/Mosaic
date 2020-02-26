@@ -22,7 +22,7 @@ rule virSorter:
 			--ncpu {threads} \
 			--data-dir $WD/{input.virSorter_db} \
 			--virome
-		#grep ">" {params.out_folder}/Predicted_viral_sequences/VIRSorter_*fasta > {output.results}
+		grep ">" {params.out_folder}/Predicted_viral_sequences/VIRSorter_*fasta > {output.results}
 		"""
 
 # rule virFinder:
@@ -48,9 +48,9 @@ rule annotate_VIBRANT:
 		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
 		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
 		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
 		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
