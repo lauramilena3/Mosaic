@@ -16,7 +16,7 @@ rule virSorter:
 	shell:
 		"""
 		WD=$(pwd)
-		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.representatives} \
+		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.merged_assembly} \
 			--db 2 \
 			--wdir {params.out_folder} \
 			--ncpu {threads} \
@@ -63,9 +63,9 @@ rule annotate_VIBRANT:
 	shell:
 		"""
 		cd {params.viral_dir}
-		grep "^>" {input.representatives} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
+		grep "^>" {input.merged_assembly} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
 			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
-		seqtk subseq {input.representatives} {output.plus5000_list} > {output.plus5000_contigs}
+		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
 		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.tot.tsv > {output.vibrant_circular}
 		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
@@ -301,7 +301,7 @@ rule hmmCircularContigs:
 	threads: 1
 	shell:
 		"""
-		sed 's/\./_/g' {input.representatives} > {output.edited_fasta}
+		sed 's/\./_/g' {input.merged_assembly} > {output.edited_fasta}
 		seqtk subseq {output.edited_fasta} {input.circular_unk} > {output.circular_unk_fasta}
 		if [ -s {output.circular_unk_fasta} ]
 		then
