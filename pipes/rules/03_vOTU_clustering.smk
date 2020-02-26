@@ -1,9 +1,9 @@
 rule vOUTclustering:
 	input:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_contigs.{sampling}.fasta",
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.clstr",
-		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}_95-80.fna",
+		clusters=dirs_dict["vOUT_DIR"] + "/positive_contigs.{sampling}_95-80.clstr",
+		representatives=dirs_dict["vOUT_DIR"] + "/positive_contigs.{sampling}_95-80.fna",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt",
 		representatives_renamed=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
 	message:

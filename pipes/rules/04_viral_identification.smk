@@ -1,6 +1,6 @@
 rule virSorter:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
@@ -45,7 +45,7 @@ rule virSorter:
 
 rule annotate_VIBRANT:
 	input:
-		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
 		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
@@ -281,9 +281,9 @@ rule parseViralTable:
 rule hmmCircularContigs:
 	input:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
-		representatives=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 	output:
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		edited_fasta=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		circular_unk_fasta=dirs_dict["VIRAL_DIR"]+ "/unknown_circular.{sampling}.fna",
 		coords=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.coords",
 		aa=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.faa",
@@ -319,7 +319,7 @@ rule hmmCircularContigs:
 		"""
 rule extractViralContigs:
 	input:
-		edited_fasta=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.fna",
+		edited_fasta=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
 	output:
