@@ -271,7 +271,7 @@ rule hmmCircularContigs:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 	output:
-		edited_fasta=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		edited_fasta=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		circular_unk_fasta=dirs_dict["VIRAL_DIR"]+ "/unknown_circular.{sampling}.fna",
 		coords=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.coords",
 		aa=dirs_dict["VIRAL_DIR"] + "/unknown_circular.{sampling}.faa",
