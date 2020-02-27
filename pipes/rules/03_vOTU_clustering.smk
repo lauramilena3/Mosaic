@@ -13,7 +13,7 @@ rule vOUTclustering:
 	threads: 1
 	shell:
 		"""
-		./scripts/stampede-Cluster_genomes.pl -f {input.merged_assembly} -c 80 -i 95
+		./scripts/stampede-Cluster_genomes.pl -f {input.positive_contigs} -c 80 -i 95
 		cat {output.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		ln -s {output.representatives} {output.representatives_renamed}
