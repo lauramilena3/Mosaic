@@ -1,6 +1,6 @@
 rule virSorter:
 	input:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
@@ -45,13 +45,15 @@ rule virSorter:
 
 rule annotate_VIBRANT:
 	input:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
 		plus5000_list=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
 		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
 		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
+		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_list.{sampling}.txt",
+		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_quality.{sampling}.txt",
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 		minlen=5000,
@@ -68,6 +70,8 @@ rule annotate_VIBRANT:
 		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
 		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.tot.tsv > {output.vibrant_circular}
+		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
+		cp {output.vibrant}/VIBRANT_results*/VIBRANT_genome_quality*.tsv {output.vibrant_quality}
 		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
 		#vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
 		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
@@ -79,6 +83,10 @@ rule parseViralTable:
 	input:
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/virSorterCategories.txt",
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
+		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_list.{sampling}.txt",
+		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_quality.{sampling}.txt",
+		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
 	output:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
 		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv",
@@ -89,15 +97,15 @@ rule parseViralTable:
 		"Parsing VirSorter and VirFinder results"
 	run:
 		import pandas as pd
+		VS=input.categories
+		VB_circular = input.vibrant_circular
+		lenghts=input.merged_assembly_len
+		above5000=input.positive
+		qualityAbove=input.vibrant_quality
 
-		VS="../05_VIRAL_ID/virSorter_tot/virSorterCategories.txt"
-		VB_circular = "./vibrant_circular.txt"
-		lenghts="representative_lengths.tot.txt"
-		above4000="VIBRANT_4000_filtered_contigs.tot/VIBRANT_phages_4000_filtered_contigs.tot/4000_filtered_contigs.tot.phages_combined.txt"
-		below4000="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_phages_4000_filtered_contigs_out.tot/4000_filtered_contigs_out.tot.phages_combined.txt"
-		qualityAbove="VIBRANT_4000_filtered_contigs.tot/VIBRANT_results_4000_filtered_contigs.tot/VIBRANT_genome_quality_4000_filtered_contigs.tot.tsv"
-		qualityBelow="VIBRANT_4000_filtered_contigs_out.tot/VIBRANT_results_4000_filtered_contigs_out.tot/VIBRANT_genome_quality_4000_filtered_contigs_out.tot.tsv"
-
+		circular_unk=output.circular_unk
+		positive=output.positive_list
+		viral_table=output.table
 		#VirSorter
 		nameVS=[]
 		catVS=[]
@@ -135,7 +143,6 @@ rule parseViralTable:
 		resultsVS=resultsVS.drop_duplicates(subset=['name'], keep="first")
 
 		#VIBRANT
-
 		nameVB=[]
 		circular_VB=[]
 
@@ -153,11 +160,10 @@ rule parseViralTable:
 		circularVB["nameVB"]=nameVB
 		circularVB["circularVB"]=circular_VB
 
-
 		nameVIBRANT=[]
 		VB_positive=[]
 
-		with open(above4000) as fp:
+		with open(above5000) as fp:
 			line = fp.readline()
 			cnt = 1
 			while line:
@@ -166,18 +172,6 @@ rule parseViralTable:
 					VB_positive.append(1)
 				line = fp.readline()
 				cnt += 1
-
-		with open(below4000) as fp:
-			line = fp.readline()
-			cnt = 1
-			while line:
-				if cnt != 1:
-					nameVIBRANT.append(line.rstrip("\n\r").replace(".", "_"))
-					VB_positive.append(1)
-				line = fp.readline()
-				cnt += 1
-
-
 
 		resultsVIBRANT=pd.DataFrame()
 
@@ -201,18 +195,6 @@ rule parseViralTable:
 				line = fp.readline()
 				cnt += 1
 
-		with open(qualityBelow) as fp:
-			line = fp.readline()
-			cnt = 1
-			while line:
-				if cnt != 1:
-					quality=line.rstrip("\n\r").replace(".", "_").split("\t")[2]
-					if not quality == "complete circular":
-						name=line.rstrip("\n\r").replace(".", "_").split("\t")[0].split("_fragment")[0]
-						nameVIBRANT.append(name)
-						VB_quality.append(line.rstrip("\n\r").replace(".", "_").split("\t")[2].split(" ")[0])
-				line = fp.readline()
-				cnt += 1
 
 		qualityVIBRANT=pd.DataFrame()
 
@@ -264,19 +246,25 @@ rule parseViralTable:
 		final.loc[((final['circularVB'] == "Y" )| (final['circularVS'] == "Y")), 'CIRCULAR' ] = "Y"
 		final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
 		final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
-		final['VIRAL']=final['VIRAL'].fillna(value="N")
 
-		viral=final[final["VIRAL"]=="Y"].name.tolist()
-		f=open(output.positive_list, 'w')
-		f.write("\n".join(viral))
+		viral=final[final["VIRAL"]=="Y"].nameLEN.tolist()
+		corr=[]
+		for s in viral:
+		    k = s.rfind("_")
+		    new_string = s[:k] + "." + s[k+1:]
+		    corr.append(new_string)
+		f=open(positive, 'w')
+		f.write("\n".join(corr))
 		f.close()
 
-		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000)) & (final["VIRAL"]=="N")].name.tolist()
-		f=open(output.circular_unk, 'w')
+		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000)) & (final["VIRAL"]!="Y")].name.tolist()
+		f=open(circular_unk, 'w')
 		f.write("\n".join(rep_check))
 		f.close()
 
-		final.to_csv(output.viral_table)
+		final.to_csv(viral_table)
+
+
 
 rule hmmCircularContigs:
 	input:

@@ -67,12 +67,12 @@ rule assemblyStatsILLUMINA:
 		{input.quast_dir}/quast.py {input.scaffolds_spades} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
-
 rule mergeAssembliesSHORT:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES)
 	output:
-		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta")
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
 	message:
 		"Merging assembled contigs"
 	conda:
@@ -81,4 +81,6 @@ rule mergeAssembliesSHORT:
 	shell:
 		"""
 		cat {input.scaffolds_spades} > {output.merged_assembly}
+		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
+		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
 		"""
