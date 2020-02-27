@@ -48,8 +48,8 @@ rule annotate_VIBRANT:
 		merged_assembly=(dirs_dict["vOUT_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		plus5000_list=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
-		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
+		plus5000_list=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
+		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
 		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
 		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
 	params:
