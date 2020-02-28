@@ -1,6 +1,6 @@
 rule annotate_VIGA:
 	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
 		piler_dir=os.path.join(workflow.basedir, (config['piler_dir'])),
 		trf_dir=os.path.join(workflow.basedir, (config['trf_dir'])),
@@ -35,7 +35,7 @@ rule annotate_VIGA:
 		PATH=$PILER:$PATH
 		TRF={input.trf_dir}
 		PATH=$TRF:$PATH
-		ln -sfn {input.positive_contigs} {output.temp_symlink}
+		ln -sfn {input.representatives} {output.temp_symlink}
 		mkdir -p {output.temp_viga_dir}
 		cd {output.temp_viga_dir}
 		touch {output.modifiers}
@@ -151,7 +151,7 @@ rule create_WIsH_models:
 rule hostID_WIsH:
 	input:
 		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		model_dir=("db/PATRIC/FNA/wish_modelDir"),
 	output:
 		results_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REPRESENTATIVE_CONTIGS_BASE + "_resultsDir"),
@@ -166,7 +166,7 @@ rule hostID_WIsH:
 		"""
 		mkdir {output.phages_dir}
 		cd {output.phages_dir}
-		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.positive_contigs}
+		awk -F '>' '/^>/ {{F=sprintf("%s.fa", $2); print > F;next;}} {{print F; close(F)}}' < {input.representatives}
 		cd {workflow.basedir}
 		mkdir {output.results_dir}
 		{input.wish_dir}/WIsH -c predict -g {output.phages_dir} -m {params.model_dir_ln} -r {output.results_dir} -b

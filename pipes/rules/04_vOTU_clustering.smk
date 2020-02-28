@@ -2,7 +2,7 @@ rule vOUTclustering:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/positive_contigs.{sampling}_95-80.clstr",
+		clusters=dirs_dict["vOUT_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}_95-80.clstr",
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt",
 		representatives_renamed=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
