@@ -2,8 +2,8 @@ rule vOUTclustering:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-80.clstr",
-		representatives_temp=temp(dirs_dict["vOUT_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-80.fna"),
+		clusters=dirs_dict["VIRAL_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-80.clstr",
+		representatives_temp=temp(dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-80.fna"),
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_lengths.{sampling}.txt",
 	message:
