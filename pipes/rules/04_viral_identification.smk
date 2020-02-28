@@ -262,7 +262,7 @@ rule parseViralTable:
 		f.write("\n".join(rep_check))
 		f.close()
 
-		final.to_csv(viral_table)
+		final.to_csv(viral_table, sep="\t")
 
 
 
