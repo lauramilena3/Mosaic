@@ -48,12 +48,12 @@ rule annotate_VIBRANT:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		plus5000_list=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.txt",
-		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}.fasta",
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
-		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
-		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_list.{sampling}.txt",
-		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_quality.{sampling}.txt",
+		plus5000_list=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_over5000.{sampling}.txt",
+		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_over5000.{sampling}.fasta",
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}"),
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_circular.{sampling}.txt",
+		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_positive_list.{sampling}.txt",
+		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_positive_quality.{sampling}.txt",
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 		minlen=5000,
@@ -72,29 +72,27 @@ rule annotate_VIBRANT:
 		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.tot.tsv > {output.vibrant_circular}
 		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
 		cp {output.vibrant}/VIBRANT_results*/VIBRANT_genome_quality*.tsv {output.vibrant_quality}
-		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +REFERENCE_CONTIGS_BASE + ".tot"),
-		#vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +REFERENCE_CONTIGS_BASE + ".tot"),
-		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
-		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +REFERENCE_CONTIGS_BASE + ".tot"),
+		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
 		"""
 
 rule parseViralTable:
 	input:
 		categories=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/virSorterCategories.txt",
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + "_over5000.{sampling}"),
-		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_circular.{sampling}.txt",
-		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_list.{sampling}.txt",
-		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_"+ REPRESENTATIVE_CONTIGS_BASE + "_positive_quality.{sampling}.txt",
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}"),
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_circular.{sampling}.txt",
+		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_positive_list.{sampling}.txt",
+		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_positive_quality.{sampling}.txt",
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
 	output:
 		circular_unk=dirs_dict["VIRAL_DIR"]+ "/unknown_circular_list.{sampling}.txt",
 		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv",
 		positive_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
-	params:
-		vibrant_results=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS,
 	message:
-		"Parsing VirSorter and VirFinder results"
+		"Parsing VirSorter and VIBRANT results"
 	run:
 		import pandas as pd
 		VS=input.categories
@@ -311,7 +309,7 @@ rule extractViralContigs:
 		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
 	output:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".{sampling}.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 		positive_rep_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_rep_contigs.{sampling}.fasta",
 		positive_VS_VB_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_contigs.{sampling}.fasta",
 	message:

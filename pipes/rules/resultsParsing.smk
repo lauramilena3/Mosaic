@@ -178,7 +178,7 @@ rule getSummaryTable:
 	input:
 		hmm_results=dirs_dict["VIRAL_DIR"]+ "/hmm_parsed.{sampling}.out",
 		table=dirs_dict["VIRAL_DIR"]+ "/viral_table.{sampling}.csv",
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
+		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
 	output:
 		summary=dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",
 	message:

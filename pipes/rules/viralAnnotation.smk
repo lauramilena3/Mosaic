@@ -1,27 +1,27 @@
 rule annotate_VIGA:
 	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
 		piler_dir=os.path.join(workflow.basedir, (config['piler_dir'])),
 		trf_dir=os.path.join(workflow.basedir, (config['trf_dir'])),
 	output:
 		modifiers=temp(dirs_dict["ANNOTATION"] + "/modifiers.txt"),
-		temp_symlink=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta"),
-		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + "_tempVIGA")),
-		GenBank_file=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
-		GenBank_table_temp1=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl"),
-		GenBank_table_temp2=temp(dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.tbl2"),
-		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + ".tbl",
-		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
-		csv=dirs_dict["ANNOTATION"] + "/" + REFERENCE_CONTIGS_BASE + ".tot" + "_annotated.csv",
-		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REFERENCE_CONTIGS_BASE + ".tot.txt",
-		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REFERENCE_CONTIGS_BASE + ".tot.txt"),
-		viga_topology_temp=temp(dirs_dict["ANNOTATION"] + "/viga_topology_temp" + REFERENCE_CONTIGS_BASE + "tot.txt"),
-		viga_topology=(dirs_dict["ANNOTATION"] + "/viga_topology_" + REFERENCE_CONTIGS_BASE + "tot.txt"),
+		temp_symlink=temp(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta"),
+		temp_viga_dir=temp(directory(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_tempVIGA")),
+		GenBank_file=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.gbk",
+		GenBank_table_temp1=temp(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.tbl"),
+		GenBank_table_temp2=temp(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.tbl2"),
+		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + ".tbl",
+		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
+		csv=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.csv",
+		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt",
+		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt"),
+		viga_topology_temp=temp(dirs_dict["ANNOTATION"] + "/viga_topology_temp" + REPRESENTATIVE_CONTIGS_BASE + "tot.txt"),
+		viga_topology=(dirs_dict["ANNOTATION"] + "/viga_topology_" + REPRESENTATIVE_CONTIGS_BASE + "tot.txt"),
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REPRESENTATIVE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 		VIGA_dir=directory("../" + config['viga_dir']),
 	conda:
@@ -61,19 +61,38 @@ rule annotate_VIGA:
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
 		"""
 
+rule annotate_VIBRANT:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
+	output:
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
+	params:
+		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
+	message:
+		"Annotating contigs with VIBRANT"
+	threads: 32
+	shell:
+		"""
+		cd {params.viral_dir}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads}
+		"""
+
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
 		representatives=dirs_dict["vOUT_DIR"] + "/merged_scaffolds.tot_95-80.fna",
-		reference=REFERENCE_CONTIGS
+		reference=REPRESENTATIVE_CONTIGS
 	output:
 		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
-		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
-		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+		index_reference=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".index",
+		idx_reference=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".idx",
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REPRESENTATIVE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Creating databases for reference and assembly mmseqs"
@@ -88,16 +107,16 @@ rule create_dbs_mmseqs2:
 rule search_contigs_mmseqs2:
 	input:
 		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
-		index_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".index",
-		idx_reference=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + ".idx",
+		index_reference=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".index",
+		idx_reference=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".idx",
 	output:
-		results_index=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_search_results.index",
-		results_table=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE + "_best_search_results.txt",
+		results_index=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_search_results.index",
+		results_table=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_best_search_results.txt",
 		temp_dir=temp(directory(dirs_dict["MMSEQS"] + "/tmp")),
 	params:
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
-		reference_name=dirs_dict["MMSEQS"] + "/" + REFERENCE_CONTIGS_BASE,
-		results_name=dirs_dict["MMSEQS"] + "/" +  REFERENCE_CONTIGS_BASE + "_search_results",
+		reference_name=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE,
+		results_name=dirs_dict["MMSEQS"] + "/" +  REPRESENTATIVE_CONTIGS_BASE + "_search_results",
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Comparing reference and assembly mmseqs"
@@ -132,11 +151,11 @@ rule create_WIsH_models:
 rule hostID_WIsH:
 	input:
 		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REFERENCE_CONTIGS_BASE + ".tot.fasta",
+		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		model_dir=("db/PATRIC/FNA/wish_modelDir"),
 	output:
-		results_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_resultsDir"),
-		phages_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REFERENCE_CONTIGS_BASE + "_phagesDir"),
+		results_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REPRESENTATIVE_CONTIGS_BASE + "_resultsDir"),
+		phages_dir=directory(dirs_dict["VIRAL_DIR"] + "/wish/wish_" + REPRESENTATIVE_CONTIGS_BASE + "_phagesDir"),
 	params:
 		model_dir_ln="db/PATRIC/FNA/wish_modelDir/wish_modelDir_ln",
 		phages_dir=dirs_dict["VIRAL_DIR"] + "/wish_modelDir_ln",
