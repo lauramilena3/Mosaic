@@ -2,7 +2,8 @@ rule vOUTclustering:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		clusters=dirs_dict["vOUT_DIR"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}_95-80.clstr",
+		clusters=dirs_dict["vOUT_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-80.clstr",
+		representatives_temp=dirs_dict["vOUT_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-80.fna",
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/representative_lengths.{sampling}.txt",
 		representatives_renamed=dirs_dict["vOUT_DIR"] + "/representative_contigs.{sampling}.fasta",
@@ -17,6 +18,7 @@ rule vOUTclustering:
 		cat {output.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		ln -s {output.representatives} {output.representatives_renamed}
+		cp {output.representatives_temp} {output.representatives}
 		"""
 
 #rule circularizeContigs:
