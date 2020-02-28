@@ -18,7 +18,7 @@ nanopore_quality: "10"
 sampling: "sub tot"
 
 
-reference_contigs: ""
+VIRAL_CONTIGS: ""
 sra_list: ""
 
 
