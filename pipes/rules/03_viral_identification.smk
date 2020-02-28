@@ -43,7 +43,7 @@ rule virSorter:
 # 		Rscript {params.virFinder_script} {input.representatives} {output.pvalues}
 # 		"""
 
-rule annotate_VIBRANT:
+rule viralID_VIBRANT:
 	input:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
@@ -60,7 +60,7 @@ rule annotate_VIBRANT:
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
-		"Annotating contigs with VIBRANT"
+		"Identifying viral contigs with VIBRANT"
 	threads: 32
 	shell:
 		"""
