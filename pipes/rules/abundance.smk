@@ -2,13 +2,13 @@ ruleorder: mapReadsToContigsPE > mapReadsToContigsSE
 
 rule createContigBowtieDb:
 	input:
-		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.1.bt2",
-		contigs_info=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta.fai",
-		contigs_lenght=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + "_lenght.{sampling}.txt",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
+		contigs_info=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta.fai",
+		contigs_lenght=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_lenght.{sampling}.txt",
 	params:
-		prefix=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}",
+		prefix=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
 		"Creating contig DB with Bowtie2"
 	conda:
@@ -16,15 +16,15 @@ rule createContigBowtieDb:
 	threads: 1
 	shell:
 		"""
-		bowtie2-build -f {input.positive_contigs} {params.prefix}
+		bowtie2-build -f {input.representatives} {params.prefix}
 		#Get genome file
-		samtools faidx {input.positive_contigs}
+		samtools faidx {input.representatives}
 		awk -F' ' '{{print $1"	"$2}}' {output.contigs_info} > {output.contigs_lenght}
 		"""
 
 rule mapReadsToContigsPE:
 	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.1.bt2",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -33,7 +33,7 @@ rule mapReadsToContigsPE:
 		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
 	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}",
+		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
 		"Mapping reads to contigs"
 	conda:
@@ -48,13 +48,13 @@ rule mapReadsToContigsPE:
 		"""
 rule mapReadsToContigsSE:
 	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.1.bt2",
+		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
 		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
 	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}",
+		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
 		"Mapping reads to contigs"
 	conda:
