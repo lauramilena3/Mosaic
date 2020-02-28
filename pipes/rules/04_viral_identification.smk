@@ -100,7 +100,7 @@ rule parseViralTable:
 		VS=input.categories
 		VB_circular = input.vibrant_circular
 		lenghts=input.merged_assembly_len
-		above5000=input.positive
+		above5000=input.vibrant_positive
 		qualityAbove=input.vibrant_quality
 
 		circular_unk=output.circular_unk
