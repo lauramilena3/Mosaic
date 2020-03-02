@@ -28,11 +28,11 @@ rule getAbundancesPE:
 			unpaired=int(unpaired_size.readline())
 			reads=((paired*2)+unpaired)/1000000
 			#NORMALIZE TP MEAN
-			tpmean_file=dirs_dict["MAPPING_DIR"]+ "/" +sample+"_tpmean." + sampling + ".tsv"
+			tpmean_file=dirs_dict["MAPPING_DIR"]+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
 			tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
 			tpmean[sample] = tpmean[sample].apply(lambda x: x/reads)
 			#REMOVE LOW COVERED CONTIGS
-			breadth_file = dirs_dict["MAPPING_DIR"]+ "/" +sample+"_filtered_coverage." + sampling + ".txt"
+			breadth_file = dirs_dict["MAPPING_DIR"]+ "/bedtools_" +sample+"_filtered_coverage." + sampling + ".txt"
 			breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
 			df=pd.merge(tpmean, breadth, on='contig', how='outer')
 			#Divide dataframe in lenghts

@@ -2,8 +2,8 @@ rule getORFs:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		coords=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.coords",
-		aa=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
+		coords=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.coords",
+		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 	message:
 		"Calling ORFs with prodigal"
 	conda:
@@ -21,13 +21,14 @@ rule getORFs:
 		"""
 rule clusterTaxonomy:
 	input:
-		aa=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
+		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 	output:
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
+		gene2genome=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/gene2genome.csv",
+		genome_file=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
 		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"],
-		out_dir=directory(dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}"),
+		out_dir=directory(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}"),
 	message:
 		"Clustering viral genomes with vContact2"
 	conda:
@@ -47,8 +48,8 @@ rule clusterTaxonomy:
 		# fi
 		#three changes in code 1) int 2,3) summary remove excluded
 		grep -c ">" {input.aa}
-		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.genome_file}
-		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.genome_file} \
+		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
+		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.gene2genome} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
@@ -60,10 +61,10 @@ rule mmseqsTaxonomy:
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
-		mmseqsdir=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/"),
-		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
-		tsv=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
-		table=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
+		mmseqsdir=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/"),
+		html=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
+		tsv=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
+		table=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
 	message:
 		"Taxonomy Assignment with MMseqs2"
 	params:
