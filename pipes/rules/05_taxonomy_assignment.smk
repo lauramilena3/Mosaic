@@ -53,7 +53,6 @@ rule clusterTaxonomy:
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
-
 rule mmseqsTaxonomy:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
