@@ -18,8 +18,8 @@ if RESULTS_DIR == "" and not RAW_DATA_DIR == "":
 	RESULTS_DIR=os.path.abspath(os.path.join(RAW_DATA_DIR, os.pardir))
 
 
-VIRAL_CONTIGS=config['VIRAL_CONTIGS'].rstrip("/")
-REPRESENTATIVE_CONTIGS=VIRAL_CONTIGS
+REPRESENTATIVE_CONTIGS=config['representative_contigs'].rstrip("/")
+VIRAL_CONTIGS=REPRESENTATIVE_CONTIGS
 if VIRAL_CONTIGS == "":
 	VIRAL_CONTIGS_BASE="positive_contigs"
 	VIRAL_CONTIGS_DIR=RESULTS_DIR + "/04_VIRAL_ID"
