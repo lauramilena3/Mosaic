@@ -67,9 +67,9 @@ rule mmseqsTaxonomy:
 	message:
 		"Taxonomy Assignment with MMseqs2"
 	params:
-		positive_contigsDB=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/positive_contigsDB"),
-		taxonomyResultDB=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/taxonomyResultDB"),
-		tmp=directory(dirs_dict["VIRAL_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/tmp"),
+		positive_contigsDB=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/positive_contigsDB"),
+		taxonomyResultDB=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/taxonomyResultDB"),
+		tmp=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/tmp"),
 		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
 		refDB=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fnaDB")),
 	conda:
