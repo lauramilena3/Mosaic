@@ -166,7 +166,8 @@ rule taxonomyAssignmentvContact:
 
 rule taxonomyAssignmenMMseqs:
 	input:
-		html=(dirs_dict["VIRAL_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.html"),
+		html=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html"),
+
 
 rule runALE:
 	input:
