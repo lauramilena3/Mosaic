@@ -60,28 +60,7 @@ rule annotate_VIGA:
 		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{{$1+=-1}}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
 		"""
-
-
-rule viralID_VIBRANT:
-	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives.{sampling}.fasta",
-		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
-	output:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives..{sampling}"),
-	params:
-		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
-		minlen=5000,
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env5.yaml"
-	message:
-		"Annotating contigs with VIBRANT"
-	threads: 8
-	shell:
-		"""
-		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads} -virome
-		"""
-
-
+		
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
