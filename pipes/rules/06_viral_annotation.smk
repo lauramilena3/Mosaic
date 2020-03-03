@@ -1,6 +1,6 @@
 rule annotate_VIGA:
 	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
 		piler_dir=os.path.join(workflow.basedir, (config['piler_dir'])),
 		trf_dir=os.path.join(workflow.basedir, (config['trf_dir'])),
