@@ -1,6 +1,0 @@
-RUN			Data 	Platform	Sample	Usage
-ERR2635201	noData	MinIon		Virome
-ERR2632810	ready	Illumina	Mock 
-ERR2625613	ready	Illumina	Virome	Used
-ERR2625614	ready	MinIon		Virome	Used
-ERR2676759	ready	MinIon		Virome
