@@ -79,7 +79,7 @@ rule mmseqsTaxonomy:
 	shell:
 		"""
 		#analyse
-		mkdir {output.mmseqsdir}
+		#mkdir {output.mmseqsdir}
 		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {params.positive_contigsDB}
 		{input.mmseqs_dir}/build/bin/mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
 			{params.taxonomyResultDB} {params.tmp} --search-type 2
