@@ -26,12 +26,12 @@ if VIRAL_CONTIGS == "":
 	REPRESENTATIVE_CONTIGS_BASE="95-80_positive_contigs"
 	REPRESENTATIVE_CONTIGS_DIR=RESULTS_DIR + "/05_vOTUs"
 else:
-	VIRAL_CONTIGS_BASE=os.path.basename(os.path.abspath(VIRAL_CONTIGS)).split(".")[0]
-	VIRAL_CONTIGS_DIR=os.path.dirname(os.path.abspath(VIRAL_CONTIGS)).rstrip("/")
-	REPRESENTATIVE_CONTIGS_BASE=VIRAL_CONTIGS_BASE
-	REPRESENTATIVE_CONTIGS_DIR=VIRAL_CONTIGS_DIR
+	REPRESENTATIVE_CONTIGS_BASE=os.path.basename(os.path.abspath(VIRAL_CONTIGS)).split(".")[0]
+	REPRESENTATIVE_CONTIGS_DIR=os.path.dirname(os.path.abspath(VIRAL_CONTIGS)).rstrip("/")
+#	VIRAL_CONTIGS_BASE=REPRESENTATIVE_CONTIGS_BASE
+#	VIRAL_CONTIGS_DIR=REPRESENTATIVE_CONTIGS_DIR
 	if RESULTS_DIR== "":
-		RESULTS_DIR=VIRAL_CONTIGS_DIR
+		RESULTS_DIR=REPRESENTATIVE_CONTIGS_DIR
 
 print(VIRAL_CONTIGS_DIR)
 
@@ -163,12 +163,11 @@ rule getSRA_runs:
 
 rule taxonomyAssignmentvContact:
 	input:
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
+		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
 
 rule taxonomyAssignmenMMseqs:
 	input:
 		html=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.html"),
-
 
 rule runALE:
 	input:

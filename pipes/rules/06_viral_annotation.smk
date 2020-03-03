@@ -1,6 +1,6 @@
 rule annotate_VIGA:
 	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives.{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
 		piler_dir=os.path.join(workflow.basedir, (config['piler_dir'])),
 		trf_dir=os.path.join(workflow.basedir, (config['trf_dir'])),
@@ -60,7 +60,7 @@ rule annotate_VIGA:
 		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{{$1+=-1}}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
 		"""
-		
+
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
