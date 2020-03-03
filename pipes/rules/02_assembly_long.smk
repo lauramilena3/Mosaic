@@ -16,8 +16,9 @@ rule symlinkPooled:
 		"""
 		for destination in {output}
 		do
-    		ln -s {input.pooled} "$destination"
+			ln -s {input.pooled} "$destination"
 		done
+		#add a merged illumina
 		"""
 rule hybridAsemblySpades:
 	input:
@@ -78,6 +79,7 @@ rule asemblyCanu:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
 		canu_dir=config['canu_dir']
+		pooled=POOLED
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
@@ -297,6 +299,25 @@ rule mergeAssembliesHIBRID:
 	input:
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
+	output:
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
+	message:
+		"Merging assembled contigs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		cat {input.scaffolds_long} {input.scaffolds_spades} > {output.merged_assembly}
+		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
+		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
+		"""
+
+rule mergeAssembliesPOOLED:
+	input:
+		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=NANOPORE_SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",

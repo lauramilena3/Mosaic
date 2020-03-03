@@ -1,6 +1,6 @@
 rule annotate_VIGA:
 	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives.{sampling}.fasta",
 		VIGA_dir=os.path.join(workflow.basedir, config['viga_dir']),
 		piler_dir=os.path.join(workflow.basedir, (config['piler_dir'])),
 		trf_dir=os.path.join(workflow.basedir, (config['trf_dir'])),
@@ -61,24 +61,26 @@ rule annotate_VIGA:
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
 		"""
 
-rule annotate_VIBRANT:
+
+rule viralID_VIBRANT:
 	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives.{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}"),
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_representatives..{sampling}"),
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
+		minlen=5000,
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Annotating contigs with VIBRANT"
-	threads: 32
+	threads: 8
 	shell:
 		"""
-		cd {params.viral_dir}
-		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads} -virome
 		"""
+
 
 rule create_dbs_mmseqs2:
 	input:

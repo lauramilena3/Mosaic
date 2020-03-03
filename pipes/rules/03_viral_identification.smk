@@ -255,7 +255,7 @@ rule parseViralTable:
 		f.write("\n".join(corr))
 		f.close()
 
-		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(5000)) & (final["VIRAL"]!="Y")].name.tolist()
+		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(7000)) & (final["VIRAL"]!="Y")].name.tolist()
 		f=open(circular_unk, 'w')
 		f.write("\n".join(rep_check))
 		f.close()
