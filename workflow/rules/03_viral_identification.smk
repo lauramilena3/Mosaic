@@ -243,7 +243,7 @@ rule parseViralTable:
 		final.loc[((final['VS_positive'] == float(1)) | (final['VB_positive'] == float(1))), 'POSITIVE' ] = "Y"
 		final.loc[((final['circularVB'] == "Y" )| (final['circularVS'] == "Y")), 'CIRCULAR' ] = "Y"
 		final.loc[((final['POSITIVE'] =="Y") & (final['LEN'] >= float(5000))), 'VIRAL' ] = "Y"
-		final.loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
+		final.#loc[((final["CIRCULAR"]=="Y") | (final["VB_quality"]=="high")| (final["VB_quality"]=="medium")) &  (final["LEN"]<float(5000))  &  (final["POSITIVE"]=="Y"), 'VIRAL' ] = "Y"
 
 		viral=final[final["VIRAL"]=="Y"].nameLEN.tolist()
 		corr=[]
@@ -255,7 +255,7 @@ rule parseViralTable:
 		f.write("\n".join(corr))
 		f.close()
 
-		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<float(7000)) & (final["VIRAL"]!="Y")].name.tolist()
+		rep_check=final[(final["CIRCULAR"]=="Y") & (final["LEN"]<=float(7000)) & (final["VIRAL"]!="Y")].name.tolist()
 		f=open(circular_unk, 'w')
 		f.write("\n".join(rep_check))
 		f.close()

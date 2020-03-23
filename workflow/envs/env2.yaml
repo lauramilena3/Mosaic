@@ -1,6 +1,13 @@
 channels:
   - bioconda
-#  - g2554711/label/bioconda 
+#  - g2554711/label/bioconda
 dependencies:
   - bamm =1.7.3
-
+#  - amos =3.1.0
+#  - perl-getopt-long=2.50
+#libgcc-ng
+#perl-dbd-mysql
+#conda install -c bioconda perl-xml-dom
+#conda install -c bioconda perl-xml-libxml
+#conda install -c bioconda perl-math-random
+#conda install -c bioconda perl-bioperl
