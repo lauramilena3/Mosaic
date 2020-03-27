@@ -69,7 +69,7 @@ rule viralID_VIBRANT:
 			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
 		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
-		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.tot.tsv > {output.vibrant_circular}
+		cut -f1 {output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.{wildcards.sampling}.tsv > {output.vibrant_circular}
 		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
 		cp {output.vibrant}/VIBRANT_results*/VIBRANT_genome_quality*.tsv {output.vibrant_quality}
 		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +VIRAL_CONTIGS_BASE + ".tot"),
