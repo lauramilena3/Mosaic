@@ -70,7 +70,7 @@ rule getQUAST:
 		"""
 rule get_mmseqs:
 	output:
-		mmseqs_dir=directory(os.path.join(workflow.basedir, (config['mmseqs_dir'])),
+		mmseqs_dir=directory(os.path.join(workflow.basedir, config['mmseqs_dir'])),
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	message:
