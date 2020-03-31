@@ -57,7 +57,7 @@ rule viralID_VIBRANT:
 	params:
 		viral_dir=directory(dirs_dict["VIRAL_DIR"]),
 		minlen=5000,
-		name_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}/VIBRANT_results*/VIBRANT_complete_circular*.{wildcards.sampling}.tsv"
+		name_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}/VIBRANT_results*/VIBRANT_complete_circular*.{sampling}.tsv"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
