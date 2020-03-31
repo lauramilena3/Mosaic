@@ -62,7 +62,7 @@ rule viralID_VIBRANT:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Identifying viral contigs with VIBRANT"
-	threads: 32
+	threads: 8
 	shell:
 		"""
 		cd {params.viral_dir}
@@ -70,12 +70,8 @@ rule viralID_VIBRANT:
 			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
 		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
-		circular={output.vibrant}/VIBRANT_results*/VIBRANT_complete_circular*.{wildcards.sampling}.tsv
-		if [ -e {params.name_circular} ]; then
-			cut -f1 {params.name_circular} > {output.vibrant_circular}
-		else
-			touch {output.vibrant_circular}
-		fi
+		cut -f1 {params.name_circular} > {output.vibrant_circular}
+		touch {output.vibrant_circular}
 		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
 		cp {output.vibrant}/VIBRANT_results*/VIBRANT_genome_quality*.tsv {output.vibrant_quality}
 		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +VIRAL_CONTIGS_BASE + ".tot"),
