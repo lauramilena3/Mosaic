@@ -62,12 +62,13 @@ rule viralID_VIBRANT:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Identifying viral contigs with VIBRANT"
-	threads: 8
+	threads: 1
 	shell:
 		"""
 		cd {params.viral_dir}
 		grep "^>" {input.merged_assembly} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
 			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
+		head {output.plus5000_list}
 		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
 		cut -f1 {params.name_circular} > {output.vibrant_circular}
