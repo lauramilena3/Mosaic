@@ -3,7 +3,7 @@ ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 ruleorder: symlinkPooled>subsampleReadsNanopore
-
+ruleorder mergeAssembliesHYBRID > mergeAssembliesSHORT
 rule symlinkPooled:
 	input:
 		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
@@ -295,7 +295,7 @@ rule scoreALE:
 		{input.ALE_dir}/src/ALE {input.sorted_bam_paired} {input.scaffolds} {output.ale}
 		"""
 
-rule mergeAssembliesHIBRID:
+rule mergeAssembliesHYBRID:
 	input:
 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
 	output:
