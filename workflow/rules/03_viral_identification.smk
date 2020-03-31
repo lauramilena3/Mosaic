@@ -4,10 +4,10 @@ rule virSorter:
 		virSorter_dir=config['virSorter_dir'],
 		virSorter_db=config['virSorter_db']
 	output:
+		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
+	params:
 		out=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/VIRSorter_global-phage-signal.csv",
 		results=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/virSorterCategories.txt"
-	params:
-		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -18,11 +18,11 @@ rule virSorter:
 		WD=$(pwd)
 		{config[virSorter_dir]}/wrapper_phage_contigs_sorter_iPlant.pl -f {input.merged_assembly} \
 			--db 2 \
-			--wdir {params.out_folder} \
+			--wdir {output.out_folder} \
 			--ncpu {threads} \
 			--data-dir $WD/{input.virSorter_db} \
 			--virome
-		grep ">" {params.out_folder}/Predicted_viral_sequences/VIRSorter_*fasta > {output.results}
+		grep ">" {output.out_folder}/Predicted_viral_sequences/VIRSorter_*fasta > {params.results}
 		"""
 
 # rule virFinder:
