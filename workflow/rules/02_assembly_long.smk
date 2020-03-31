@@ -1,5 +1,5 @@
 #ruleorder: asemblyCanuPOOLED > asemblyCanu
-ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE 
+ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 ruleorder: symlinkPooled>subsampleReadsNanopore
@@ -297,8 +297,7 @@ rule scoreALE:
 
 rule mergeAssembliesHIBRID:
 	input:
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
@@ -309,26 +308,26 @@ rule mergeAssembliesHIBRID:
 	threads: 1
 	shell:
 		"""
-		cat {input.scaffolds_long} {input.scaffolds_spades} > {output.merged_assembly}
+		cat {input.scaffolds_long} > {output.merged_assembly}
 		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
 		"""
 
-rule mergeAssembliesPOOLED:
-	input:
-		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
-	output:
-		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
-		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
-	message:
-		"Merging assembled contigs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
-	shell:
-		"""
-		cat {input.scaffolds_long} {input.scaffolds_spades} > {output.merged_assembly}
-		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
-		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
-		"""
+# rule mergeAssembliesPOOLED:
+# 	input:
+# 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta",sample=SAMPLES),
+# 		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_filtered_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
+# 	output:
+# 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+# 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
+# 	message:
+# 		"Merging assembled contigs"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 1
+# 	shell:
+# 		"""
+# 		cat {input.scaffolds_long} {input.scaffolds_spades} > {output.merged_assembly}
+# 		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
+# 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
+# 		"""
