@@ -56,7 +56,7 @@ rule clusterTaxonomy:
 rule mmseqsTaxonomy:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
-		mmseqs_dir=(config['mmseqs_dir']),
+		mmseqs_dir=directory(os.path.join(workflow.basedir, config['mmseqs_dir'])),
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
@@ -72,7 +72,6 @@ rule mmseqsTaxonomy:
 		tmp=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/tmp"),
 		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
 		refDB=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fnaDB")),
-
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	threads: 8
