@@ -66,8 +66,8 @@ rule viralID_VIBRANT:
 	shell:
 		"""
 		cd {params.viral_dir}
-		grep "^>" {input.merged_assembly} | sed s"/_/ /"g | awk '{{ if ($4 >= {params.minlen}) print $0 }}' \
-			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.plus5000_list}
+		cat {input.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} $0 !~ ">" {{c+=length($0);}} END {{ print c; }}' | \
+			awk  '$2 > {params.minlen}' | cut -f1 > {output.plus5000_list}
 		head {output.plus5000_list}
 		seqtk subseq {input.merged_assembly} {output.plus5000_list} > {output.plus5000_contigs}
 		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
