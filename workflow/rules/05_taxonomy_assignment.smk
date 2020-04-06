@@ -81,7 +81,7 @@ rule mmseqsTaxonomy:
 		#mkdir {output.mmseqsdir}
 		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {params.positive_contigsDB}
 		{input.mmseqs_dir}/build/bin/mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
-			{params.taxonomyResultDB} {params.tmp} --search-type 2
+			{params.taxonomyResultDB} {params.tmp} --search-type 2 --lca-mode 2
 		#results
 		{input.mmseqs_dir}/build/bin/mmseqs createtsv {params.positive_contigsDB} {params.taxonomyResultDB} {output.tsv}
 		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.table}
