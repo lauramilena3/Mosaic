@@ -194,12 +194,12 @@ rule annotate_VIBRANT:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		plus5000_list=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
-		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.fasta",
-		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}"),
-		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
-		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
-		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		plus5000_list=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		plus5000_contigs=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.fasta",
+		vibrant=directory(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}"),
+		vibrant_circular=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		vibrant_positive=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		vibrant_quality=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
 	params:
 		viral_dir=directory(dirs_dict["vOUT_DIR"]),
 		minlen=5000,
