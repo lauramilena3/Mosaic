@@ -147,9 +147,9 @@ rule assembly:
 
 rule annotate_contigs:
 	input:
-		vibrant=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
+		vibrant=(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
-rule annotate_VIGAdir:
+rule annotate_VIGA:
 	input:
 		genomes_dir=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
