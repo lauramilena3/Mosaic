@@ -145,11 +145,11 @@ rule assembly:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE),
 #		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample=SAMPLES),
 
-rule annotate_contigs:
+rule annotate_VIBRANT_contigs:
 	input:
 		vibrant=(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
-rule annotate_VIGA:
+rule annotate_VIGA_contigs:
 	input:
 		genomes_dir=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
 
