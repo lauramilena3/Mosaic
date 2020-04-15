@@ -194,8 +194,6 @@ rule annotate_VIBRANT:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
 	output:
-		plus5000_list=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
-		plus5000_contigs=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.fasta",
 		vibrant=directory(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}"),
 		vibrant_circular=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + "_circular.{sampling}.txt",
 		vibrant_positive=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + "_positive_list.{sampling}.txt",
@@ -208,15 +206,11 @@ rule annotate_VIBRANT:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
 		"Identifying viral contigs with VIBRANT"
-	threads: 1
+	threads: 8
 	shell:
 		"""
 		cd {params.viral_dir}
-		cat {input.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} $0 !~ ">" {{c+=length($0);}} END {{ print c; }}' | \
-			awk  '$2 > {params.minlen}' | cut -f1 > {output.plus5000_list}
-		head {output.plus5000_list}
-		seqtk subseq {input.representatives} {output.plus5000_list} > {output.plus5000_contigs}
-		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads}
 		cut -f1 {params.name_circular} > {output.vibrant_circular}
 		touch {output.vibrant_circular}
 		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
