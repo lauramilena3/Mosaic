@@ -189,3 +189,41 @@ rule mapReadstoContigsPE:
 		samtools sort {output.bam_unpaired} -o {output.sorted_bam_unpaired}
 		samtools index {output.sorted_bam_unpaired}
 		"""
+rule annotate_VIBRANT:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		VIBRANT_dir=os.path.join(workflow.basedir, config['vibrant_dir']),
+	output:
+		plus5000_list=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		plus5000_contigs=dirs_dict["VIRAL_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.fasta",
+		vibrant=directory(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}"),
+		vibrant_circular=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		vibrant_positive=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+		vibrant_quality=dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}.txt",
+	params:
+		viral_dir=directory(dirs_dict["vOUT_DIR"]),
+		minlen=5000,
+		name_circular=dirs_dict["vOUT_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}/VIBRANT_results*/VIBRANT_complete_circular*.{sampling}.tsv"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
+	message:
+		"Identifying viral contigs with VIBRANT"
+	threads: 1
+	shell:
+		"""
+		cd {params.viral_dir}
+		cat {input.representatives} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} $0 !~ ">" {{c+=length($0);}} END {{ print c; }}' | \
+			awk  '$2 > {params.minlen}' | cut -f1 > {output.plus5000_list}
+		head {output.plus5000_list}
+		seqtk subseq {input.representatives} {output.plus5000_list} > {output.plus5000_contigs}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {output.plus5000_contigs} -t {threads}
+		cut -f1 {params.name_circular} > {output.vibrant_circular}
+		touch {output.vibrant_circular}
+		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
+		cp {output.vibrant}/VIBRANT_results*/VIBRANT_genome_quality*.tsv {output.vibrant_quality}
+		#vibrant_figures=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_figures_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_parsed=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_parsed_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		"""
