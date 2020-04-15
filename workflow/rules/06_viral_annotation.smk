@@ -201,7 +201,7 @@ rule annotate_VIBRANT:
 	params:
 		viral_dir=directory(dirs_dict["vOUT_DIR"]),
 		minlen=5000,
-		name_circular=dirs_dict["vOUT_DIR"] + "/VIBRANT_merged_scaffolds_over5000.{sampling}/VIBRANT_results*/VIBRANT_complete_circular*.{sampling}.tsv"
+		name_circular=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}/VIBRANT_results*/VIBRANT_complete_circular*.{sampling}.tsv"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
