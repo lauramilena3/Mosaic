@@ -1,3 +1,4 @@
 # Mosaic
-![Alt text](https://user-images.githubusercontent.com/12174880/55395600-2052a380-5542-11e9-9441-bc0b17f55279.png?raw=true "Title")
+![Alt text](https://user-images.githubusercontent.com/12174880/79860360-d483ce00-83d2-11ea-93ff-8030ff58fc24.png?raw=true "Title")
+
 
