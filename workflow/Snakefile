@@ -151,7 +151,7 @@ rule annotate_VIBRANT_contigs:
 
 rule annotate_VIGA_contigs:
 	input:
-		genomes_dir=(dirs_dict["VIRAL_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
+		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt",
 
 rule runVirSorter:
 	input:
