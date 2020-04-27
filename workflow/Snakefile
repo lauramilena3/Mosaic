@@ -164,7 +164,7 @@ rule getSRA_runs:
 
 rule taxonomyAssignmentvContact:
 	input:
-		genome_file=dirs_dict["VIRAL_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
+		genome_file=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.tot/genome_by_genome_overview.csv",
 
 rule taxonomyAssignmenMMseqs:
 	input:
