@@ -217,7 +217,7 @@ rule downloadViralDB:
 		"""
 rule getClusterONE:
 	output:
-		clusterONE_dir=config["clusterONE_dir"],
+		clusterONE_dir=directory(config["clusterONE_dir"]),
 	message:
 		"Downloading clusterONE"
 	threads: 1
