@@ -22,11 +22,11 @@ rule getORFs:
 rule clusterTaxonomy:
 	input:
 		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
+		clusterONE_dir=config["clusterONE_dir"],
 	output:
 		gene2genome=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/gene2genome.csv",
 		genome_file=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
 	params:
-		clusterONE_dir=config["clusterONE_dir"],
 		vcontact_dir=config["vcontact_dir"],
 		out_dir=directory(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}"),
 	message:
@@ -50,7 +50,7 @@ rule clusterTaxonomy:
 		grep -c ">" {input.aa}
 		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
 		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.gene2genome} \
-		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {params.clusterONE_dir}/cluster_one-1.0.jar \
+		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
 rule mmseqsTaxonomy:
