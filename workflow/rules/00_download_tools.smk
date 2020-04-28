@@ -220,10 +220,10 @@ rule getClusterONE:
 		clusterONE_dir=config["clusterONE_dir"],
 	message:
 		"Downloading clusterONE"
-	threads: 8
+	threads: 1
 	shell:
 		"""
-		mkdir -p {params.clusterONE_dir}
+		mkdir -p {output.clusterONE_dir}
 		curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 		mv cluster_one-1.0.jar {params.clusterONE_dir}
 		"""
