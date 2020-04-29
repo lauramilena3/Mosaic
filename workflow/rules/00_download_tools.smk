@@ -226,6 +226,7 @@ rule getClusterONE:
 		mkdir -p {output.clusterONE_dir}
 		curl -OL  http://www.paccanarolab.org/static_content/clusterone/cluster_one-1.0.jar
 		mv cluster_one-1.0.jar {output.clusterONE_dir}
+		chmod 744 {output.clusterONE_dir}/cluster_one-1.0.jar
 		"""
 rule downloadCanu:
 	output:
