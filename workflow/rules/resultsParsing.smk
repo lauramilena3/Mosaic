@@ -36,7 +36,7 @@ rule getAbundancesPE:
 			breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
 			df=pd.merge(tpmean, breadth, on='contig', how='outer')
 			#Divide dataframe in lenghts
-			df['percentage']=df['breadth']/df['length']
+			df['percentage' ]=df['breadth']/df['length']
 			df=df.fillna(0)
 			positive = df[(df['breadth']>7000) | (df['percentage']>percentage) ]
 			if df_tpmean.empty:

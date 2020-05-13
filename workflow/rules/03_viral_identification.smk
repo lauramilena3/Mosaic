@@ -308,7 +308,7 @@ rule hmmCircularContigs:
 		"""
 rule extractViralContigs:
 	input:
-		edited_fasta=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
 	output:
@@ -324,7 +324,7 @@ rule extractViralContigs:
 	shell:
 		"""
 		sed 's/\./_/g' {input.positive_VS_VB_list} > {output.positive_VS_VB_list}
-		seqtk subseq {input.edited_fasta} {input.positive_rep_list} > {output.positive_rep_contigs}
-		seqtk subseq {input.edited_fasta} {output.positive_VS_VB_list} >> {output.positive_VS_VB_contigs}
+		seqtk subseq {input.merged_assembly} {input.positive_rep_list} > {output.positive_rep_contigs}
+		seqtk subseq {input.merged_assembly} {output.positive_VS_VB_list} > {output.positive_VS_VB_contigs}
 		cat {output.positive_rep_contigs} {output.positive_VS_VB_contigs} > {output.positive_contigs}
 		"""
