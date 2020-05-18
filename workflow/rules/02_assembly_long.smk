@@ -227,7 +227,7 @@ rule asemblyFlye2nd:
 		"""
 		flye --subassemblies {input.corrected_scaffolds} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
 		cp {output.scaffolds} {output.scaffolds_flye2}
-		sed -i "s/>/>${{wildcards.sample}}_/g" {output.scaffolds_flye2}
+		sed -i "s/>/>{wildcards.sample}_/g" {output.scaffolds_flye2}
 		"""
 # rule errorCorrectSE:
 # 	input:
