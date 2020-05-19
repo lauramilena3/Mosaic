@@ -86,7 +86,7 @@ rule trim_adapters_quality_illumina_PE:
 
 rule trim_adapters_quality_illumina_SE:
 	input:
-		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_" + config['forward_tag'] + ".fastq",
+		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_" + str(config['forward_tag']) + ".fastq",
 		qc_report=dirs_dict["QC_DIR"]+ "/pre_processing_multiqc_report.html"
 	output:
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
