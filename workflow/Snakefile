@@ -55,9 +55,9 @@ if not RAW_DATA_DIR == "":
 	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + str(config['forward_tag']) + ".fastq")
 	for fname in os.listdir(RAW_DATA_DIR):
-		if fname.endswith(config['reverse_tag'] + '.fastq'):
+		if fname.endswith(str(config['reverse_tag']) + '.fastq'):
 			PAIRED=True
-		elif fname.endswith(config['nanopore_tag'] + '.fastq'):
+		elif fname.endswith(str(config['nanopore_tag']) + '.fastq'):
 			NANOPORE=True
 else:
 	RAW_DATA_DIR=RESULTS_DIR+"/00_RAW_DATA"
