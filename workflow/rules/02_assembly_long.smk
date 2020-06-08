@@ -208,6 +208,7 @@ rule errorCorrectPilonPE:
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
 
+ 
 rule asemblyFlye2nd:
 	input:
 		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
