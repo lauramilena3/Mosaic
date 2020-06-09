@@ -49,7 +49,7 @@ rule clusterTaxonomy:
 		#three changes in code 1) int 2,3) summary remove excluded
 		grep -c ">" {input.aa}
 		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
-		vcontact --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.gene2genome} \
+		vcontact2 --raw-proteins {input.aa} --rel-mode 'Diamond' --proteins-fp {output.gene2genome} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}
 		"""
