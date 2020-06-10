@@ -24,7 +24,8 @@ rule createContigBowtieDb:
 
 rule mapReadsToContigsPE:
 	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
+#		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -41,8 +42,10 @@ rule mapReadsToContigsPE:
 	threads: 4
 	shell:
 		"""
-		bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
-		-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
+		#bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
+		#-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
+		bbmap.sh ref={params.contigs} in1={input.forward_paired} in2={input.reverse_paired}  \
+		outm={output.sam} -t {threads}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
 		"""
@@ -63,7 +66,7 @@ rule mapReadsToContigsSE:
 	shell:
 		"""
 		#Mapping reads to contigs
-		bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
+		#bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
 		"""
