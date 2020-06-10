@@ -77,6 +77,7 @@ rule filterBAM:
 	params:
 		out_dir=dirs_dict["MAPPING_DIR"],
 		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}_filtered.bam",
+		p_ident=config['p_ident'],
 	message:
 		"Filtering reads in Bam file with BamM"
 	conda:
@@ -85,7 +86,7 @@ rule filterBAM:
 	shell:
 		"""
 		samtools sort {input.bam} -o {output.bam_sorted}
-		bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+		bamm filter --bamfile {output.bam_sorted} --percentage_id {params.p_ident} -o {params.out_dir}
 		mv {params.temp_bam_filtered} {output.bam_filtered}
 		"""
 

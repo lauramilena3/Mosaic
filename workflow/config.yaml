@@ -21,6 +21,8 @@ sampling: "sub tot"
 representative_contigs: ""
 sra_list: ""
 
+#species
+p_ident: "95"
 
 #bbnorm
 min_norm: "2"
