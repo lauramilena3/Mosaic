@@ -201,7 +201,6 @@ rule getAbundancesDB:
 		            splited=first_line.split(" ", 1)
 		    breadth = pd.DataFrame([splited], columns=['breadth', 'contig'])
 		    df=pd.merge(tpmean, breadth, on='contig', how='outer')
-		    #df=df.fillna(0)
 		    df["breadth"] = pd.to_numeric(df["breadth"])
 		    df['percentage' ]=df['breadth']/df['length']
 		    df=df.fillna(0)
@@ -213,15 +212,24 @@ rule getAbundancesDB:
 		    if df_tpmean.empty:
 		        df_tpmean=df
 		    else:
-		        #positive.drop("percentage", axis=1, inplace=True)
 		        df_tpmean=pd.merge(df, df_tpmean, on='contig', how='outer')
 
-		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
+
 		df_tpmean=df_tpmean.fillna(0)
-		df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)
+		df_tpmean.rename(columns={'contig':'OTU'}, inplace=True)
+
+
 		a_series = (df_tpmean != 0).any(axis=1)
 		df_tpmean = df_tpmean.loc[a_series]
-		df_tpmean.to_csv(filename, sep='\t', index=False, header=True)
+		df_tpmean.set_index('OTU', inplace=True)
+
+		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.7).any(axis=1)]
+
+		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
+		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
+
+		df_tpmean.to_csv(filename, sep='\t', header=True)
+		df_tpmean_70.to_csv(filename_70, sep='\t', header=True)
 
 rule tabletoBIOM:
 	input:
