@@ -171,9 +171,10 @@ rule getAbundancesDB:
 		"Getting vOTU tables"
 	threads: 1
 	run:
-		%cd RESULTS_DIR
 		import pandas as pd
 		import numpy as np
+		import os
+		os.chdir(RESULTS_DIR) 
 		lenght=7000
 		percentage=0.7
 		min_bases=5000
