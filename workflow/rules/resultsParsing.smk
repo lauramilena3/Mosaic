@@ -222,7 +222,6 @@ rule getAbundancesDB:
 		a_series = (df_tpmean != 0).any(axis=1)
 		df_tpmean = df_tpmean.loc[a_series]
 		df_tpmean.to_csv(filename, sep='\t', index=False, header=True)
-		df_tpmean
 
 rule tabletoBIOM:
 	input:
