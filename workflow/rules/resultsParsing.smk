@@ -174,7 +174,7 @@ rule getAbundancesDB:
 		import pandas as pd
 		import numpy as np
 		import os
-		os.chdir(RESULTS_DIR) 
+		os.chdir(RESULTS_DIR)
 		lenght=7000
 		percentage=0.7
 		min_bases=5000
@@ -216,7 +216,7 @@ rule getAbundancesDB:
 		        #positive.drop("percentage", axis=1, inplace=True)
 		        df_tpmean=pd.merge(df, df_tpmean, on='contig', how='outer')
 
-		filename="vOTU_abundance_table." + sampling + ".txt"
+		filename="vOTU_abundance_table_DB." + sampling + ".txt"
 		df_tpmean=df_tpmean.fillna(0)
 		df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)
 		a_series = (df_tpmean != 0).any(axis=1)
