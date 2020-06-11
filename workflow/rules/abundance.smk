@@ -21,29 +21,29 @@ rule createContigBowtieDb:
 		samtools faidx {input.representatives}
 		awk -F' ' '{{print $1"	"$2}}' {output.contigs_info} > {output.contigs_lenght}
 		"""
-rule createContigBBDb:
-	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
-	output:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
-		contigs_info=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta.fai",
-		contigs_lenght=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_lenght.{sampling}.txt",
-	params:
-		prefix=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
-	message:
-		"Creating contig DB with Bowtie2"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
-	shell:
-		"""
-		bowtie2-build -f {input.representatives} {params.prefix}
-		#Get genome file
-		samtools faidx {input.representatives}
-		bbmap.sh ref={input.representatives}
-		awk -F' ' '{{print $1"	"$2}}' {output.contigs_info} > {output.contigs_lenght}
-
-		"""
+# rule createContigBBDb:
+# 	input:
+# 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+# 	output:
+# 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
+# 		contigs_info=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta.fai",
+# 		contigs_lenght=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_lenght.{sampling}.txt",
+# 	params:
+# 		prefix=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
+# 	message:
+# 		"Creating contig DB with Bowtie2"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 1
+# 	shell:
+# 		"""
+# 		bowtie2-build -f {input.representatives} {params.prefix}
+# 		#Get genome file
+# 		samtools faidx {input.representatives}
+# 		bbmap.sh ref={input.representatives}
+# 		awk -F' ' '{{print $1"	"$2}}' {output.contigs_info} > {output.contigs_lenght}
+#
+# 		"""
 rule mapReadsToContigsPE:
 	input:
 #		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
