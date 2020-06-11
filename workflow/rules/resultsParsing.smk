@@ -160,6 +160,69 @@ rule getAbundancesSE:
 			df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)
 			df_tpmean.to_csv(dirs_dict["MAPPING_DIR"]+ "/" + filename, sep='\t', index=False, header=True)
 
+rule getAbundancesDB:
+	input:
+		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_filtered_coverage.{{sampling}}.txt", sample=SAMPLES),
+		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_tpmean.{{sampling}}.tsv", sample=SAMPLES),
+		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.{{sampling}}.txt", sample=SAMPLES),
+	output:
+		abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_DB.{sampling}.txt",
+	message:
+		"Getting vOTU tables"
+	threads: 1
+	run:
+		%cd RESULTS_DIR
+		import pandas as pd
+		import numpy as np
+		lenght=7000
+		percentage=0.7
+		min_bases=5000
+		sampling=wildcards.sampling
+		df_tpmean=pd.DataFrame()
+		sampling="tot"
+		for sample in SAMPLES:
+		    #READ NUMBER
+		    paired_size=open("02_CLEAN_DATA"+ "/" +sample+"_paired_clean."+sampling+".txt")
+		    unpaired_size=open("02_CLEAN_DATA"+ "/" +sample+"_unpaired_clean."+sampling+".txt")
+		    paired=int(paired_size.readline())
+		    unpaired=int(unpaired_size.readline())
+		    reads=((paired*2)+unpaired)/1000000
+		    #NORMALIZE TP MEAN
+		    tpmean_file="06_MAPPING"+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
+		    tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
+		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
+		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_filtered_coverage." + sampling + ".txt"
+		    with open(breadth_file) as f:
+		        first_line = f.readline().strip()
+		        if first_line=="":
+		            splited=["", ""]
+		        else:
+		            splited=first_line.split(" ", 1)
+		    breadth = pd.DataFrame([splited], columns=['breadth', 'contig'])
+		    df=pd.merge(tpmean, breadth, on='contig', how='outer')
+		    #df=df.fillna(0)
+		    df["breadth"] = pd.to_numeric(df["breadth"])
+		    df['percentage' ]=df['breadth']/df['length']
+		    df=df.fillna(0)
+		    df.drop("breadth", axis=1, inplace=True)
+		    df.drop("length", axis=1, inplace=True)
+		    df.columns = ['contig', sample + "_depth", sample + "_breadth" ]
+		    #REMOVE LOW COVERED CONTIGS
+		    df=df[df[sample + "_breadth"]>0]
+		    if df_tpmean.empty:
+		        df_tpmean=df
+		    else:
+		        #positive.drop("percentage", axis=1, inplace=True)
+		        df_tpmean=pd.merge(df, df_tpmean, on='contig', how='outer')
+
+		filename="vOTU_abundance_table." + sampling + ".txt"
+		df_tpmean=df_tpmean.fillna(0)
+		df_tpmean.rename(columns={'contig':'#OTU ID'}, inplace=True)
+		a_series = (df_tpmean != 0).any(axis=1)
+		df_tpmean = df_tpmean.loc[a_series]
+		df_tpmean.to_csv(filename, sep='\t', index=False, header=True)
+		df_tpmean
+
 rule tabletoBIOM:
 	input:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.{sampling}.txt",

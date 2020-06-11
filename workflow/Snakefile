@@ -134,7 +134,7 @@ rule clean_reads:
 
 rule abundance_from_db_contigs:
 	input:
-		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table.tot.txt", sample = SAMPLES)
+		expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_DB.tot.txt", sample = SAMPLES)
 
 rule assembly_vs_reference:
 	input:
