@@ -233,7 +233,6 @@ rule getAbundancesDB:
 
 		df_tpmean.to_csv(filename, sep='\t', header=True)
 		df_tpmean_70.to_csv(filename_70, sep='\t', header=True)
-		df_tpmean_70`
 
 rule tabletoBIOM:
 	input:
