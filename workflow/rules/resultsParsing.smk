@@ -191,21 +191,21 @@ rule getAbundancesDB:
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 
 		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_filtered_coverage." + sampling + ".txt"
-		    with open(breadth_file) as f:
-		        first_line = f.readline().strip()
-		        if first_line=="":
-		            splited=["", ""]
-		        else:
-		            splited=first_line.split(" ", 1)
-		    breadth = pd.DataFrame([splited], columns=['breadth', 'contig'])
-		    #print(tpmean['contig'].tolist())
-		    #print(breadth['contig'].tolist())
+		    #breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
+		    contig=[]
+		    brdth=[]
+		    with open(breadth_file) as fp:
+		        for line in fp:
+		            first_line = line.strip()
+		            if first_line=="":
+		                contig.append("")
+		                brdth.append("")
+		            else:
+		                brdth.append(first_line.split(" ", 1)[0])
+		                contig.append(first_line.split(" ", 1)[1])
+		        breadth = pd.DataFrame({'contig': contig,'breadth': brdth})
 
 		    df=pd.merge(tpmean,breadth,left_on='contig',right_on='contig')
-		    #pd.merge(tpmean, breadth, on='contig', how='outer')
-		    print(df)
-		    print(sample)
-
 		    df["breadth"] = pd.to_numeric(df["breadth"])
 		    df['percentage' ]=df['breadth']/df['length']
 		    df=df.fillna(0)
@@ -221,18 +221,20 @@ rule getAbundancesDB:
 		df_tpmean=df_tpmean.fillna(0)
 		df_tpmean.rename(columns={'contig':'OTU'}, inplace=True)
 
-
 		a_series = (df_tpmean != 0).any(axis=1)
 		df_tpmean = df_tpmean.loc[a_series]
 		df_tpmean.set_index('OTU', inplace=True)
 
-		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.6).any(axis=1)]
+		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.7).any(axis=1)]
+		cols = [c for c in df_tpmean_70.columns if c.lower()[-5:] != 'depth']
+		df_tpmean_70=df_tpmean_70[cols]
 
 		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
 		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
 
 		df_tpmean.to_csv(filename, sep='\t', header=True)
 		df_tpmean_70.to_csv(filename_70, sep='\t', header=True)
+
 
 rule tabletoBIOM:
 	input:
