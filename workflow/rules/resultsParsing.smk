@@ -175,12 +175,8 @@ rule getAbundancesDB:
 		import numpy as np
 		import os
 		os.chdir(RESULTS_DIR)
-		lenght=7000
-		percentage=0.7
-		min_bases=5000
 		sampling=wildcards.sampling
 		df_tpmean=pd.DataFrame()
-		sampling="tot"
 		for sample in SAMPLES:
 		    #READ NUMBER
 		    paired_size=open("02_CLEAN_DATA"+ "/" +sample+"_paired_clean."+sampling+".txt")
@@ -192,6 +188,8 @@ rule getAbundancesDB:
 		    tpmean_file="06_MAPPING"+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
 		    tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
 		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
+		    tpmean["contig"] = tpmean["contig"].str.strip()
+
 		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_filtered_coverage." + sampling + ".txt"
 		    with open(breadth_file) as f:
 		        first_line = f.readline().strip()
@@ -200,7 +198,14 @@ rule getAbundancesDB:
 		        else:
 		            splited=first_line.split(" ", 1)
 		    breadth = pd.DataFrame([splited], columns=['breadth', 'contig'])
-		    df=pd.merge(tpmean, breadth, on='contig', how='outer')
+		    #print(tpmean['contig'].tolist())
+		    #print(breadth['contig'].tolist())
+
+		    df=pd.merge(tpmean,breadth,left_on='contig',right_on='contig')
+		    #pd.merge(tpmean, breadth, on='contig', how='outer')
+		    print(df)
+		    print(sample)
+
 		    df["breadth"] = pd.to_numeric(df["breadth"])
 		    df['percentage' ]=df['breadth']/df['length']
 		    df=df.fillna(0)
@@ -213,8 +218,6 @@ rule getAbundancesDB:
 		        df_tpmean=df
 		    else:
 		        df_tpmean=pd.merge(df, df_tpmean, on='contig', how='outer')
-
-
 		df_tpmean=df_tpmean.fillna(0)
 		df_tpmean.rename(columns={'contig':'OTU'}, inplace=True)
 
@@ -223,13 +226,14 @@ rule getAbundancesDB:
 		df_tpmean = df_tpmean.loc[a_series]
 		df_tpmean.set_index('OTU', inplace=True)
 
-		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.7).any(axis=1)]
+		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.6).any(axis=1)]
 
 		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
 		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
 
 		df_tpmean.to_csv(filename, sep='\t', header=True)
 		df_tpmean_70.to_csv(filename_70, sep='\t', header=True)
+		df_tpmean_70`
 
 rule tabletoBIOM:
 	input:
