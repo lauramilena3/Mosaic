@@ -93,8 +93,8 @@ rule mapReadsToContigsSE:
 		#bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
-		samtools sort {input.bam} -o {output.bam_sorted}
-		samtools index {input.bam_sorted}
+		samtools sort {output.bam} -o {output.bam_sorted}
+		samtools index {output.bam_sorted}
 		"""
 
 # rule filterBAM:
