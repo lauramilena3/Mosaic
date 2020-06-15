@@ -78,6 +78,8 @@ rule mapReadsToContigsSE:
 	output:
 		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
 		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
+		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
+		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
 	params:
 		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
@@ -91,35 +93,37 @@ rule mapReadsToContigsSE:
 		#bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
+		samtools sort {input.bam} -o {output.bam_sorted}
+		samtools index {input.bam_sorted}
 		"""
 
-rule filterBAM:
-	input:
-		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
-	output:
-		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
-	params:
-		out_dir=dirs_dict["MAPPING_DIR"],
-		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}_filtered.bam",
-		p_ident=config['p_ident'],
-	message:
-		"Filtering reads in Bam file with BamM"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env2.yaml"
-	threads: 1
-	shell:
-		"""
-		samtools sort {input.bam} -o {output.bam_sorted}
-		bamm filter --bamfile {output.bam_sorted} --percentage_id {params.p_ident} -o {params.out_dir}
-		mv {params.temp_bam_filtered} {output.bam_filtered}
-		"""
+# rule filterBAM:
+# 	input:
+# 		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
+# 	output:
+# 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
+# 		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
+# 	params:
+# 		out_dir=dirs_dict["MAPPING_DIR"],
+# 		temp_bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}_filtered.bam",
+# 		p_ident=config['p_ident'],
+# 	message:
+# 		"Filtering reads in Bam file with BamM"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env2.yaml"
+# 	threads: 1
+# 	shell:
+# 		"""
+# 		samtools sort {input.bam} -o {output.bam_sorted}
+# 		bamm filter --bamfile {output.bam_sorted} --percentage_id {params.p_ident} -o {params.out_dir}
+# 		mv {params.temp_bam_filtered} {output.bam_filtered}
+# 		"""
 
 rule tpmeanPerConfidence:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
+		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
+		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
 	output:
-		bam_filtered_bai=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam.bai",
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_tpmean.{sampling}.tsv",
 	message:
 		"Calculating tpmean depth coverage"
@@ -128,16 +132,14 @@ rule tpmeanPerConfidence:
 	threads: 1
 	shell:
 		"""
-		samtools index {input.bam_filtered}
-		bamm parse -c {output.tpmean} -m tpmean -b {input.bam_filtered}
+		bamm parse -c {output.tpmean} -m tpmean -b {input.bam_sorted}
 		"""
-
 rule getBreadthCoverage:
 	input:
-		bam_filtered=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted_filtered.{sampling}.bam",
+		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
 	output:
-		bam_cov=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_filtered_genomecov.{sampling}.txt",
-		cov_final=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_filtered_coverage.{sampling}.txt",
+		bam_cov=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_genomecov.{sampling}.txt",
+		cov_final=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_coverage.{sampling}.txt",
 	message:
 		"Calculating breadth coverage contigs"
 	conda:
@@ -145,6 +147,6 @@ rule getBreadthCoverage:
 	threads: 1
 	shell:
 		"""
-		bedtools genomecov -dz -ibam {input.bam_filtered} > {output.bam_cov}
+		bedtools genomecov -dz -ibam {input.bam_sorted} > {output.bam_cov}
 		cut -f 1 {output.bam_cov} | sort| uniq -c | sort -nr | sed -e 's/^[[:space:]]*//' > {output.cov_final}
 		"""
