@@ -71,31 +71,31 @@ rule mapReadsToContigsPE:
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
 		"""
-rule mapReadsToContigsSE:
-	input:
-		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
-	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
-		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
-		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
-	params:
-		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
-	message:
-		"Mapping reads to contigs"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		#Mapping reads to contigs
-		#bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
-		#Sam to Bam
-		samtools view -b -S {output.sam} > {output.bam}
-		samtools sort {output.bam} -o {output.bam_sorted}
-		samtools index {output.bam_sorted}
-		"""
+# rule mapReadsToContigsSE:
+# 	input:
+# 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
+# 	output:
+# 		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
+# 		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
+# 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
+# 		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
+# 	params:
+# 		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
+# 	message:
+# 		"Mapping reads to contigs"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 4
+# 	shell:
+# 		"""
+# 		#Mapping reads to contigs
+# 		#bowtie2 --non-deterministic -x {params.contigs} -U {input.unpaired} -S {output.sam} -p {threads}
+# 		#Sam to Bam
+# 		samtools view -b -S {output.sam} > {output.bam}
+# 		samtools sort {output.bam} -o {output.bam_sorted}
+# 		samtools index {output.bam_sorted}
+# 		"""
 
 # rule filterBAM:
 # 	input:
