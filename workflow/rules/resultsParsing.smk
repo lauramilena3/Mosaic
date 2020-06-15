@@ -190,7 +190,7 @@ rule getAbundancesDB:
 		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 
-		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_filtered_coverage." + sampling + ".txt"
+		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_coverage." + sampling + ".txt"
 		    #breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
 		    contig=[]
 		    brdth=[]
