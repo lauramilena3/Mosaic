@@ -5,7 +5,7 @@ channels:
   - daler
 dependencies:
   - multiqc =1.8      #python3.6
-  - nanofilt =2.2.0   #python3.6
+  - nanofilt =2.7.0   #python3.6
   - nanostat =1.1.2
 #  - quast =5.0.2
   - fastqc =0.11.8    #Java
