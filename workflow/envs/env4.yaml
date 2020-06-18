@@ -7,7 +7,7 @@ dependencies:
   - java-jdk =8.0.112
   - hdf5 =1.10.4
   - numpy =1.17.3
-  - pandas =1.0.5
+  - pandas =0.25.3 #max for vContact2
   - pytables =3.5.1
   - pypandoc =1.4
   - biopython =1.73
