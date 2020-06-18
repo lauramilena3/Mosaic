@@ -6,14 +6,14 @@ channels:
 dependencies:
   - seqtk =1.3
 #CAT
-  - cat =4.3.3
+  - cat =5.0.5
 #VirSorter
   - mcl =14.137
   - muscle =3.8.1551
-  - blast =2.7.1
+  - blast =2.9.0
   - perl-bioperl =1.7.2
   - perl-file-which =1.23
-  - hmmer =3.1b2
+  - hmmer =3.3
   - prodigal =2.6.3
   - perl-parallel-forkmanager =2.02
   - perl-list-moreutils =0.428

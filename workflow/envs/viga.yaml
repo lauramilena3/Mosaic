@@ -11,9 +11,9 @@ dependencies:
   - muscle =3.8.1551
 #  - ucsc-trfbig =377
   - prodigal =2.6.3
-  - diamond =0.9.28
+  - diamond =0.9.34
   - blast =2.9.0
-  - hmmer =3.2.1
+  - hmmer =3.3
 #Other
 #  - mmseqs2=10.6d92c
   - cmake =3.16.3
