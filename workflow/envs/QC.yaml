@@ -6,7 +6,7 @@ channels:
 dependencies:
   - multiqc =1.9      #python3.6
   - nanofilt =2.7.1   #python3.6
-  - nanostat =1.2.2
+  - nanostat =1.2.1
 #  - quast =5.0.2
   - fastqc =0.11.9    #Java
 # Sra toolkit
