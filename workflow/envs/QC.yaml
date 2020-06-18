@@ -4,11 +4,11 @@ channels:
   - biobuilds
   - daler
 dependencies:
-  - multiqc =1.8      #python3.6
-  - nanofilt =2.7.0   #python3.6
-  - nanostat =1.1.2
+  - multiqc =1.9      #python3.6
+  - nanofilt =2.7.1   #python3.6
+  - nanostat =1.2.2
 #  - quast =5.0.2
-  - fastqc =0.11.8    #Java
+  - fastqc =0.11.9    #Java
 # Sra toolkit
   - perl-xml-libxml =2.0132
   - perl-bioperl =1.7.2
