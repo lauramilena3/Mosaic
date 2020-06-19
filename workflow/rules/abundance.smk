@@ -65,7 +65,7 @@ rule mapReadsToContigsPE:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
  	resources:
- 		mem_mb=2000
+ 		mem_mb=4000
 	shell:
 		"""
 		#bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
