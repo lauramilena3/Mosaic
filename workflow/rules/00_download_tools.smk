@@ -215,6 +215,21 @@ rule downloadViralDB:
 			rm virsorter-data-v2.tar.gz
 		fi
 		"""
+rule downloadVcontact2Files:
+	output:
+		gene2genome=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv.gz")),
+		vcontact_format=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa.gz")),
+	message:
+		"Downloading vContact2 formatting database"
+	threads: 1
+	params:
+	shell:
+		"""
+		wget http://s3.climb.ac.uk/ADM_share/crap/website/gene-to-genome.30May2020.csv.gz
+		gunzip -c gene-to-genome.30May2020.csv.gz > {output.gene2genome}
+		wget http://s3.climb.ac.uk/ADM_share/crap/website/vcontact_format_30May2020.faa.gz
+		gunzip -c vcontact_format_30May2020.faa.gz > {output.vcontact_format}
+		"""
 rule getClusterONE:
 	output:
 		clusterONE_dir=directory(config["clusterONE_dir"]),
