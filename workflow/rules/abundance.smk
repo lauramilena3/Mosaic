@@ -70,7 +70,7 @@ rule mapReadsToContigsPE:
 		"""
 		#bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
 		#-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
-		bbmap.sh -Xmx{resources.mem_mb}m ref={input.representatives} nodisk in1={input.forward_paired} in2={input.reverse_paired}  \
+		bbmap.sh ref={input.representatives} nodisk in1={input.forward_paired} in2={input.reverse_paired}  \
 		outm={output.sam} threads={threads}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
