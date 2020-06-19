@@ -217,8 +217,8 @@ rule downloadViralDB:
 		"""
 rule downloadVcontact2Files:
 	output:
-		gene2genome=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv.gz")),
-		vcontact_format=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa.gz")),
+		gene2genome=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv")),
+		vcontact_format=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa")),
 	message:
 		"Downloading vContact2 formatting database"
 	threads: 1
