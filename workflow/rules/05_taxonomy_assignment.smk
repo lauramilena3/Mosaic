@@ -56,6 +56,7 @@ rule clusterTaxonomy:
 		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
 		cat {input.gene2genome} {output.gene2genome} > {output.merged_gene2genome}
 		cat {input.vcontact_format} {input.aa} > {output.merged_ORFs}
+		dos2unix {output.merged_gene2genome}
 		vcontact2 --raw-proteins {output.merged_ORFs} --rel-mode 'Diamond' --proteins-fp {output.merged_gene2genome} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
 		--output-dir {params.out_dir} --threads {threads}

@@ -93,7 +93,7 @@ rule asemblyCanu:
 	threads: 4
 	shell:
 		"""
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+		./{config[canu_dir]}/canu genomeSize=2m minReadLength=1000 -p \
 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw {input.nanopore} \
@@ -208,7 +208,7 @@ rule errorCorrectPilonPE:
 		cp {params.scaffolds_pilon} {output.scaffolds}
 		"""
 
- 
+
 rule asemblyFlye2nd:
 	input:
 		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
