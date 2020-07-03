@@ -53,8 +53,8 @@ rule mapReadsToContigsPE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt"
 	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
+		sam=dirs_dict["MAPPING_DIR"]+ "/bbmap_{sample}.{sampling}.sam",
+		bam=dirs_dict["MAPPING_DIR"]+ "/bbmap_{sample}.{sampling}.bam",
  		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
  		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
 	params:
@@ -82,8 +82,8 @@ rule mapReadsToContigsSE:
 		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
 	output:
-		sam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.sam",
-		bam=dirs_dict["MAPPING_DIR"]+ "/bowtie_{sample}.{sampling}.bam",
+		sam=dirs_dict["MAPPING_DIR"]+ "/bbmap_{sample}.{sampling}.sam",
+		bam=dirs_dict["MAPPING_DIR"]+ "/bbmap_{sample}.{sampling}.bam",
 		bam_sorted=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam",
 		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
 	params:
@@ -146,6 +146,7 @@ rule getBreadthCoverage:
 	output:
 		bam_cov=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_genomecov.{sampling}.txt",
 		cov_final=dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_coverage.{sampling}.txt",
+		tmp_sort=temp(directory(dirs_dict["MAPPING_DIR"]+ "/temp_{sample}_{sampling}")),
 	message:
 		"Calculating breadth coverage contigs"
 	conda:
@@ -154,5 +155,5 @@ rule getBreadthCoverage:
 	shell:
 		"""
 		bedtools genomecov -dz -ibam {input.bam_sorted} > {output.bam_cov}
-		cut -f 1 {output.bam_cov} | sort| uniq -c | sort -nr | sed -e 's/^[[:space:]]*//' > {output.cov_final}
+		cut -f 1 {output.bam_cov} | sort -T {output.tmp_sort} | uniq -c | sort -nr -T {output.tmp_sort} | sed -e 's/^[[:space:]]*//' > {output.cov_final}
 		"""
