@@ -234,7 +234,8 @@ rule getAbundancesDB:
 
 		filter_df=(df_tpmean_70_b >= 0.7)
 		filter_df.columns=df_tpmean_70_d.columns
-		filtered_df_tpmean_70_d=df_tpmean_70_d[filter_df]
+		filtered_df_tpmean_70_d=df_tpmean_70_d[filter_df].fillna(0)
+
 
 		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
 		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
