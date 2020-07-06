@@ -193,7 +193,7 @@ rule getAbundancesDB:
 		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 			#READ COUNTS
-			print(paired)
+		    print(paired)
 		    counts_file="06_MAPPING"+ "/BamM_" +sample+"_counts." + sampling + ".tsv"
 		    counts = pd.read_csv(counts_file, sep="\t", header=0, names=("contig", "length", sample))
 		    counts["contig"] = counts["contig"].str.strip()
