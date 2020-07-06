@@ -193,6 +193,7 @@ rule getAbundancesDB:
 		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 			#READ COUNTS
+			print(paired)
 		    counts_file="06_MAPPING"+ "/BamM_" +sample+"_counts." + sampling + ".tsv"
 		    counts = pd.read_csv(counts_file, sep="\t", header=0, names=("contig", "length", sample))
 		    counts["contig"] = counts["contig"].str.strip()
@@ -239,7 +240,7 @@ rule getAbundancesDB:
 		    #REMOVE NON COVERED CONTIGS
 		    df2=df2[df2[sample + "_breadth"]>0]
 		    if df_counts.empty:
-		        df_counts=df
+		        df_counts=df2
 		    else:
 		        df_counts=pd.merge(df2, df_counts, on='contig', how='outer')
 		#TP MEAN
