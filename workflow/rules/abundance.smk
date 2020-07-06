@@ -155,5 +155,6 @@ rule getBreadthCoverage:
 	shell:
 		"""
 		bedtools genomecov -dz -ibam {input.bam_sorted} > {output.bam_cov}
+		mkdir {output.tmp_sort}
 		cut -f 1 {output.bam_cov} | sort -T {output.tmp_sort} | uniq -c | sort -nr -T {output.tmp_sort} | sed -e 's/^[[:space:]]*//' > {output.cov_final}
 		"""
