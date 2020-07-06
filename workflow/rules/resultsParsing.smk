@@ -226,14 +226,21 @@ rule getAbundancesDB:
 		df_tpmean.set_index('OTU', inplace=True)
 
 		df_tpmean_70=df_tpmean.loc[(df_tpmean >= 0.7).any(axis=1)]
-		cols = [c for c in df_tpmean_70.columns if c.lower()[-5:] != 'depth']
-		df_tpmean_70=df_tpmean_70[cols]
+		cols_d = [c for c in df_tpmean_70.columns if c.lower()[-5:] == 'depth']
+		cols_b = [c for c in df_tpmean_70.columns if c.lower()[-5:] != 'depth']
+
+		df_tpmean_70_d=df_tpmean_70[cols_d]
+		df_tpmean_70_b=df_tpmean_70[cols_b]
+
+		filter_df=(df_tpmean_70_b >= 0.7)
+		filter_df.columns=df_tpmean_70_d.columns
+		filtered_df_tpmean_70_d=df_tpmean_70_d[filter_df]
 
 		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
 		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
 
 		df_tpmean.to_csv(filename, sep='\t', header=True)
-		df_tpmean_70.to_csv(filename_70, sep='\t', header=True)
+		filtered_df_tpmean_70_d.to_csv(filename_70, sep='\t', header=True)
 
 
 rule tabletoBIOM:
