@@ -131,6 +131,7 @@ rule tpmeanPerConfidence:
 		bam_indexed=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_sorted.{sampling}.bam.bai",
 	output:
 		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_tpmean.{sampling}.tsv",
+		tpmean=dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_counts.{sampling}.tsv",
 	message:
 		"Calculating tpmean depth coverage"
 	conda:
@@ -139,6 +140,7 @@ rule tpmeanPerConfidence:
 	shell:
 		"""
 		bamm parse -c {output.tpmean} -m tpmean -b {input.bam_sorted}
+		bamm parse -c {output.counts} -m counts -b {input.bam_sorted}
 		"""
 rule getBreadthCoverage:
 	input:

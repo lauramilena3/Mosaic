@@ -164,6 +164,7 @@ rule getAbundancesDB:
 	input:
 		cov_final=expand(dirs_dict["MAPPING_DIR"]+ "/bedtools_{sample}_coverage.{{sampling}}.txt", sample=SAMPLES),
 		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_tpmean.{{sampling}}.tsv", sample=SAMPLES),
+		tpmean=expand(dirs_dict["MAPPING_DIR"]+ "/BamM_{sample}_counts.{sampling}.tsv", sample=SAMPLES),
 		paired_size=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.{{sampling}}.txt", sample=SAMPLES),
 	output:
 		abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_DB.{sampling}.txt",
@@ -177,6 +178,8 @@ rule getAbundancesDB:
 		os.chdir(RESULTS_DIR)
 		sampling=wildcards.sampling
 		df_tpmean=pd.DataFrame()
+		df_counts=pd.DataFrame()
+
 		for sample in SAMPLES:
 		    #READ NUMBER
 		    paired_size=open("02_CLEAN_DATA"+ "/" +sample+"_paired_clean."+sampling+".txt")
@@ -189,6 +192,10 @@ rule getAbundancesDB:
 		    tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
 		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
 		    tpmean["contig"] = tpmean["contig"].str.strip()
+			#READ COUNTS
+		    counts_file="06_MAPPING"+ "/BamM_" +sample+"_counts." + sampling + ".tsv"
+		    counts = pd.read_csv(counts_file, sep="\t", header=0, names=("contig", "length", sample))
+		    counts["contig"] = counts["contig"].str.strip()
 
 		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_coverage." + sampling + ".txt"
 		    #breadth = pd.read_csv(breadth_file, sep=" ", header=0, names=("breadth", "contig"))
@@ -204,8 +211,9 @@ rule getAbundancesDB:
 		                brdth.append(first_line.split(" ", 1)[0])
 		                contig.append(first_line.split(" ", 1)[1])
 		        breadth = pd.DataFrame({'contig': contig,'breadth': brdth})
-
+			# TPMEAN
 		    df=pd.merge(tpmean,breadth,left_on='contig',right_on='contig')
+
 		    df["breadth"] = pd.to_numeric(df["breadth"])
 		    df['percentage' ]=df['breadth']/df['length']
 		    df=df.fillna(0)
@@ -218,6 +226,23 @@ rule getAbundancesDB:
 		        df_tpmean=df
 		    else:
 		        df_tpmean=pd.merge(df, df_tpmean, on='contig', how='outer')
+
+			#COUNTS
+		    df2=pd.merge(counts,breadth,left_on='contig',right_on='contig')
+
+		    df2["breadth"] = pd.to_numeric(df["breadth"])
+		    df2['percentage']=df2['breadth']/df2['length']
+		    df2=df2.fillna(0)
+		    df2.drop("breadth", axis=1, inplace=True)
+		    #df.drop("length", axis=1, inplace=True)
+		    df2.columns = ['contig', sample + "_depth", sample + "_breadth" ]
+		    #REMOVE NON COVERED CONTIGS
+		    df2=df2[df2[sample + "_breadth"]>0]
+		    if df_counts.empty:
+		        df_counts=df
+		    else:
+		        df_counts=pd.merge(df2, df_counts, on='contig', how='outer')
+		#TP MEAN
 		df_tpmean=df_tpmean.fillna(0)
 		df_tpmean.rename(columns={'contig':'OTU'}, inplace=True)
 
@@ -236,13 +261,34 @@ rule getAbundancesDB:
 		filter_df.columns=df_tpmean_70_d.columns
 		filtered_df_tpmean_70_d=df_tpmean_70_d[filter_df].fillna(0)
 
+		#COUNTS
+		df_counts=df_counts.fillna(0)
+		df_counts.rename(columns={'contig':'OTU'}, inplace=True)
+
+		a_series = (df_counts != 0).any(axis=1)
+		df_counts = df_counts.loc[a_series]
+		df_counts.set_index('OTU', inplace=True)
+
+		df_counts_70=df_counts.loc[(df_counts >= 0.7).any(axis=1)]
+		cols_d = [c for c in df_counts_70.columns if c.lower()[-5:] == 'depth']
+		cols_b = [c for c in df_counts_70.columns if c.lower()[-5:] != 'depth']
+
+		df_counts_70_d=df_counts_70[cols_d]
+		df_counts_70_b=df_counts_70[cols_b]
+
+		filter_df2=(df_counts_70_b >= 0.7)
+		filter_df2.columns=df_counts_70_d.columns
+		filtered_df_counts_70_d=df_counts_70_d[filter_df2].fillna(0)
+
+		#SAVE FILES
 
 		filename="06_MAPPING/vOTU_abundance_table_DB." + sampling + ".txt"
 		filename_70="06_MAPPING/vOTU_abundance_table_DB_70." + sampling + ".txt"
+		filename_70_counts="06_MAPPING/vOTU_abundance_counts_DB_70." + sampling + ".txt"
 
 		df_tpmean.to_csv(filename, sep='\t', header=True)
 		filtered_df_tpmean_70_d.to_csv(filename_70, sep='\t', header=True)
-
+		filtered_df_counts_70_d.to_csv(filename_70_counts, sep='\t', header=True)
 
 rule tabletoBIOM:
 	input:
