@@ -312,7 +312,7 @@ rule extractViralContigs:
 		positive_rep_list=dirs_dict["VIRAL_DIR"]+ "/positive_rep_list.{sampling}.txt",
 		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_list.{sampling}.txt",
 	output:
-		positive_VS_VB_list=dirs_dict["VIRAL_DIR"]+ "/formated_positive_VS_VB_list.{sampling}.txt",
+		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/formatted_merged_scaffolds.{sampling}.fasta"),
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 		positive_rep_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_rep_contigs.{sampling}.fasta",
 		positive_VS_VB_contigs=dirs_dict["VIRAL_DIR"]+ "/positive_VS_VB_contigs.{sampling}.fasta",
@@ -323,8 +323,8 @@ rule extractViralContigs:
 	threads: 1
 	shell:
 		"""
-		sed 's/\./_/g' {input.positive_VS_VB_list} > {output.positive_VS_VB_list}
-		seqtk subseq {input.merged_assembly} {input.positive_rep_list} > {output.positive_rep_contigs}
-		seqtk subseq {input.merged_assembly} {output.positive_VS_VB_list} > {output.positive_VS_VB_contigs}
+		sed 's/\./_/g' {input.merged_assembly} > {output.merged_assembly}
+		seqtk subseq {output.merged_assembly} {input.positive_rep_list} > {output.positive_rep_contigs}
+		seqtk subseq {output.merged_assembly} {output.positive_VS_VB_list} > {output.positive_VS_VB_contigs}
 		cat {output.positive_rep_contigs} {output.positive_VS_VB_contigs} > {output.positive_contigs}
 		"""
