@@ -230,7 +230,7 @@ rule getAbundancesDB:
 			#COUNTS
 		    df2=pd.merge(counts,breadth,left_on='contig',right_on='contig')
 
-		    df2["breadth"] = pd.to_numeric(df["breadth"])
+		    df2["breadth"] = pd.to_numeric(df2["breadth"])
 		    df2['percentage']=df2['breadth']/df2['length']
 		    df2=df2.fillna(0)
 		    df2.drop("breadth", axis=1, inplace=True)
