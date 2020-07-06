@@ -234,7 +234,7 @@ rule getAbundancesDB:
 		    df2['percentage']=df2['breadth']/df2['length']
 		    df2=df2.fillna(0)
 		    df2.drop("breadth", axis=1, inplace=True)
-		    #df.drop("length", axis=1, inplace=True)
+		    df2.drop("length", axis=1, inplace=True)
 		    df2.columns = ['contig', sample + "_depth", sample + "_breadth" ]
 		    #REMOVE NON COVERED CONTIGS
 		    df2=df2[df2[sample + "_breadth"]>0]
