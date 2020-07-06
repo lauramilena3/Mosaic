@@ -188,7 +188,7 @@ rule getAbundancesDB:
 		    #NORMALIZE TP MEAN
 		    tpmean_file="06_MAPPING"+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
 		    tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
-		    tpmean[sample] = tpmean[sample].apply(lambda x: x/pair
+		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 
 		    breadth_file = "06_MAPPING"+ "/bedtools_" +sample+"_coverage." + sampling + ".txt"
