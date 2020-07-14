@@ -1,11 +1,9 @@
-.. image:: picture.jpg
+.. image:: https://user-images.githubusercontent.com/12174880/79860360-d483ce00-83d2-11ea-93ff-8030ff58fc24.png?raw=true
    :width: 200px
    :height: 100px
    :scale: 50 %
    :alt: alternate text
    :align: right
-
-![Alt text](https://user-images.githubusercontent.com/12174880/79860360-d483ce00-83d2-11ea-93ff-8030ff58fc24.png?raw=true "Title")
 
 .. _getting_started:
 
