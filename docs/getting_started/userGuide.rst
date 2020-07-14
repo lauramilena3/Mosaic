@@ -28,12 +28,12 @@ View the number of avaliable cores with::
 Create variables for the number of cores, your raw data directory and the results directory::
    
    nCores=16
-   fastqDir="/path/to/your/raw/data"
-   reusultDir="/path/to/your/desired/results/dir"
+   in_dir="/path/to/your/raw/data"
+   out_dir="/path/to/your/desired/results/dir"
 
 Run Mosaic's pipeline with the desired number of cores and choosen directories::
    
-   snakemake -j $nCores --use-conda --config input_dir=$fastqDir results_dir=$reusultDir
+   snakemake -j $nCores --use-conda --config input_dir=$in_dir results_dir=$out_dir
 
 NOTE: Every time you run Mosaic you need to: 1) activate the virtual environment and 2) run it from the Mosaic/workflow folder.
 
