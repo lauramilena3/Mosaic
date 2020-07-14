@@ -1,3 +1,10 @@
+.. image:: picture.jpg
+   :width: 200px
+   :height: 100px
+   :scale: 50 %
+   :alt: alternate text
+   :align: right
+   
 .. _getting_started:
 
 Requirements
