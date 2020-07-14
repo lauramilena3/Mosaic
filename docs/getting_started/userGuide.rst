@@ -11,7 +11,7 @@ Installation
 Clone GitHub  repo and enter directory::
    
    git clone https://github.com/lauramilena3/Mosaic
-   cd Mosaic/pipes
+   cd Mosaic/workflow
 
 Create Mosaic virtual environment and activate it::
    
@@ -24,11 +24,10 @@ Running Mosaic
 View the number of avaliable cores with::
    
    nproc #Linux
-   sysctl -n hw.ncpu #MacOs
 
-Go into Mosaic directory and create variables for the number of cores, your raw data directory and the results directory of your choice::
+Create variables for the number of cores, your raw data directory and the results directory::
    
-   nCores="cores"
+   nCores=16
    fastqDir="/path/to/your/raw/data"
    reusultDir="/path/to/your/desired/results/dir"
 
@@ -36,7 +35,7 @@ Run Mosaic's pipeline with the desired number of cores and choosen directories::
    
    snakemake -j $nCores --use-conda --config input_dir=$fastqDir results_dir=$reusultDir
 
-NOTE: Please notice that every time you run Mosaic: 1) you will need to activate the virtual environment and 2) you need to run it from the Mosaic/pipes folder. If you are using your laptop we suggest you to leave 2 free processors for other system tasks. 
+NOTE: Every time you run Mosaic you need to: 1) activate the virtual environment and 2) run it from the Mosaic/workflow folder.
 
 Visualize the workflow 
 +++++++++++++++++++++++
