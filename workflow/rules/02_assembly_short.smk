@@ -18,7 +18,7 @@ rule shortReadAsemblySpadesPE:
 		"Assembling PE reads with metaSpades"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 16
+	threads: 8
 	shell:
 		"""
 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired}  --pe1-s {input.unpaired} -o {params.assembly_dir} \
