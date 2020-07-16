@@ -63,6 +63,32 @@ If you want to visualize a simpler diagram, only including the rules, use::
 
    snakemake --rulegraph | dot -Tpdf > rulegraph.pdf
 
+Mosaic modules
+==============
+
+Other mosaic submodules::
+
+   snakemake --use-conda --config input_dir=$in_dir/00_RAW_READS/ -j 16 -k
+   
+   snakemake --use-conda --config input_dir=$in_dir/00_RAW_READS/ nanopore_pooled="True" nanopore_pooled_name=direct_virome nanopore_quality=7 -k -j 64 -n
+
+   snakemake -j 32 --use-conda -p clean_reads --config input_dir=$in_dir/00_RAW_DATA/ contaminants_list="GCF_000001405.39"
+
+   snakemake -j 16 --use-conda -p assembly_vs_reference --config results_dir=$output_dir/ VIRAL_CONTIGS=$ncbi.fasta
+
+   snakemake --use-conda -p annotate_VIGA --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p annotate_contigs --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p annotate_VIBRANT_contigs --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p abundance_from_db_contigs --config input_dir=in_dir/00_RAW_READS/  representative_contigs=$contigs_file.tot.fasta results_dir=$output_dir/
+
+   snakemake --use-conda -k -j 16 -p taxonomyAssignmentvContact --config representative_contigs=$contigs_file.tot.fasta 
+
+   snakemake --use-conda -p taxonomyAssignmenMMseqs --config representative_contigs=$contigs_file.tot.fasta  -k -j 16
+
+
 
 
 
