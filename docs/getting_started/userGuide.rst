@@ -1,3 +1,10 @@
+.. image:: https://user-images.githubusercontent.com/12174880/79860360-d483ce00-83d2-11ea-93ff-8030ff58fc24.png?raw=true
+   :width: 200px
+   :height: 100px
+   :scale: 50 %
+   :alt: alternate text
+   :align: right
+
 .. _getting_started:
 
 Requirements
@@ -11,7 +18,7 @@ Installation
 Clone GitHub  repo and enter directory::
    
    git clone https://github.com/lauramilena3/Mosaic
-   cd Mosaic/pipes
+   cd Mosaic/workflow
 
 Create Mosaic virtual environment and activate it::
    
@@ -24,19 +31,18 @@ Running Mosaic
 View the number of avaliable cores with::
    
    nproc #Linux
-   sysctl -n hw.ncpu #MacOs
 
-Go into Mosaic directory and create variables for the number of cores, your raw data directory and the results directory of your choice::
+Create variables for the number of cores, your raw data directory and the results directory::
    
-   nCores="cores"
-   fastqDir="/path/to/your/raw/data"
-   reusultDir="/path/to/your/desired/results/dir"
+   nCores=16
+   in_dir="/path/to/your/raw/data"
+   out_dir="/path/to/your/desired/results/dir"
 
 Run Mosaic's pipeline with the desired number of cores and choosen directories::
    
-   snakemake -j $nCores --use-conda --config input_dir=$fastqDir results_dir=$reusultDir
+   snakemake -j $nCores --use-conda --config input_dir=$in_dir results_dir=$out_dir
 
-NOTE: Please notice that every time you run Mosaic: 1) you will need to activate the virtual environment and 2) you need to run it from the Mosaic/pipes folder. If you are using your laptop we suggest you to leave 2 free processors for other system tasks. 
+NOTE: Every time you run Mosaic you need to: 1) activate the virtual environment and 2) run it from the Mosaic/workflow folder.
 
 Visualize the workflow 
 +++++++++++++++++++++++
@@ -56,6 +62,32 @@ RULES
 If you want to visualize a simpler diagram, only including the rules, use::
 
    snakemake --rulegraph | dot -Tpdf > rulegraph.pdf
+
+Mosaic modules
+==============
+
+Other mosaic submodules::
+
+   snakemake --use-conda --config input_dir=$in_dir/00_RAW_READS/ -j 16 -k
+   
+   snakemake --use-conda --config input_dir=$in_dir/00_RAW_READS/ nanopore_pooled="True" nanopore_pooled_name=direct_virome nanopore_quality=7 -k -j 64 -n
+
+   snakemake -j 32 --use-conda -p clean_reads --config input_dir=$in_dir/00_RAW_DATA/ contaminants_list="GCF_000001405.39"
+
+   snakemake -j 16 --use-conda -p assembly_vs_reference --config results_dir=$output_dir/ VIRAL_CONTIGS=$ncbi.fasta
+
+   snakemake --use-conda -p annotate_VIGA --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p annotate_contigs --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p annotate_VIBRANT_contigs --config representative_contigs=$contigs_file.tot.fasta -k -j 16 -n
+
+   snakemake --use-conda -p abundance_from_db_contigs --config input_dir=in_dir/00_RAW_READS/  representative_contigs=$contigs_file.tot.fasta results_dir=$output_dir/
+
+   snakemake --use-conda -k -j 16 -p taxonomyAssignmentvContact --config representative_contigs=$contigs_file.tot.fasta 
+
+   snakemake --use-conda -p taxonomyAssignmenMMseqs --config representative_contigs=$contigs_file.tot.fasta  -k -j 16
+
 
 
 
