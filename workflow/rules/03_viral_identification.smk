@@ -324,6 +324,7 @@ rule extractViralContigs:
 	shell:
 		"""
 		sed 's/\./_/g' {input.merged_assembly} > {output.merged_assembly}
+		sed -i 's/\./_/g' {input.positive_VS_VB_list}
 		seqtk subseq {output.merged_assembly} {input.positive_rep_list} > {output.positive_rep_contigs}
 		seqtk subseq {output.merged_assembly} {input.positive_VS_VB_list} > {output.positive_VS_VB_contigs}
 		cat {output.positive_rep_contigs} {output.positive_VS_VB_contigs} > {output.positive_contigs}
