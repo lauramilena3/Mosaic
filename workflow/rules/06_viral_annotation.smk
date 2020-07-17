@@ -210,7 +210,7 @@ rule annotate_VIBRANT:
 	shell:
 		"""
 		cd {params.viral_dir}
-		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads}
+		{input.VIBRANT_dir}/VIBRANT_run.py -i {input.representatives} -t {threads} -virome
 		cut -f1 {params.name_circular} > {output.vibrant_circular}
 		touch {output.vibrant_circular}
 		cp {output.vibrant}/VIBRANT_phages_*/*phages_combined.txt {output.vibrant_positive}
