@@ -15,7 +15,7 @@ rule virSorter:
 	threads: 32
 	shell:
 		"""
-		virsorter run -w {params.out_folder}} -i {input.,merged_assembly} -j {threads} --db-dir
+		virsorter run -w {params.out_folder} -i {input.,merged_assembly} -j {threads} --db-dir
 		grep ">" {output.results} import names}} | cut -f1 -d\| | sed "s/>//g" > {output.positive_list}
 		"""
 
