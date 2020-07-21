@@ -1,12 +1,11 @@
 rule virSorter:
 	input:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
-		virSorter_dir=config['virSorter_dir'],
-		virSorter_db=config['virSorter_db']
+		virSorter_db=config['virSorter_db'],
 	output:
 		positive_fasta=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-combined.fa",
-		table_virsorter=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-score.tsv"
-		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt"
+		table_virsorter=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-score.tsv",
+		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt",
 	params:
 		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
 	message:
@@ -23,7 +22,7 @@ rule virSorter:
 rule extractViralContigs:
 	input:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
-		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt"
+		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt",
 	output:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 	message:
