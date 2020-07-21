@@ -319,15 +319,3 @@ rule getSummaryTable:
 		"""
 		touch {output.summary}
 		"""
-rule getSummaryFile:
-	input:
-
-	output:
-		summary=dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",
-	message:
-		"Getting vOTU tables"
-	threads: 1
-	shell:
-		"""
-		touch {output.summary}
-		"""
