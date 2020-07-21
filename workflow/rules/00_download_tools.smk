@@ -194,27 +194,41 @@ rule downloadViralTools:
 			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
 		fi
 		"""
-
-rule downloadViralDB:
+rule downloadVirSorterDB:
 	output:
 		virSorter_db=directory(config['virSorter_db']),
 	message:
 		"Downloading VirSorter database"
-	threads: 1
+	threads: 4
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	params:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		VS_db="{config[virSorter_db]}"
-		echo $VS_db
-		if [ ! -d $VS_db ]
-		then
-			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
-			mkdir -p {params.virSorter_db}
-			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
-			rm virsorter-data-v2.tar.gz
-		fi
+		virsorter setup -d {output} -j 4
 		"""
+
+# rule downloadVirSorterDB:
+# 	output:
+# 		virSorter_db=directory(config['virSorter_db']),
+# 	message:
+# 		"Downloading VirSorter database"
+# 	threads: 1
+# 	params:
+# 		virSorter_db="db/VirSorter"
+# 	shell:
+# 		"""
+# 		VS_db="{config[virSorter_db]}"
+# 		echo $VS_db
+# 		if [ ! -d $VS_db ]
+# 		then
+# 			curl -OL https://zenodo.org/record/1168727/files/virsorter-data-v2.tar.gz
+# 			mkdir -p {params.virSorter_db}
+# 			tar -xvzf virsorter-data-v2.tar.gz -C {params.virSorter_db}
+# 			rm virsorter-data-v2.tar.gz
+# 		fi
+# 		"""
 rule downloadVcontact2Files:
 	output:
 		gene2genome=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv")),

@@ -8,6 +8,7 @@ dependencies:
 #CAT
   - cat =5.0.5
 #VirSorter
+  - virsorter =2.0
   - mcl =14.137
   - muscle =3.8.1551
   - blast =2.9.0
