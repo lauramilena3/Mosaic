@@ -23,8 +23,8 @@ rule clusterTaxonomy:
 	input:
 		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 		clusterONE_dir=config["clusterONE_dir"],
-		gene2genome=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv")),
-		vcontact_format=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa")),
+		gene2genome_format_csv=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv")),
+		vcontact_format_aa=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa")),
 	output:
 		gene2genome=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/gene2genome.csv",
 		merged_gene2genome=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/gene2genome_merged.csv",
@@ -40,22 +40,9 @@ rule clusterTaxonomy:
 	threads: 8
 	shell:
 		"""
-		# if [ ! -d {params.vcontact_dir} ]
-		# the
-		# 	git clone https://bitbucket.org/MAVERICLab/vcontact2/
-		# 	mv vcontact2 tools
-		# 	envir=$( which vcontact | rev | cut -d/ -f3 | rev)
-		# 	cp {params.vcontact_dir}/vcontact/data/ViralRefSeq-* .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/data/
-		# 	cp scripts/matrices.py .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/matrices.py
-		# 	cp scripts/vcontact .snakemake/conda/$envir/bin/vcontact
-		# 	cp scripts/summaries.py .snakemake/conda/$envir/lib/python3.7/site-packages/vcontact/exports/summaries.py
-		# fi
-		#three changes in code 1) int 2,3) summary remove excluded
-
-		grep -c ">" {input.aa}
 		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
-		cat {input.gene2genome} {output.gene2genome} > {output.merged_gene2genome}
-		cat {input.vcontact_format} {input.aa} > {output.merged_ORFs}
+		cat {output.gene2genome} {input.gene2genome_format_csv}  > {output.merged_gene2genome}
+		cat {input.aa} {input.vcontact_format_aa} > {output.merged_ORFs}
 		dos2unix {output.merged_gene2genome}
 		vcontact2 --raw-proteins {output.merged_ORFs} --rel-mode 'Diamond' --proteins-fp {output.merged_gene2genome} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
