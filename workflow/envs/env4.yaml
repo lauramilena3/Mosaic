@@ -22,5 +22,6 @@ dependencies:
   - biom-format =2.1.7
   - taxonkit =0.6.0
   - vcontact2 =0.9.17
+  - mmseqs2 =v11.e1a1c
 #  - pip:
 #    - git+https://bitbucket.org/MAVERICLab/vcontact2/src/master/vcontact/
