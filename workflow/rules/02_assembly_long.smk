@@ -41,7 +41,7 @@ rule hybridAsemblySpades:
 	shell:
 		"""
 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired}  --pe1-s {input.unpaired} -o {params.assembly_dir} \
-		--meta -t {threads} --only-assembler --nanopore {input.nanopore}
+		--meta -t {threads} --only-assembler --nanopore {input.nanopore} --memory 350
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
@@ -217,7 +217,7 @@ rule asemblyFlye2nd:
 		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
 	message:
-		"Assembling Nanopore reads with Flye"
+		"Assembling metaSPAdes and canu subassemblies with Flye"
 	params:
 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
 		genome_size="20m"
@@ -230,6 +230,7 @@ rule asemblyFlye2nd:
 		cp {output.scaffolds} {output.scaffolds_flye2}
 		sed -i "s/>/>{wildcards.sample}_/g" {output.scaffolds_flye2}
 		"""
+
 # rule errorCorrectSE:
 # 	input:
 # 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
