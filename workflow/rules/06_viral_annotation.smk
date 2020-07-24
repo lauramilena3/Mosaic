@@ -205,7 +205,7 @@ rule annotate_VIBRANT:
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	message:
-		"Identifying viral contigs with VIBRANT"
+		"Annotating viral contigs with VIBRANT"
 	threads: 8
 	shell:
 		"""
