@@ -72,10 +72,10 @@ rule annotate_BLAST:
 		"Annotating contigs with BLAST"
 	threads: 8
 	shell:
-	"""
-	blastp -num_threads {threads} -db {input.blast} -query {input.representatives} \
-	-outfmt "6 qseqid sseqid stitle qstart qend qlen slen qcovs evalue length" > {output.blast_output}
-	"""
+		"""
+		blastp -num_threads {threads} -db {input.blast} -query {input.representatives} \
+		-outfmt "6 qseqid sseqid stitle qstart qend qlen slen qcovs evalue length" > {output.blast_output}
+		"""
 
 rule create_dbs_mmseqs2:
 	input:
