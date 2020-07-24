@@ -270,13 +270,13 @@ rule downloadCanu:
 			if [ {config[operating_system]} == "macOs" ]
 			then
 				mkdir -p tools
-				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Darwin-amd64.tar.xz
+				curl -OL https://github.com/marbl/canu/releases/download/v2.0/canu-2.0.Darwin-amd64.tar.xz
 			else
 				mkdir -p tools
-				curl -OL https://github.com/marbl/canu/releases/download/v1.8/canu-1.8.Linux-amd64.tar.xz
+				curl -OL https://github.com/marbl/canu/releases/download/v2.0/canu-2.0.Linux-amd64.tar.xz
 			fi
 		fi
-		tar -xJf canu-1.8.*.tar.xz -C tools
+		tar -xJf canu-2.0.*.tar.xz -C tools
 		"""
 rule get_WIsH:
 	input:
