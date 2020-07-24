@@ -65,12 +65,13 @@ rule annotate_BLAST:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		blast=(os.path.join(workflow.basedir,"db/ncbi/NCBI_viral_proteins.faa")),
 	output:
-		blast_output=temp(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv"),
+		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv"),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
 		"Annotating contigs with BLAST"
 	threads: 8
+	shell:
 	"""
 	blastp -num_threads {threads} -db {input.blast} -query {input.representatives} \
 	-outfmt "6 qseqid sseqid stitle qstart qend qlen slen qcovs evalue length" > {output.blast_output}
