@@ -61,6 +61,8 @@ rule mmseqsTaxonomy:
 		table=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl"),
 	message:
 		"Taxonomy Assignment with MMseqs2"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	params:
 		positive_contigsDB=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/positive_contigsDB"),
 		taxonomyResultDB=directory(dirs_dict["vOUT_DIR"] + "/taxonomy_mmseqs_"+ REPRESENTATIVE_CONTIGS_BASE + ".{sampling}/taxonomyResultDB"),
@@ -68,17 +70,17 @@ rule mmseqsTaxonomy:
 		taxdump=(os.path.join(workflow.basedir,"db/ncbi-taxdump/")),
 		refDB=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fnaDB")),
 	conda:
-		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 8
 	shell:
 		"""
 		#analyse
 		#mkdir {output.mmseqsdir}
-		{input.mmseqs_dir}/build/bin/mmseqs createdb {input.representatives} {params.positive_contigsDB}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
-			{params.taxonomyResultDB} {params.tmp} --search-type 3 --lca-mode 2
+		mmseqs createdb {input.representatives} {params.positive_contigsDB}
+		mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
+			{params.taxonomyResultDB} {params.tmp} --search-type 3 --lca-mode 2 -c 0.3 --cov-mode 1
 		#results
-		{input.mmseqs_dir}/build/bin/mmseqs createtsv {params.positive_contigsDB} {params.taxonomyResultDB} {output.tsv}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.table}
-		{input.mmseqs_dir}/build/bin/mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.html} --report-mode 1
+		mmseqs createtsv {params.positive_contigsDB} {params.taxonomyResultDB} {output.tsv}
+		mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.table}
+		mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.html} --report-mode 1
 	 	"""

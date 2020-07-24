@@ -38,7 +38,7 @@ basecalled_dir: "data/basecalled/"
 
 virSorter_db: "db/VirSorter/virsorter-data"
 kraken_db: "db/NCBI-bacteria-01.04.2019"
-canu_dir: "tools/canu-1.8/Linux-amd64/bin" #linux
+canu_dir: "tools/canu-2.0/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
 virFinder_dir: "tools/VirFinder"

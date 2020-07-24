@@ -244,6 +244,19 @@ rule downloadVcontact2Files:
 		wget http://s3.climb.ac.uk/ADM_share/crap/website/vcontact_format_30May2020.faa.gz
 		gunzip -c vcontact_format_30May2020.faa.gz > {output.vcontact_format}
 		"""
+
+rule downloadBLASTviralProteins:
+	output:
+		blast=(os.path.join(workflow.basedir,"db/ncbi/NCBI_viral_proteins.faa")),
+	message:
+		"Downloading vContact2 formatting database"
+	threads: 1
+	shell:
+		"""
+		esearch -db "protein" -query "txid10239[Organism:exp] AND (viruses[filter] AND refseq[filter])" \
+			| efetch -format fasta > {output.blast}
+		makeblastdb -in {output.blast} -dbtype prot
+		"""
 rule getClusterONE:
 	output:
 		clusterONE_dir=directory(config["clusterONE_dir"]),

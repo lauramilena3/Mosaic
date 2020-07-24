@@ -28,7 +28,7 @@ rule annotate_VIGA:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
 		"Annotating contigs with VIGA"
-	threads: 64
+	threads: 8
 	shell:
 		"""
 		PILER={input.piler_dir}
@@ -60,6 +60,21 @@ rule annotate_VIGA:
 		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{{$1+=-1}}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
 		"""
+rule annotate_BLAST:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		blast=(os.path.join(workflow.basedir,"db/ncbi/NCBI_viral_proteins.faa")),
+	output:
+		blast_output=temp(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv"),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	message:
+		"Annotating contigs with BLAST"
+	threads: 8
+	"""
+	blastp -num_threads {threads} -db {input.blast} -query {input.representatives} \
+	-outfmt "6 qseqid sseqid stitle qstart qend qlen slen qcovs evalue length" > {output.blast_output}
+	"""
 
 rule create_dbs_mmseqs2:
 	input:
@@ -77,14 +92,15 @@ rule create_dbs_mmseqs2:
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Creating databases for reference and assembly mmseqs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 4
 	shell:
 		"""
-		{params.mmseqs}/mmseqs createdb {input.representatives} {params.representatives_name}
-		{params.mmseqs}/mmseqs createdb {input.reference} {params.reference_name}
-		{params.mmseqs}/mmseqs createindex {params.reference_name} tmp --search-type 3
+		mmseqs createdb {input.representatives} {params.representatives_name}
+		mmseqs createdb {input.reference} {params.reference_name}
+		mmseqs createindex {params.reference_name} tmp --search-type 3
 		"""
-
 rule search_contigs_mmseqs2:
 	input:
 		index_representatives=dirs_dict["MMSEQS"] + "/representatives.index",
@@ -101,13 +117,15 @@ rule search_contigs_mmseqs2:
 		mmseqs= "./" + config['mmseqs_dir'] + "/build/bin",
 	message:
 		"Comparing reference and assembly mmseqs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
 	threads: 16
 	shell:
 		"""
 		mkdir {output.temp_dir}
-		{params.mmseqs}/mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
+		mmseqs search {params.representatives_name} {params.reference_name} {params.results_name} {output.temp_dir} \
 		--start-sens 1 --sens-steps 3 -s 7 --search-type 3 --threads {threads}
-		{params.mmseqs}/mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
+		mmseqs convertalis {params.representatives_name} {params.reference_name} {params.results_name} {output.results_table}
 		"""
 
 rule create_WIsH_models:
