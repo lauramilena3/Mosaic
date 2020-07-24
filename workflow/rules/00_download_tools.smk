@@ -251,6 +251,8 @@ rule downloadBLASTviralProteins:
 	message:
 		"Downloading vContact2 formatting database"
 	threads: 1
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
 	shell:
 		"""
 		esearch -db "protein" -query "txid10239[Organism:exp] AND (viruses[filter] AND refseq[filter])" \
