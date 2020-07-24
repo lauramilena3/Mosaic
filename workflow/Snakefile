@@ -112,7 +112,7 @@ def inputAll(wildcards):
 	inputs.append(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.html")
 	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE))
 	inputs.extend(directory(expand(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}",sampling=SAMPLING_TYPE)))
-	inputs.extend(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv",sampling=SAMPLING_TYPE)
+	inputs.extend(expand(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv",sampling=SAMPLING_TYPE))
 
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
