@@ -249,7 +249,7 @@ rule downloadBLASTviralProteins:
 	output:
 		blast=(os.path.join(workflow.basedir,"db/ncbi/NCBI_viral_proteins.faa")),
 	message:
-		"Downloading vContact2 formatting database"
+		"Downloading RefSeq viral proteins for blast annotation"
 	threads: 1
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml",
