@@ -75,7 +75,7 @@ rule trim_adapters_quality_illumina_PE:
 		"Trimming Illumina Adapters with Trimmomatic"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	threads: 2
+	threads: 8
 	shell:
 		"""
 		trimmomatic PE -threads {threads} -phred33 {input.forward} {input.reverse} \
@@ -232,7 +232,7 @@ rule remove_phiX174_PE:
 		"Removing phiX174 with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	threads: 1
+	threads: 4
 	resources:
 		mem_mb=4000
 	shell:
