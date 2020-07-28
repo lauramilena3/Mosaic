@@ -26,7 +26,7 @@ rule getAbundancesPE:
 			unpaired_size=open(dirs_dict["CLEAN_DATA_DIR"]+ "/" +sample+"_unpaired_clean."+sampling+".txt")
 			paired=int(paired_size.readline())
 			unpaired=int(unpaired_size.readline())
-			reads=((paired*2)+unpaired)/1000000
+			reads=((paired))/1000000
 			#NORMALIZE TP MEAN
 			tpmean_file=dirs_dict["MAPPING_DIR"]+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
 			tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
@@ -186,11 +186,11 @@ rule getAbundancesDB:
 		    unpaired_size=open("02_CLEAN_DATA"+ "/" +sample+"_unpaired_clean."+sampling+".txt")
 		    paired=int(paired_size.readline())
 		    unpaired=int(unpaired_size.readline())
-		    reads=((paired*2)+unpaired)/1000000
+		    #reads=((paired*2)+unpaired)/1000000
 		    #NORMALIZE TP MEAN
 		    tpmean_file="06_MAPPING"+ "/BamM_" +sample+"_tpmean." + sampling + ".tsv"
 		    tpmean = pd.read_csv(tpmean_file, sep="\t", header=0, names=("contig", "length", sample))
-		    tpmean[sample] = tpmean[sample].apply(lambda x: x/paired)
+		    tpmean[sample] = tpmean[sample].apply(lambda x: x*1000000/paired)
 		    tpmean["contig"] = tpmean["contig"].str.strip()
 			#READ COUNTS
 		    print(paired)
