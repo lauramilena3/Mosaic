@@ -208,7 +208,18 @@ rule downloadVirSorterDB:
 		"""
 		virsorter setup -d {output} -j 4
 		"""
-
+rule downloadCheckvDB:
+	output:
+		checkv_db=directory(config['checkv_db']),
+	message:
+		"Downloading CheckV database"
+	threads: 4
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+	shell:
+		"""
+		checkv download_database ./db
+		"""
 # rule downloadVirSorterDB:
 # 	output:
 # 		virSorter_db=directory(config['virSorter_db']),

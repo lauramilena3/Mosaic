@@ -18,7 +18,28 @@ rule vOUTclustering:
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		cp {output.representatives_temp} {output.representatives}
 		"""
-
+rule estimateGenomeCompletness:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+	output:
+		quality_summary=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
+		completeness=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/completeness.tsv",
+		contamination=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/contamination.tsv",
+		repeats=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/repeats.tsv",
+	params:
+		checkv_outdir=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}",
+	message:
+		"Estimating genome completeness with CheckV "
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+	threads: 1
+	shell:
+		"""
+		checkv contamination {input.representatives} {params.checkv} -t {threads}
+		checkv completeness {input.representatives} {params.checkv} -t {threads}
+		checkv repeats {input.representatives} {params.checkv}
+		checkv quality_summary {input.representatives} {params.checkv}
+		"""
 #rule circularizeContigs:
 #	input:
 #		seeds=dirs_dict["vOUT_DIR"] + "/{sample}_merged_scaffolds_95-80.fna",
