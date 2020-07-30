@@ -36,6 +36,7 @@ contaminants_list: ""
 adapters_file: "adapters.fa"
 basecalled_dir: "data/basecalled/"
 
+img_vr_db: "db/IMG_VR/"
 virSorter_db: "db/VirSorter/virsorter-data"
 kraken_db: "db/NCBI-bacteria-01.04.2019"
 checkv_db: "db/checkv-db-v0.6"

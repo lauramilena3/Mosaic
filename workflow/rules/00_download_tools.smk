@@ -254,6 +254,9 @@ rule downloadVcontact2Files:
 		gunzip -c gene-to-genome.30May2020.csv.gz > {output.gene2genome}
 		wget http://s3.climb.ac.uk/ADM_share/crap/website/vcontact_format_30May2020.faa.gz
 		gunzip -c vcontact_format_30May2020.faa.gz > {output.vcontact_format}
+		dos2unix {output.gene2genome}
+		dos2unix {output.vcontact_format}
+		#sed -i "s/None/None_provided/g" {output.gene2genome}
 		"""
 
 rule downloadBLASTviralProteins:

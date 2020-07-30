@@ -47,6 +47,7 @@ SRA_list=config['sra_list'].split()
 
 CONTAMINANTS=config['contaminants_list'].split()
 NANOPORE=False
+TOMBO=False
 PAIRED=False
 READ_TYPES=[config['forward_tag']]
 POOLED=config['nanopore_pooled']
@@ -59,6 +60,8 @@ if not RAW_DATA_DIR == "":
 			PAIRED=True
 		elif fname.endswith(str(config['nanopore_tag']) + '.fastq'):
 			NANOPORE=True
+		elif fname.endswith(str(config['nanopore_tag']) + '_fast5_single'):
+			TOMBO=True
 else:
 	RAW_DATA_DIR=RESULTS_DIR+"/00_RAW_DATA"
 
@@ -95,6 +98,9 @@ print(RESULTS_DIR)
 print("Nanopore = ")
 print(NANOPORE)
 
+print("FAST5 = ")
+print(TOMBO)
+
 print("Nanopore sampes= ")
 print(NANOPORE_SAMPLES)
 #======================================================
@@ -114,10 +120,12 @@ def inputAll(wildcards):
 	inputs.extend(directory(expand(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}",sampling=SAMPLING_TYPE)))
 	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv", sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/quality_summary.tsv", sampling=SAMPLING_TYPE))
-
+	inputs.extend(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv")
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
+	if TOMBO:
+		inputs.extend(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".fraction_modified_reads.plus.wig")
 	return inputs
 
 rule all:

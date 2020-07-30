@@ -77,6 +77,22 @@ rule annotate_BLAST:
 		-outfmt "6 qseqid sseqid stitle qstart qend qlen slen qcovs evalue length" > {output.blast_output}
 		"""
 
+rule blasToIMGVR:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		img_vr_db=(config['img_vr_db']) + "IMG_VR.fasta",
+	output:
+		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv"),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/viga.yaml"
+	message:
+		"Blast contigs agaist IMG/VR database"
+	threads: 8
+	shell:
+		"""
+		blastp -num_threads {threads} -db {input.img_vr_db} -query {input.representatives} \
+		-outfmt "6 qseqid sseqid qstart qend qlen slen qcovs evalue length" > {output.blast_output}
+		"""
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),
@@ -239,4 +255,28 @@ rule annotate_VIBRANT:
 		#vibrant_tables_unformated=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
 		#vibrant_phages=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
 		#vibrant_results=(directory(dirs_dict["ANNOTATION"] + "/VIBRANT_HMM_tables_unformatted_" +VIRAL_CONTIGS_BASE + ".tot"),
+		"""
+
+rule detectNucleotideModifications:
+	input:
+		fastq_file=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore.fastq",
+		fast5_dir=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore_single_fast5",
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+	output:
+		plus_wig=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".fraction_modified_reads.plus.wig"),
+		minus_wig=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".fraction_modified_reads.minus.wig"),
+	params:
+		representative_basename=REPRESENTATIVE_CONTIGS_BASE,
+	message:
+		"Detecting nucleotide modifications with tombo"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 16
+	shell:
+		"""
+		tombo preprocess annotate_raw_with_fastqs --fast5-basedir {input.fast5_dir} --fastq-filenames {input.fastq_file} --overwrite --processes {theads}
+		tombo resquiggle {input.fast5_dir} {input.representatives} --processes {threads}
+		tombo detect_modifications de_novo --fast5-basedirs {input.fast5_dir} --statistics-file-basename {params.representative_basename}.de_novo --processes {threads}
+		tombo text_output browser_files --fast5-basedirs {input.fast5_dir} --statistics-filename {params.representative_basename}.de_novo.tombo.stats \
+		--genome-fasta {input.representatives} --browser-file-basename {params.representative_basename} --file-types fraction
 		"""
