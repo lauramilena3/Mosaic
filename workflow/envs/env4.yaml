@@ -19,7 +19,7 @@ dependencies:
   - pyparsing =2.4.5
 #  - blast 2.7.1
   - diamond =0.9.34
-  - biom-format =2.1.7
+#  - biom-format =2.1.7
   - taxonkit =0.6.0
   - vcontact2 =0.9.19
   - mmseqs2 =11.e1a1c
