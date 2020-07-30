@@ -31,7 +31,7 @@ rule estimateGenomeCompletness:
 	message:
 		"Estimating genome completeness with CheckV "
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 1
 	shell:
 		"""
