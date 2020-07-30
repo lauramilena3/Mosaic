@@ -35,10 +35,10 @@ rule estimateGenomeCompletness:
 	threads: 1
 	shell:
 		"""
-		checkv contamination {input.representatives} {params.checkv} -t {threads}
-		checkv completeness {input.representatives} {params.checkv} -t {threads}
-		checkv repeats {input.representatives} {params.checkv}
-		checkv quality_summary {input.representatives} {params.checkv}
+		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads}
+		checkv repeats {input.representatives} {params.checkv_outdir}
+		checkv quality_summary {input.representatives} {params.checkv_outdir}
 		"""
 #rule circularizeContigs:
 #	input:
