@@ -162,7 +162,7 @@ rule annotate_VIBRANT_contigs:
 
 rule checkViralCompletness:
 	input:
-		checkV=dirs_dict["VIRAL_DIR"] + "/checkV_tot/quality_summary.tsv", sampling=SAMPLING_TYPE))
+		checkV=dirs_dict["VIRAL_DIR"] + "/checkV_tot/quality_summary.tsv"
 
 rule annotate_VIGA_contigs:
 	input:
