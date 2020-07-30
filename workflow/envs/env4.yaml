@@ -23,7 +23,6 @@ dependencies:
   - taxonkit =0.6.0
   - vcontact2 =0.9.19
   - mmseqs2 =11.e1a1c
-  - checkv =0.6.0
-  - ont-tombo 1.5.1
+
 #  - pip:
 #    - git+https://bitbucket.org/MAVERICLab/vcontact2/src/master/vcontact/

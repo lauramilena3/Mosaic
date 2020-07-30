@@ -13,3 +13,5 @@ dependencies:
   - scikit-learn =0.23.1
   - hmmer =3.3
   - wget =1.20.1
+  - checkv =0.6.0
+  - ont-tombo 1.5.1
