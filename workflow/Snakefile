@@ -179,7 +179,7 @@ rule getSRA_runs:
 
 rule taxonomyAssignmentvContact:
 	input:
-        dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs_merged.{sampling}.fasta
+		OTUs=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs_merged.tot.fasta",
 rule taxonomyAssignmenMMseqs:
 	input:
 		html=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.html"),
