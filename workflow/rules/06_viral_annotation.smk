@@ -80,7 +80,7 @@ rule annotate_BLAST:
 rule blasToIMGVR:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
-		img_vr_db=(config['img_vr_db']) + "IMG_VR.fasta",
+		img_vr_db="home/lmf/db/" (config['img_vr_db']) + "IMG_VR.fasta",
 	output:
 		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv"),
 	conda:
@@ -90,7 +90,7 @@ rule blasToIMGVR:
 	threads: 8
 	shell:
 		"""
-		blastp -num_threads {threads} -db {input.img_vr_db} -query {input.representatives} \
+		blastn -num_threads {threads} -db {input.img_vr_db} -query {input.representatives} \
 		-outfmt "6 qseqid sseqid qstart qend qlen slen qcovs evalue length" > {output.blast_output}
 		"""
 rule create_dbs_mmseqs2:

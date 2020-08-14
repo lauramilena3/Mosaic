@@ -1,0 +1,36 @@
+#
+#mmseqs prefilter representatives IMG_VR IMG_VR_pref -s 7.5 --threads 16
+#mmseqs align representatives IMG_VR IMG_VR_pref IMG_VR_best_results_aln -a
+#mmseqs convertalis representatives IMG_VR IMG_VR_best_results_aln IMG_VR_align.txt --format-output "query,target,qlen,qaln,qcov,tlen" --search-type 3
+#--min-seq-id 0.95 -c 0.8
+
+#
+#minimap2 -cx asm20 --cs ../ESCHERICHIA_PHAGES/unique.tot.fasta IMG_VR.fasta > minimap.paf
+#awk '((($9-$8)/$7)>.80)' minimap.paf
+
+
+makeblastdb -in IMG_VR.fasta -dbtype nucl
+blastn -db IMG_VR.fasta -query ../ESCHERICHIA_PHAGES/unique.tot.fasta -outfmt "6 qseqid sseqid qstart qend qlen slen qcovs evalue length" > blast.out
+
+
+#WANG
+while read SRA; do echo $SRA; fastq-dump --split-files $SRA & done < accession_list.txt
+
+trimmomatic PE -threads 4 -phred33 00_RAW_DATA/${SRA}_1.fastq 00_RAW_DATA/${SRA}_2.fastq  \
+02_CLEAN_DATA/${SRA}_forward_paired.fastq  02_CLEAN_DATA/${SRA}_forward_unpaired.fastq 02_CLEAN_DATA/${SRA}_reverse_paired.fastq 02_CLEAN_DATA/${SRA}_reverse_unpaired.fastq \
+ILLUMINACLIP:{params.adapters}:2:30:10:2:true LEADING:{config[trimmomatic_leading]} TRAILING:{config[trimmomatic_trailing]} \
+SLIDINGWINDOW:{config[trimmomatic_window_size]}:{config[trimmomatic_window_quality]} MINLEN:{config[trimmomatic_minlen]}
+
+Nextera
+
+
+Written 5775367 spots for SRR7287341
+Read 6019662 spots for SRR7287609
+Written 6019662 spots for SRR7287609
+Read 7636182 spots for SRR7287333
+Written 7636182 spots for SRR7287333
+2020-05-19T12:48:47 fastq-dump.2.9.6 sys: timeout exhausted while reading file within network system module - mbedtls_ssl_read returned -76 ( NET - Reading information from the socket failed )
+Read 6298206 spots for SRR7287263
+Written 6298206 spots for SRR7287263
+Read 7161188 spots for SRR7287610
+Written 7161188 spots for SRR7287610

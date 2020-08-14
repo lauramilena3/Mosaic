@@ -1,0 +1,188 @@
+cat * > temp_Pseudomonas_tomato.fasta
+sed 's/>/>tomato | /g' temp_Pseudomonas_tomato.fasta | awk '{for(x=1;x<=NF;x++)if($x~/tomato/){sub(/tomato/,++i)}}1' > Erwinia.fasta
+sed -i 's/>/>Erwinia_phage_/g' Erwinia.fasta
+sed 's/.*_/>Escherichia_coli_phage_/'
+sed 's/\s.*$//'
+sed -i '/^$/d' file.txt
+
+sed -i 's/gnl|unknown|DNAM/Bertil/g' Bertil_peptides.fasta
+rename 's/\r//g' *
+
+#multi to single
+cat hg18.fa | awk '{if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fa")} print $0' > filename }'
+screen
+ctrl +a, ctrl +d
+exit
+screen -r
+
+cat all_phages_JBJ.fasta | awk '{if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fasta")} print $0 > filename}'
+grep ">" Erwinia.fasta
+
+rename -n 's/ /_/g' ./*" "*
+rename -n 's/\(|\[|\]|\)//g' *
+rename -n 's/\(|\[|\]|\)//g' *
+
+#drop_duplicates
+awk '/^>/{{f=!d[$1];d[$1]=1}}f' {output.low_contigs_dup} > {output.low_contigs}
+
+#size
+cat {output.representatives} | awk '$0 ~ ">" {print c; c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }'
+
+
+while read p; do echo $p; done < test
+
+jupyter notebook --no-browser --port=8889
+
+lsof -ti:8889 | xargs kill -9
+ssh -N -f -L 127.0.0.1:8889:127.0.0.1:8889 lmf@130.225.99.101
+jupyter-notebook --no-browser --port=8889 --ip=0.0.0.0
+
+
+salloc -N 1 -n 1 -t 05:00:00 --mem 12G
+ssh -X node-24
+jupyter-notebook --no-browser --port=8889 --ip=0.0.0.0
+
+lsof -ti:8889 | xargs kill -9
+ssh -N -f -L 8889:node-18.local:8889 lm.forero10@magnus.uniandes.edu.co
+
+
+cat renamed_viga.txt | while read line ; do echo "$line" ; stringarray=($line) ; new=${stringarray[-1]} ; old=${stringarray[1]} ; echo $old ; echo $new ; sed -i -e "s/${new}\t/${old}\t/g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.csv ; sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.gbk ; sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.tbl ; sed -i "s/>${new} $/>${old}/g" Erwinia.tot_annotated.fasta ; done
+
+snakemake -j 32 --use-conda -p clean_reads --config input_dir=/home/lmf/05_NANOPORE_VIROME/00_RAW_DATA/ contaminants_list="GCF_000001405.39"
+
+
+snakemake --use-conda --config results_dir=/hpcfs/home/rd.hernandez/DatosRuth-Shotgun/2.VIRUS/Viral_Analysis/ -k -j 16
+
+snakemake -j 16 --use-conda -p assembly_vs_reference --config results_dir=/home/lmf/03_COLIPHAGES/GVD/ VIRAL_CONTIGS=/home/lmf/03_COLIPHAGES/GVD/GVD_1.7.2018.fasta
+
+snakemake --use-conda -p annotate_VIGA --config representative_contigs=/home/lmf/coliphages.tot.fasta -k -j 16 -n
+
+snakemake --use-conda -p annotate_contigs --config representative_contigs=/home/lmf/coliphages.tot.fasta -k -j 16 -n
+
+for fasta in /home/lmf/ ; do snakemake --use-conda -p annotate_VIGA --config representative_contigs=$fasta -k -j 2 & done
+
+snakemake --use-conda -p hostID_WiSH --config representative_contigs=/home/lmf/03_COLIPHAGES/ESCHERICHIA_PHAGES/First_Submission/07_ANNOTATION/Escherichia_phages.tot.fasta -k -j 16
+
+snakemake --use-conda -p abundance_from_db_contigs --config input_dir=/home/lmf/07_AMARU/00_RAW_DATA representative_contigs=/home/lmf/07_AMARU/JACOB/JACOB_phages	.tot.fasta results_dir=/home/lmf/07_AMARU
+
+snakemake --use-conda -k -j 16 -p taxonomyAssignmentvContact --config representative_contigs=/home/lmf/00_DEAZAGUANINE/IMG_VR/filtered/non_redundant_contigs.tot.fasta
+
+snakemake --use-conda -p taxonomyAssignmenMMseqs --config representative_contigs=/home/lmf/03_COLIPHAGES/FASTA/coliphages.tot.fasta -k -j 16
+
+snakemake --use-conda --config input_dir=/home/lmf/KATRINE/05_NANOPORE_VIROME/00_RAW_DATA nanopore_pooled="True" nanopore_pooled_name=direct_virome nanopore_quality=7 -k -j 64 -n
+
+snakemake --use-conda --config work_dir=/home/lmf/WITOLD/CAJAN/ sample=barcode07 control=barcode08 genome=cajan
+
+clean_reads
+
+gunzip -c reads.fastq.gz | NanoFilt -q 10 -l 500 --headcrop 50 | minimap2 genome.fa - | samtools sort -O BAM -@24 -o alignment.bam -
+
+
+xargs samtools faidx test.fa < names.txt
+
+snakemake --use-conda --config input_dir=/home/lmf/04_MOSAIC/GOV/00_RAW_DATA  contaminants_list="GCF_000001405.39 GCA_000181335.4 GCF_000002285.3" forward_tag="pass_1" reverse_tag="pass_2" sampling="sub tot" trimmomatic_minlen="50" min_norm="2" max_norm="100" max_subsample="20000000"
+
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb positive_contigs.fasta positive_contigs
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs clusthash positive_contigs positive_contigs_filtered --min-seq-id 1
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs clust positive_contigs positive_contigs_filtered positive_clustered
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs result2repseq positive_contigs positive_clustered clustered_representatives
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs result2flat positive_contigs positive_contigs clustered_representatives clustered_representatives.fasta --use-fasta-header
+
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb positive_contigs.fasta positive_contigs
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs cluster positive_contigs positive_clustered tmp --min-seq-id 1.0 --cov-mode 0 -c 1
+
+mmseqs easy-cluster non_redundant_contigs.tot.faa clusterRes tmp
+mmseqs convertalis --format-output "query,target,evalue,qaln,taln,alnlen,qcov" queryDB targetDB alnRes alnRes.tab
+
+
+sequenza-utils pileup2acgt -p mpileup > perbase.txt
+
+GENBANK SUBMISSION
+/home/lmf/03_COLIPHAGES/ESCHERICHIA_PHAGES/First_Submission/07_ANNOTATION/Escherichia_phages.tot.fasta
+
+for hmm in ../preQ_HMMs/*hmm; do echo $hmm; model=$(basename "$hmm" .hmm); echo $model; hmmsearch --tblout $model.tbl $hmm full_set_phages.faa ; done
+for hmm in ./*tbl ; do echo $hmm; model=$(basename "$hmm" .tbl); echo $model; cat $hmm | grep -v '^#' | awk '{print $1,$3,$5,$6}' > $model.out; done
+
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createdb all_proteins.faa dpdA
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs prefilter dpdA dpdA resultDB_pref -s 7.5
+/home/lmf/apps/Mosaic/pipes/tools/MMseqs2/build/bin/mmseqs createtsv  dpdA dpdA resultDB_pref resultDB_pref.tsv
+for fasta in *.fa* ; do model=$(basename "$fasta" .fa); echo $model;sed 's/>/>${model-}/g' ;done
+
+
+--cluster-mode 1
+
+
+grep "^  1"  *
+
+
+https://seaborn.pydata.org/examples/structured_heatmap.html
+
+cat hg18.fa | awk '{if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fa")} print $0 > filename}'
+bowtie2-build -f {input.positive_contigs} {params.prefix}
+samtools faidx {input.positive_contigs}
+bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam} -p {threads}
+samtools view -b -S {output.sam} > {output.bam}
+samtools sort {input.bam} -o {output.bam_sorted}
+bamm filter --bamfile {output.bam_sorted} --percentage_id 0.95 --percentage_aln 0.9 -o {params.out_dir}
+mv {params.temp_bam_filtered} {output.bam_filtered}
+bcftools mpileup -f {input.positive_contigs} {output.bam_sorted} | bcftools call -cv -Ob | bcftools view -i '%QUAL>=30'
+
+
+prodigal -i ounavirinae.fasta -o ounavirinae.coords -a ounavirinae.faa -p meta
+
+hhsearch -i $name.faa -d /opt/hh-suite/data/pdb70 -d /opt/hh-suite/data/pfam -d /opt/hh-suite/data/scop70_1.75 -cpu 18 -o $name.hhr
+hhsearch -i $name.faa -d /opt/hh-suite/data/pdb70 -d /opt/hh-suite/data/pfam -d /opt/hh-suite/data/scop70_1.75  -d /home/lmf/db/NCBI_CD/NCBI_CD  -o $name.hhr -oa3m ../results/9010868.a3m -p 20 -Z 250 -loc -z 1 -b 1 -B 250 -ssm 2 -sc 1 -seq 1 -dbstrlen 10000 -norealign -maxres 32000 -contxt /opt/hh-suite/data/context_data.crf
+
+hmmsearch --max transferase1.hmm IMG_VR_proteins.fasta
+
+
+cat all_phages_JBJ.fasta | awk '{if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fasta")} print $0 > filename}'
+for fastq in */ ; do virus=${fastq:0:-1} ; bowtie2-build -f $virus.fasta $virus ; done
+for fastq in */ ; do virus=${fastq:0:-1} ; samtools faidx $virus.fasta; done
+for fastq in */ ; do virus=${fastq:0:-1} ; bowtie2 --non-deterministic -x $virus -1 $virus/${virus}_R1.fastq -2 $virus/${virus}_R2.fastq -S $virus.sam -p 32; done
+
+
+bwa mem -t 48 -x ont2d pUC18.fasta all_clean.fastq | samtools sort -O BAM -@24 -o mapped_reads.bam
+bamm filter --bamfile mapped_reads.bam --percentage_id 0.95 --percentage_aln 0.9 -o filtered
+samtools view -h -o filtered.sam filtered/mapped_reads_filtered.bam
+cut -f1 filtered.sam | sort| uniq > positive_contigs.txt
+seqtk subseq all_clean.fastq positive_reads.txt > positive_reads.fastq
+
+makeblastdb -in pUC18.fasta -dbtype nucl
+sed -n '1~4s/^@/>/p;2~4p' INFILE.fastq > OUTFILE.fasta
+blastn -query all_12_clean.fasta -db pGH66.fasta -evalue 1e-4 -outfmt "6 qlen qseqid sseqid length qstart qend sstart send qcov evalue" -out pGH66_12.table
+
+CAJAN:
+/home/tkn/work/from_medusa/DATA_3/queusine_new
+
+control=
+sample=
+name=
+genome=
+mkdir $name
+cd $name
+mkdir control sample
+cp -r $control control
+cp -r $sample sample
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir workspace/ --fastq-filenames barcode02.fastq --overwrite
+tombo resquiggle --processes 40 --overwrite control $genome
+tombo resquiggle --processes 40 --overwrite sample $genome
+tombo detect_modifications model_sample_compare --fast5-basedirs sample --control-fast5-basedirs control --statistics-file-basename $name
+tombo text_output browser_files --fast5-basedirs sample --statistics-filename ${name}.tombo.stats --genome-fasta $genome --browser-file-basename $name --file-types fraction
+tombo text_output signif_sequence_context --statistics-filename ${name}.tombo.stats --genome-fasta $genome --num-regions 10000 --num-bases 10
+fasta_formatter -i tombo_results.significant_regions.fasta -t | awk '{if ($5 > 0.7) print ">"$1,$2,$3,$4,$5"\n"$6}' > ${name}_sig.fa
+python format_tombo.py ${name}_plusmod.wig
+
+bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} -2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
+
+grep "^>" representative_contigs.tot.fasta | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
+	| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
+
+
+
+/home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_circular.tot.txt, /home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_positive_list.tot.txt
+
+
+	./tools/canu-1.8/Linux-amd64/bin/canu genomeSize=5m minReadLength=1000 -p contigFilter="2 1000 1.0 1.0 2" corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw /home/lmf/KATRINE/05_NANOPORE_VIROME/02_CLEAN_DATA/Vir_3_2_nanopore_clean.tot.fastq -d /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/canu_Vir_3_2_tot -p Vir_3_2 useGrid=false maxThreads=16
+	cp /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/canu_Vir_3_2_tot/Vir_3_2.contigs.fasta /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/Vir_3_2_contigs_canu.tot.fasta
+	sed -i s"/ /_/"g /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/Vir_3_2_contigs_canu.tot.fasta

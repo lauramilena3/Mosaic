@@ -1,0 +1,49 @@
+
+
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.2.1.genomic.fna.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.3.1.genomic.fna.gz
+gunzip *gz
+cat *fna > RefSeq_Viral.fasta
+rm viral*fna
+
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+rm taxdump.tar.gz
+
+circular_H="/high_confidence_circular_list.tot.txt",
+circular_L="/low_confidence_circular_list.tot.txt",
+non_circular_H="/high_confidence_non_circular_list.tot.txt",
+non_circular_L="/low_confidence_non_circular_list.tot.txt",
+circular_unk="/unknown_circular_list.tot.txt",
+table="/viral_table.tot.csv"
+
+
+for foobar in * ; do
+  temp=`echo "$foobar" | cut -c 3-`
+  mv $foobar "$temp" ;
+done
+
+prodigal -i IMG_VR.fasta -o out_coords_prodigal.txt -a IMG_VR_proteins.fasta -p meta
+hmmsearch --tblout FolE.tbl preQ_HMMs/FolE.hmm IMG_VR_proteins.fasta > FolE.out &
+hmmsearch --tblout QueC.tbl preQ_HMMs/QueC.hmm IMG_VR_proteins.fasta > QueC.out &
+hmmsearch --tblout QueD.tbl preQ_HMMs/QueD.hmm IMG_VR_proteins.fasta > QueD.out &
+hmmsearch --tblout QueE.tbl preQ_HMMs/QueE.hmm IMG_VR_proteins.fasta > QueE.out &
+hmmsearch --tblout QueF.tbl preQ_HMMs/QueF.hmm IMG_VR_proteins.fasta > QueF.out &
+
+
+cat FolE.tbl| grep -v '^#' | awk '{{ if ( $6 > 0 ) {{print $1,$3,$5,$6}} }}' > FolE.csv
+cat QueC.tbl| grep -v '^#' | awk '{{ if ( $6 > 0 ) {{print $1,$3,$5,$6}} }}' > QueC.csv
+cat QueD.tbl| grep -v '^#' | awk '{{ if ( $6 > 0 ) {{print $1,$3,$5,$6}} }}' > QueD.csv
+cat QueE.tbl| grep -v '^#' | awk '{{ if ( $6 > 0 ) {{print $1,$3,$5,$6}} }}' > QueE.csv
+cat QueF.tbl| grep -v '^#' | awk '{{ if ( $6 > 0 ) {{print $1,$3,$5,$6}} }}' > QueF.csv
+
+
+
+
+cat {output.viga_names} | while read line; do stringarray=($line) ; new=${{stringarray[-1]}}; old=${{stringarray[1]}}; sed -i -e "s/${{new}} /${{old}} /g" contig_topology_viga.txt ; done
+
+sed -i -e "s/${{new}}\t/${{old}}\t/g" -e "s/${{new}}_/${{old}}_/g" {output.csv}
+	sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_file}
+	sed -i -e "s/${{new}}$/${{old}}/g" -e "s/${{new}} /${{old}} /g" -e "s/${{new}}_/${{old}}_/g" {output.GenBank_table}
+	sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
+done

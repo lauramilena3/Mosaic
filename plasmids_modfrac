@@ -1,0 +1,67 @@
+#PLASMID ANALYSIS
+#fasta from /home/tkn/demeter_data/storage/Geoffrey_mod/Geoffrey_mod/Geoffrey_mod/20190620_1100_MN31998_FAK49167_7258d548/fasta
+#fastq from /home/tkn/demeter_data/storage/Geoffrey_mod/Geoffrey_mod/Geoffrey_mod/20190620_1100_MN31998_FAK49167_7258d548/deepbinnerV020/barcode0#_guppy/
+conda activate Mosaic
+for fastq in fastq/*fastq; do for fasta in fasta/p*.fasta; do nameq=$(basename "$fastq" .fastq); namea=$(basename "$fasta" .fasta); echo ${nameq}_vs_${namea}; minimap2 -ax map-ont -t 8 $fasta $fastq > ${nameq}_vs_${namea}.sam ;done; done
+
+conda activate env2
+
+for sam in *sam; do names=$(basename "$sam" .sam); echo $names; samtools view -b -S --threads 16 $sam > ${names}.bam ; done
+for bam in *bam; do nameb=$(basename "$bam" .bam); echo $nameb; samtools sort --threads 16 $bam -o ${nameb}_sorted.bam ; done
+for bams in *sorted.bam; do samtools index $bams ; done
+for bams in *sorted.bam; do namebs=$(basename "$bams" .bam); echo $namebs; bamm parse -c ${namebs}.tpmean -m tpmean -b $bams ; done
+for bams in *sorted.bam; do namebs=$(basename "$bams" .bam); echo $namebs; bedtools genomecov -dz -ibam $bams > ${namebs}.cov ; done
+for covs in *.cov ; do namec=$(basename "$covs" .cov); echo $namec; av=$(awk '{ total += $2; count++ } END { print total/count }' $covs); echo $av; cat $covs | awk -v ID=$av  '$3> ID  { print $3}' | wc -l > ${namec}_breadth_cov.txt ; done
+
+#CREATE MODEL
+cd ~/WITOLD/TOMBO/JENP1
+control="barcode05"
+sample="barcode04"
+plasmid="JenP1"
+genome=${plasmid}.fasta
+mkdir ${control}_vs_${sample}_${plasmid}
+cd ${control}_vs_${sample}_${plasmid}
+#Preprocess		about 0.5h
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${control}/workspace/ --fastq-filenames ../fastq/${control}.fastq --overwrite --processes 8 &
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${sample}/workspace/ --fastq-filenames ../fastq/${sample}.fastq --overwrite --processes 8 &
+# Resquiggle 	about 2h
+tombo resquiggle --processes 20 --overwrite ../fast5/${control}/workspace/ ../fasta/$genome &
+tombo resquiggle --processes 20 --overwrite ../fast5/${sample}/workspace/ ../fasta/$genome &
+# Modifications	about 2h
+tombo detect_modifications model_sample_compare --fast5-basedirs ../fast5/${sample}/workspace/ --control-fast5-basedirs ../fast5/${control}/workspace/ --statistics-file-basename $plasmid
+tombo text_output browser_files --fast5-basedirs ../fast5/${sample}/workspace/  --statistics-filename ${plasmid}.tombo.stats --genome-fasta ../fasta/$genome --browser-file-basename $plasmid --file-types fraction coverage valid_coverage
+tombo build_model estimate_motif_alt_reference --alternate-model-filename JenP1.alternative.h5 --alternate-model-name JenP1 --motif-description GA:1 --fast5-basedirs ../fast5/${sample}/ --minimum-test-reads 8
+tombo build_model estimate_reference --tombo-model-filename JenP1.canonical.h5 --fast5-basedirs ./fast5/${control}/ --minimum-test-reads 8
+tombo detect_modifications alternative_model --fast5-basedirs ./fast5/${control}/ --tombo-model-filename JenP1.canonical.h5 --alternate-model-filenames JenP1.alternative.h5 --statistics-file-basename ${control}
+tombo text_output browser_files --fast5-basedirs ./fast5/${control}  --statistics-filename ${control}.JenP1.tombo.stats --genome-fasta ../fasta/$genome --browser-file-basename ${control}_alternative_model --file-types fraction coverage valid_coverage
+
+#TEST MODEL
+control="barcode05"
+sample="barcode04"
+plasmid="JenP1"
+genome=${plasmid}.fasta
+mkdir ${control}_vs_${sample}_${plasmid}
+cd ${control}_vs_${sample}_${plasmid}
+#Preprocess		about 0.5h
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${control}/workspace/ --fastq-filenames ../fastq/${control}.fastq --overwrite --processes 8 &
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${sample}/workspace/ --fastq-filenames ../fastq/${sample}.fastq --overwrite --processes 8 &
+# Resquiggle 	about 2h
+tombo resquiggle --processes 20 --overwrite ../fast5/${control}/workspace/ ../fasta/$genome &
+tombo resquiggle --processes 20 --overwrite ../fast5/${sample}/workspace/ ../fasta/$genome &
+# Modifications	about 2h
+
+tombo detect_modifications alternative_model --fast5-basedirs ../fast5/${control}/workspace --tombo-model-filename JenP1.canonical.h5 --alternate-model-filenames JenP1.alternative.h5 --statistics-file-basename ${control}
+tombo text_output browser_files --fast5-basedirs ../fast5/${control}/workspace  --statistics-filename ${control}.JenP1.tombo.stats --genome-fasta ../fasta/$genome --browser-file-basename ${control}_alternative_model --file-types fraction coverage valid_coverage
+
+tombo detect_modifications alternative_model --fast5-basedirs ../fast5/${sample}/workspace --tombo-model-filename JenP1.canonical.h5 --alternate-model-filenames JenP1.alternative.h5 --statistics-file-basename ${sample}
+tombo text_output browser_files --fast5-basedirs ../fast5/${sample}/workspace  --statistics-filename ${sample}.JenP1.tombo.stats --genome-fasta ../fasta/$genome --browser-file-basename ${sample}_alternative_model --file-types fraction coverage valid_coverage
+
+
+tombo plot motif_centered --motif GA --fast5-basedirs ../fast5/${sample}/workspace/ --genome-fasta ../fasta/$genome --control-fast5-basedirs ../fast5/${control}/workspace/ --pdf-filename ${control}_${sample}_${plasmid}_tombo_results.motif_centered.pdf
+tombo plot max_difference --fast5-basedirs ../fast5/${sample}/workspace/ --control-fast5-basedirs ../fast5/${control}/workspace/ --pdf-filename ${control}_${sample}_${plasmid}_tombo_results.max_difference.pdf
+tombo plot most_significant --fast5-basedirs ../fast5/${sample}/workspace/ --control-fast5-basedirs ../fast5/${control}/workspace/ --statistics-filename ${plasmid}.tombo.stats --pdf-filename ${control}_${sample}_${plasmid}_tombo_results.significant_difference.pdf
+
+
+#test basecalling
+
+guppy_basecaller --fast5_out -r -i temp -s  -x 'cuda:0 cuda:1' --kit SQK-RBK004 --flowcell FLO-MIN106 --barcode_kits SQK-RBK004 --trim_barcodes -q 0

@@ -1,0 +1,14 @@
+
+from Bio import SeqIO
+seqs_GGDEF=[]
+seqs_EAL=[]
+for record in SeqIO.parse("/home/lmf/db/IMG_VR/IMG_VR.aa", "fasta"):
+    if ("GGDEF" in record.seq):
+        seqs_GGDEF.append(record.id)
+    if ("EAL" in record.seq):
+        seqs_EAL.append(record.id)
+
+print(len(seqs_GGDEF))
+with open('seqs_GGDEF.csv', 'w') as f:
+    for item in seqs_GGDEF:
+        f.write("%s\n" % item)

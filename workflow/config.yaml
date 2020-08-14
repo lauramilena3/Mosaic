@@ -9,8 +9,8 @@ nanopore_pooled: False
 nanopore_pooled_name: "raw"
 long_assembler: "canu"
 
-trimmomatic_leading: "15"
-trimmomatic_trailing: "15"
+trimmomatic_leading: "20"
+trimmomatic_trailing: "20"
 trimmomatic_window_size: "4"
 trimmomatic_window_quality: "20"
 trimmomatic_minlen: "50"
