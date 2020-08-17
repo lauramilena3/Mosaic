@@ -429,3 +429,54 @@ rule normalizeReads_SE:
 		#unpaired
 		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth} t={threads}
 		"""
+
+rule kmer_rarefraction:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+	output:
+		histogram=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kmer_histogram.{sampling}.csv"),
+	message:
+		"Counting unique reads with BBtools"
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		bbcountunique.sh in1={input.forward_paired} in2={input.reverse_paired} out={output.histogram}
+		"""
+
+rule plot_kmer:
+	input:
+		histograms=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kmer_histogram.{{sampling}}.csv", sample=SAMPLES),
+	output:
+		plot=(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.{sampling}.png"),
+	message:
+		"Plot unique reads with BBtools"
+#	conda:
+#		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	threads: 1
+	run:
+		import pandas as pd
+		import seaborn as sns; sns.set()
+		import matplotlib.pyplot as plt
+
+		plt.figure(figsize=(9,6))
+		sns.set(font_scale=2)
+		sns.set_style("whitegrid")
+
+		read_max=0
+
+		for h in histograms:
+		    df=pd.read_csv(h, sep="\t")
+		    df.columns=["count", "percent", "c", "d", "e", "f", "g", "h", "i", "j"]
+		    df=df[["count", "percent"]]
+		    ax = sns.lineplot(x="count", y="percent", data=df,err_style='band')
+		    read_max=max(read_max,df["count"].max())
+
+		ax.set(ylim=(0, 100))
+		ax.set(xlim=(0, read_max*1.2))
+
+		ax.set_xlabel("Read count",fontsize=20)
+		ax.set_ylabel("New k-mers (%)",fontsize=20)
+		ax.figure.savefig(output.plot)

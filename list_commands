@@ -18,6 +18,7 @@ screen -r
 cat all_phages_JBJ.fasta | awk '{if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fasta")} print $0 > filename}'
 grep ">" Erwinia.fasta
 
+
 rename -n 's/ /_/g' ./*" "*
 rename -n 's/\(|\[|\]|\)//g' *
 rename -n 's/\(|\[|\]|\)//g' *
@@ -182,6 +183,7 @@ grep "^>" representative_contigs.tot.fasta | sed s"/_/ /"g | awk '{{ if ($4 >= {
 
 /home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_circular.tot.txt, /home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_positive_list.tot.txt
 
+cat full_taxonomy_genbank.csv | taxonkit reformat --miss-rank-repl "__"  --data-dir .    | csvtk -H -t cut -f 1,3  > formatted_lineage.csv
 
 	./tools/canu-1.8/Linux-amd64/bin/canu genomeSize=5m minReadLength=1000 -p contigFilter="2 1000 1.0 1.0 2" corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw /home/lmf/KATRINE/05_NANOPORE_VIROME/02_CLEAN_DATA/Vir_3_2_nanopore_clean.tot.fastq -d /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/canu_Vir_3_2_tot -p Vir_3_2 useGrid=false maxThreads=16
 	cp /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/canu_Vir_3_2_tot/Vir_3_2.contigs.fasta /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/Vir_3_2_contigs_canu.tot.fasta
