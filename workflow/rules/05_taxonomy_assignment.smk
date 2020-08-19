@@ -54,7 +54,7 @@ rule parseVcontact:
 		viral_cluster_overview=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/viral_cluster_overview.csv",
 		formatting_taxonomy_affiliations=config["taxonomy_file"],
 	output:
-		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "vContact_taxonomy.csv",
+		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.csv",
 	message:
 		"Assigning viral taxonomy with vContact2 results"
 	threads: 1
