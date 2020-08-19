@@ -93,6 +93,7 @@ rule blasToIMGVR:
 		blastn -num_threads {threads} -db {input.img_vr_db} -query {input.representatives} \
 		-outfmt "6 qseqid sseqid qstart qend qlen slen qcovs evalue length" > {output.blast_output}
 		"""
+
 rule create_dbs_mmseqs2:
 	input:
 		MMseqs2_dir=(config['mmseqs_dir']),

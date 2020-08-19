@@ -43,7 +43,7 @@ genome=${plasmid}.fasta
 mkdir ${control}_vs_${sample}_${plasmid}
 cd ${control}_vs_${sample}_${plasmid}
 #Preprocess		about 0.5h
-tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${control}/workspace/ --fastq-filenames ../fastq/${control}.fastq --overwrite --processes 8 &
+tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${conntrol}/workspace/ --fastq-filenames ../fastq/${control}.fastq --overwrite --processes 8 &
 tombo preprocess annotate_raw_with_fastqs --fast5-basedir ../fast5/${sample}/workspace/ --fastq-filenames ../fastq/${sample}.fastq --overwrite --processes 8 &
 # Resquiggle 	about 2h
 tombo resquiggle --processes 20 --overwrite ../fast5/${control}/workspace/ ../fasta/$genome &

@@ -30,6 +30,7 @@ rule clusterTaxonomy:
 		merged_gene2genome=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/gene2genome_merged.csv",
 		merged_ORFs=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs_merged.{sampling}.fasta",
 		genome_file=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv",
+		viral_cluster_overview=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/viral_cluster_overview.csv",
 	params:
 		vcontact_dir=config["vcontact_dir"],
 		out_dir=directory(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}"),
@@ -46,8 +47,57 @@ rule clusterTaxonomy:
 		dos2unix {output.merged_gene2genome}
 		vcontact2 --raw-proteins {output.merged_ORFs} --rel-mode 'Diamond' --proteins-fp {output.merged_gene2genome} \
 		--db 'ProkaryoticViralRefSeq94-Merged' --pcs-mode MCL --vcs-mode ClusterONE --c1-bin {input.clusterONE_dir}/cluster_one-1.0.jar \
-		--output-dir {params.out_dir} --threads {threads}
+		--output-dir {params.out_dir} --threads {threads} || true
 		"""
+rule parseVcontact:
+	input:
+		viral_cluster_overview=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/viral_cluster_overview.csv",
+		formatting_taxonomy_affiliations=config["taxonomy_file"],
+	output:
+		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "vContact_taxonomy.csv",
+	message:
+		"Assigning viral taxonomy with vContact2 results"
+	threads: 1
+	run:
+		import pandas as pd
+		def is_unique(s):
+		    a = s.to_numpy()
+		    return (a[0] == a).all()
+
+		taxonomy_df=pd.read_csv(input.formatting_taxonomy_affiliations)
+		df=pd.read_csv(input.viral_cluster_overview, index_col=0)
+		df=df[df['Members'].str.contains("NODE")]
+		df["Members"]=df["Members"].str.split(",")
+		accessions=[]
+		nodes=[]
+		taxonomies=[]
+
+		with open(output.taxonomy_results, 'w') as f:
+
+			for index, row in df.iterrows():
+			    accession=([x for x in row['Members'] if not 'NODE' in x])
+			    accession=([x for x in accession if not '~' in x])
+			    accessions.append(accession)
+			    node=[x for x in row['Members'] if 'NODE' in x]
+			    nodes.append(node)
+			    taxonomy=[]
+			    for acc in accession:
+			        taxonomy.append(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
+			    if taxonomy:
+			        tax_df=pd.DataFrame(taxonomy)
+			        tax_df.columns=["kindom", "phylum", "class", "order", "family", "genus", "species"]
+			        #print(tax_df)
+			        tax_df=tax_df.drop(columns="species")
+			        consensus_tax=""
+			        for (columnName, columnData) in tax_df.iteritems():
+			            #print('Colunm Name : ', columnName)
+			            if (is_unique(tax_df[columnName])):
+			                if not tax_df[columnName].to_numpy()[0] =="__":
+			                    consensus_tax=(columnName, tax_df[columnName].to_numpy()[0])
+			        #print(tax_df)
+			        for n in node:
+			            print(n + "\t" + consensus_tax[1] +" [" + consensus_tax[0] + "]", file=f)
+
 rule mmseqsTaxonomy:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
