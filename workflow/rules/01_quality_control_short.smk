@@ -463,7 +463,7 @@ rule plot_kmer:
 		import seaborn as sns; sns.set()
 		import matplotlib.pyplot as plt
 
-		plt.figure(figsize=(9,6))
+		plt.figure(figsize=(12,12))
 		sns.set(font_scale=2)
 		sns.set_style("whitegrid")
 
@@ -473,7 +473,7 @@ rule plot_kmer:
 		    df=pd.read_csv(h, sep="\t")
 		    df.columns=["count", "percent", "c", "d", "e", "f", "g", "h", "i", "j"]
 		    df=df[["count", "percent"]]
-		    ax = sns.lineplot(x="count", y="percent", data=df,err_style='band')
+		    ax = sns.lineplot(x="count", y="percent", data=df,err_style='band', label=sample)
 		    read_max=max(read_max,df["count"].max())
 
 		ax.set(ylim=(0, 100))
