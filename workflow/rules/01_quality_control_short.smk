@@ -469,7 +469,7 @@ rule plot_kmer:
 
 		read_max=0
 
-		for h in histograms:
+		for h in input.histograms:
 		    df=pd.read_csv(h, sep="\t")
 		    df.columns=["count", "percent", "c", "d", "e", "f", "g", "h", "i", "j"]
 		    df=df[["count", "percent"]]
