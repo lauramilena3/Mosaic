@@ -473,7 +473,7 @@ rule plot_kmer:
 		    df=pd.read_csv(h, sep="\t")
 		    df.columns=["count", "percent", "c", "d", "e", "f", "g", "h", "i", "j"]
 		    df=df[["count", "percent"]]
-		    ax = sns.lineplot(x="count", y="percent", data=df,err_style='band', label=h.split("/")[-1].rsplit(".",1)[0]))
+		    ax = sns.lineplot(x="count", y="percent", data=df,err_style='band', label=h.split("/")[-1].rsplit(".",1)[0])
 		    read_max=max(read_max,df["count"].max())
 
 		ax.set(ylim=(0, 100))
