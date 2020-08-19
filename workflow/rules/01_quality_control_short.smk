@@ -68,9 +68,8 @@ rule trim_adapters_quality_illumina_PE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq"),
-		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq")
+		reverse_unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq"),
 		trimmomatic_values=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_trimmomatic_values.txt"),
-
 	params:
 		adapters=dirs_dict["ADAPTERS_DIR"] + "/" + config['adapters_file']
 	message:
