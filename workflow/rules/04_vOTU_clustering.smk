@@ -28,6 +28,8 @@ rule estimateGenomeCompletness:
 		repeats=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/repeats.tsv",
 	params:
 		checkv_outdir=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}",
+		checkv_db=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}",
+
 	message:
 		"Estimating genome completeness with CheckV "
 	conda:
@@ -35,10 +37,10 @@ rule estimateGenomeCompletness:
 	threads: 1
 	shell:
 		"""
-		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads}
-		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads}
+		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
 		checkv repeats {input.representatives} {params.checkv_outdir}
-		checkv quality_summary {input.representatives} {params.checkv_outdir}
+		checkv quality_summary {input.representatives} {params.checkv_outdir} -d {config[checkv_db]}
 		"""
 #rule circularizeContigs:
 #	input:
