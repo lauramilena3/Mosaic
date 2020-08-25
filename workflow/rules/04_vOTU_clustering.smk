@@ -23,7 +23,7 @@ rule estimateGenomeCompletness:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
 		quality_summary=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
-		completeness=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/completeness.tsv",
+		completeness=dirs_d["VIRAL_DIR"] + "/checkV_{sampling}/completeness.tsv",
 		contamination=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/contamination.tsv",
 		repeats=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/repeats.tsv",
 	params:
@@ -38,7 +38,7 @@ rule estimateGenomeCompletness:
 	shell:
 		"""
 		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads}
 		checkv repeats {input.representatives} {params.checkv_outdir}
 		checkv quality_summary {input.representatives} {params.checkv_outdir} -d {config[checkv_db]}
 		"""
