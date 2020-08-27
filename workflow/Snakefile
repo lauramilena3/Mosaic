@@ -121,6 +121,7 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv", sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/quality_summary.tsv", sampling=SAMPLING_TYPE))
 	inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv")
+	inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_viralRefSeq.tot.csv")
 	inputs.append(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png")
 	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv", sampling=SAMPLING_TYPE))
 
