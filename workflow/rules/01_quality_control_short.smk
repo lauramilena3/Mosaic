@@ -453,6 +453,8 @@ rule plot_kmer:
 		histograms=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kmer_histogram.{{sampling}}.csv", sample=SAMPLES),
 	output:
 		plot=(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.{sampling}.png"),
+		svg=(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.{sampling}.svg"),
+
 	message:
 		"Plot unique reads with BBtools"
 #	conda:
@@ -482,3 +484,4 @@ rule plot_kmer:
 		ax.set_xlabel("Read count",fontsize=20)
 		ax.set_ylabel("New k-mers (%)",fontsize=20)
 		ax.figure.savefig(output.plot)
+		ax.figure.savefig(output.svg, format="svg")
