@@ -220,6 +220,19 @@ rule downloadCheckvDB:
 		"""
 		checkv download_database ./db
 		"""
+rule downloadKrakenDB:
+	output:
+		kraken_db=directory(config['kraken_db']),
+	message:
+		"Downloading miniKraken database"
+	threads: 4
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+	shell:
+		"""
+		wget https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v2_8GB_201904.tgz
+		tar -xvf minikraken2_v2_8GB_201904.tgz -C {output.kraken_db}
+		"""
 # rule downloadVirSorterDB:
 # 	output:
 # 		virSorter_db=directory(config['virSorter_db']),
