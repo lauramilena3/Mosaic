@@ -209,27 +209,27 @@ rule errorCorrectPilonPE:
 		"""
 
 
-rule asemblyFlye2nd:
-	input:
-		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
-		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
-	output:
-		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
-		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
-	message:
-		"Assembling metaSPAdes and canu subassemblies with Flye"
-	params:
-		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
-		genome_size="20m"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		flye --subassemblies {input.corrected_scaffolds} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
-		cp {output.scaffolds} {output.scaffolds_flye2}
-		sed -i "s/>/>{wildcards.sample}_/g" {output.scaffolds_flye2}
-		"""
+# rule asemblyFlye2nd:
+# 	input:
+# 		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+# 		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+# 	output:
+# 		scaffolds_flye2=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{sampling}.fasta",
+# 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}/assembly.fasta",
+# 	message:
+# 		"Assembling metaSPAdes and canu subassemblies with Flye"
+# 	params:
+# 		assembly_dir=dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}_{sampling}",
+# 		genome_size="20m"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 4
+# 	shell:
+# 		"""
+# 		flye --subassemblies {input.corrected_scaffolds} {input.hybrid_contigs} --out-dir {params.assembly_dir} --genome-size {params.genome_size} --meta --threads {threads}
+# 		cp {output.scaffolds} {output.scaffolds_flye2}
+# 		sed -i "s/>/>{wildcards.sample}_/g" {output.scaffolds_flye2}
+# 		"""
 
 # rule errorCorrectSE:
 # 	input:
@@ -301,7 +301,8 @@ rule scoreALE:
 
 rule mergeAssembliesHYBRID:
 	input:
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
+		corrected_scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{sampling}.fasta"),
+		hybrid_contigs=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
 	output:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
@@ -312,7 +313,7 @@ rule mergeAssembliesHYBRID:
 	threads: 1
 	shell:
 		"""
-		cat {input.scaffolds_long} > {output.merged_assembly}
+		cat {input.hybrid_contigs} {input.corrected_scaffolds} > {output.merged_assembly}
 		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
 		"""
