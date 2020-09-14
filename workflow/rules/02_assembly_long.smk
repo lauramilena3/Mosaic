@@ -304,7 +304,7 @@ rule scoreALE:
 
 rule mergeAssembliesHYBRID:
 	input:
-		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample=SAMPLES_NANOPORE),
+		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample=NANOPORE_SAMPLES),
 		hybrid_contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
