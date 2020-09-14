@@ -5,7 +5,7 @@ ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
 ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 
 
-if POOLED=True:
+if POOLED==True:
 	ruleorder: symlinkPooled>subsampleReadsNanopore
 
 	rule symlinkPooled:
