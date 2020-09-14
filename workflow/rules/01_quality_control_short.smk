@@ -485,3 +485,26 @@ rule plot_kmer:
 		ax.set_ylabel("New k-mers (%)",fontsize=20)
 		ax.figure.savefig(output.plot)
 		ax.figure.savefig(output.svg, format="svg")
+
+rule contaminants_KRAKEN:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+		kraken_db=directory(config['kraken_db']),
+	output:
+		kraken_output=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_output_tot.csv"),
+		kraken_report=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_report_tot.csv"),
+		kraken_domain=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_domains_tot.csv"),
+	params:
+		kraken_db=config['kraken_db']+ "/minikraken2_v2_8GB_201904_UPDATE",
+	message:
+		"Performing fastqQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 4
+	shell:
+		"""
+		kraken2 --db {params.kraken_db} --threads {threads} \
+			--paired {input.forward_paired} {input.reverse_paired} \
+			--output {output.kraken_output} --report {output.kraken_report}
+		grep -P 'D\t' {output.kraken_report} | sort -r > {output.kraken_domain}
