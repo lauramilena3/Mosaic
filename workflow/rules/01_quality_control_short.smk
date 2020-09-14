@@ -508,3 +508,5 @@ rule contaminants_KRAKEN:
 			--paired {input.forward_paired} {input.reverse_paired} \
 			--output {output.kraken_output} --report {output.kraken_report}
 		grep -P 'D\t' {output.kraken_report} | sort -r > {output.kraken_domain}
+		"""
+		
