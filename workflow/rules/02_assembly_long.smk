@@ -2,25 +2,28 @@
 ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
-ruleorder: symlinkPooled>subsampleReadsNanopore
 ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 
-rule symlinkPooled:
-	input:
-		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
-	output:
-		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
-	message:
-		"Creating symbolic links from pooled sample"
-	threads: 11
-	shell:
-		"""
-		for destination in {output}
-		do
-			ln -s {input.pooled} "$destination"
-		done
-		#add a merged illumina
-		"""
+
+if POOLED=True:
+	ruleorder: symlinkPooled>subsampleReadsNanopore
+
+	rule symlinkPooled:
+		input:
+			pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
+		output:
+			expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
+		message:
+			"Creating symbolic links from pooled sample"
+		threads: 11
+		shell:
+			"""
+			for destination in {output}
+			do
+				ln -s {input.pooled} "$destination"
+			done
+			#add a merged illumina
+			"""
 rule hybridAsemblySpades:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
