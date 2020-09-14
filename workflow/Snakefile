@@ -55,6 +55,8 @@ POOLED=config['nanopore_pooled']
 if not RAW_DATA_DIR == "":
 	RAW_DATA_DIR=RAW_DATA_DIR.rstrip("/")
 	SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + str(config['forward_tag']) + ".fastq")
+	NANOPORE_SAMPLES,=glob_wildcards(RAW_DATA_DIR + "/{sample}_" + str(config['nanopore_tag']) + ".fastq")
+
 	for fname in os.listdir(RAW_DATA_DIR):
 		if fname.endswith(str(config['reverse_tag']) + '.fastq'):
 			PAIRED=True
@@ -66,7 +68,7 @@ else:
 	RAW_DATA_DIR=RESULTS_DIR+"/00_RAW_DATA"
 
 
-NANOPORE_SAMPLES=SAMPLES
+#NANOPORE_SAMPLES=SAMPLES
 
 if PAIRED:
 	READ_TYPES.append(config['reverse_tag'])
@@ -124,6 +126,7 @@ def inputAll(wildcards):
 	#inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_viralRefSeq.tot.csv")
 	inputs.append(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png")
 	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv", sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_domains_tot.csv", sample=SAMPLES),
 
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
