@@ -63,7 +63,6 @@ rule trim_adapters_quality_illumina_PE:
 	input:
 		forward=dirs_dict["RAW_DATA_DIR"] + "/{sample}_" + str(config['forward_tag']) + ".fastq",
 		reverse=dirs_dict["RAW_DATA_DIR"] + "/{sample}_" + str(config['reverse_tag']) + ".fastq",
-		qc_report=dirs_dict["QC_DIR"]+ "/preQC_illumina_report.html"
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
@@ -509,4 +508,3 @@ rule contaminants_KRAKEN:
 			--output {output.kraken_output} --report {output.kraken_report}
 		grep -P 'D\t' {output.kraken_report} | sort -r > {output.kraken_domain}
 		"""
-		
