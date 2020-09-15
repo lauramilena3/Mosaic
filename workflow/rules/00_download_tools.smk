@@ -231,6 +231,7 @@ rule downloadKrakenDB:
 	shell:
 		"""
 		wget https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v2_8GB_201904.tgz
+		mkdir {output.kraken_db}
 		tar -xvf minikraken2_v2_8GB_201904.tgz -C {output.kraken_db}
 		"""
 # rule downloadVirSorterDB:
