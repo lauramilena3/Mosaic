@@ -2,7 +2,7 @@
 ruleorder: hybridAsemblySpades > shortReadAsemblySpadesPE
 #ruleorder: errorCorrectPE > errorCorrectSE
 ruleorder: assemblyStatsHYBRID > assemblyStatsILLUMINA
-#ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
+ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 
 
 if POOLED==True:
