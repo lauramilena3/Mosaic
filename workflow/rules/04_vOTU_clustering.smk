@@ -22,13 +22,13 @@ rule estimateGenomeCompletness:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		quality_summary=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
-		completeness=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/completeness.tsv",
-		contamination=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/contamination.tsv",
-		repeats=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}/repeats.tsv",
+		quality_summary=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
+		completeness=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/completeness.tsv",
+		contamination=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/contamination.tsv",
+		repeats=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/repeats.tsv",
 	params:
-		checkv_outdir=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}",
-		checkv_db=dirs_dict["VIRAL_DIR"] + "/checkV_{sampling}",
+		checkv_outdir=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
+		checkv_db=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
 
 	message:
 		"Estimating genome completeness with CheckV "
