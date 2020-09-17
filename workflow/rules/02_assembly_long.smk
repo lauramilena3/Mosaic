@@ -271,7 +271,7 @@ rule assemblyStatsHYBRID:
 	input:
 		quast_dir=(config["quast_dir"]),
 		scaffolds_spades=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
-		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/flye_combined_assembly_{sample}.{{sampling}}.fasta", sample=SAMPLES),
+		scaffolds_long=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt",
@@ -305,7 +305,7 @@ rule scoreALE:
 
 rule mergeAssembliesHYBRID:
 	input:
-		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample=NANOPORE_SAMPLES),
+		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 		hybrid_contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
