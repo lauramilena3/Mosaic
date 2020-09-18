@@ -17,7 +17,6 @@ trimmomatic_minlen: "50"
 nanopore_quality: "10"
 sampling: "sub tot"
 
-
 representative_contigs: ""
 sra_list: ""
 
@@ -38,7 +37,8 @@ basecalled_dir: "data/basecalled/"
 
 img_vr_db: "db/IMG_VR/"
 virSorter_db: "db/VirSorter/virsorter-data"
-kraken_db: "db/NCBI-bacteria-01.04.2019"
+#raken_db: "db/NCBI-bacteria-01.04.2019"
+kraken_db: "db/KRAKEN"
 checkv_db: "db/checkv-db-v0.6"
 canu_dir: "tools/canu-2.0/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
@@ -46,7 +46,7 @@ virSorter_dir: "tools/VirSorter"
 virFinder_dir: "tools/VirFinder"
 clusterONE_dir: "tools/clusterONE"
 vcontact_dir: "tools/vcontact2"
-taxonomy_file: "db/ncbi-taxdump/formatting_taxonomy_affiliations.csv"
+taxonomy_file: "db/vcontact2/formatting_taxonomy_affiliations.csv"
 mmseqs_dir: "tools/MMseqs2"
 viga_dir: "tools/viga"
 piler_dir: "tools/pilercr1.06"
