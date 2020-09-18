@@ -83,7 +83,7 @@ rule parseVcontact:
 			    taxonomy=[]
 			    for acc in accession:
 					print(acc)
-			        taxonomy.append(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
+					taxonomy.append(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
 			    if taxonomy:
 			        tax_df=pd.DataFrame(taxonomy)
 			        tax_df.columns=["kindom", "phylum", "class", "order", "family", "genus", "species"]
