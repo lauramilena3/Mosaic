@@ -8,7 +8,7 @@ ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 if POOLED==True:
 	#ruleorder: symlinkPooled>subsampleReadsNanopore
 	#ruleorder: symlinkPooled>remove_adapters_quality_nanopore
-	ruleorder: hybridAsemblySpadesPooled>hybridAsemblySpades
+	ruleorder: hybridAsemblySpadesPooled>hybridAsemblySpades>shortReadAsemblySpadesPE
 	# rule symlinkPooled:
 	# 	input:
 	# 		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
