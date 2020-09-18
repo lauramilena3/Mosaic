@@ -8,21 +8,47 @@ ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 if POOLED==True:
 	ruleorder: symlinkPooled>subsampleReadsNanopore
 	ruleorder: symlinkPooled>remove_adapters_quality_nanopore
-	rule symlinkPooled:
+	ruleorder: hybridAsemblySpadesPooled>hybridAsemblySpades
+	# rule symlinkPooled:
+	# 	input:
+	# 		pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
+	# 	output:
+	# 		expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
+	# 	message:
+	# 		"Creating symbolic links from pooled sample"
+	# 	threads: 11
+	# 	shell:
+	# 		"""
+	# 		for destination in {output}
+	# 		do
+	# 			ln -s {input.pooled} "$destination"
+	# 		done
+	# 		#add a merged illumina
+	# 		"""
+	rule hybridAsemblySpadesPooled:
 		input:
-			pooled=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.{{sampling}}.fastq", sample_nanopore=NANOPORE_SAMPLES),
+			forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.{sampling}.fastq"),
+			reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.{sampling}.fastq"),
+			unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_norm.{sampling}.fastq",
+			nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/"+ NANOPORE_SAMPLES +"_nanopore_clean.{sampling}.fastq"
 		output:
-			expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{{sampling}}.fastq", sample=SAMPLES),
+			scaffolds=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta"),
+			filtered_list=(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/filtered_list.txt")
+		params:
+			raw_scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}/scaffolds.fasta",
+			assembly_dir=directory(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_{sampling}")
 		message:
-			"Creating symbolic links from pooled sample"
-		threads: 11
+			"Assembling hybrid reads with metaSpades"
+		conda:
+			dirs_dict["ENVS_DIR"] + "/env1.yaml"
+		threads: 16
 		shell:
 			"""
-			for destination in {output}
-			do
-				ln -s {input.pooled} "$destination"
-			done
-			#add a merged illumina
+			spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired}  --pe1-s {input.unpaired} -o {params.assembly_dir} \
+			--meta -t {threads} --only-assembler --nanopore {input.nanopore} --memory 350
+			grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
+			| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
+			seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
 			"""
 
 rule hybridAsemblySpades:
@@ -50,6 +76,8 @@ rule hybridAsemblySpades:
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
 		"""
+
+
 
 # rule asemblyCanuPOOLED:
 # 	input:
