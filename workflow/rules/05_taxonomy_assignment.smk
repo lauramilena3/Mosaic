@@ -129,7 +129,7 @@ rule mmseqsTaxonomy:
 		#mkdir {output.mmseqsdir}
 		mmseqs createdb {input.representatives} {params.positive_contigsDB}
 		mmseqs taxonomy --threads {threads} {params.positive_contigsDB} {params.refDB} \
-			{params.taxonomyResultDB} {params.tmp} --search-type 3 --lca-mode 2 -c 0.3 --cov-mode 1
+			{params.taxonomyResultDB} {params.tmp} --search-type 3 --lca-mode 2 -c 0.3 --cov-mode 2
 		#results
 		mmseqs createtsv {params.positive_contigsDB} {params.taxonomyResultDB} {output.tsv}
 		mmseqs taxonomyreport {params.refDB} {params.taxonomyResultDB} {output.table}
