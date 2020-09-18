@@ -7,7 +7,7 @@ ruleorder: mergeAssembliesHYBRID > mergeAssembliesSHORT
 
 if POOLED==True:
 	ruleorder: symlinkPooled>subsampleReadsNanopore
-	ruleorder: symlinkPooled>remove_adapters_quality_nanopore
+	#ruleorder: symlinkPooled>remove_adapters_quality_nanopore
 	ruleorder: hybridAsemblySpadesPooled>hybridAsemblySpades
 	# rule symlinkPooled:
 	# 	input:
