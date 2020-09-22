@@ -61,6 +61,7 @@ rule mapReadsToContigsPE:
 		covhist=dirs_dict["MAPPING_DIR"]+ "/bbmap_covhist_{sample}.{sampling}.txt",
 		basecov=dirs_dict["MAPPING_DIR"]+ "/bbmap_basecov_{sample}.{sampling}.txt",
 		bincov=dirs_dict["MAPPING_DIR"]+ "/bbmap_bincov_{sample}.{sampling}.txt",
+		scafstats=dirs_dict["MAPPING_DIR"]+ "/bbmap_scafstats_{sample}.{sampling}.txt",
 	params:
 		contigs=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
@@ -75,7 +76,8 @@ rule mapReadsToContigsPE:
 		#bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
 		#-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
 		bbmap.sh -Xmx{resources.mem_mb}m ref={input.representatives} nodisk in1={input.forward_paired} in2={input.reverse_paired}  \
-		outm={output.sam} threads={threads} covstats={output.covstats} covhist={output.covhist} basecov={output.basecov} bincov={output.bincov}
+		outm={output.sam} threads={threads} covstats={output.covstats} covhist={output.covhist} basecov={output.basecov} \
+		bincov={output.bincov} scafstats={output.scafstats}
 		#Sam to Bam
 		samtools view -b -S {output.sam} > {output.bam}
 		samtools sort {output.bam} -o {output.bam_sorted}
