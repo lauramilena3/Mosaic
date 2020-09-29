@@ -312,6 +312,7 @@ rule parseSummary:
 		viral_boundary=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-boundary.tsv",
 		tsv=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
 		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv",
+		parsed_abundances=dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_DB_70.{sampling}.txt",
 	output:
 		summary=dirs_dict["ANNOTATION"] + "/summary_information.{sampling}.csv",
 	message:
@@ -326,4 +327,5 @@ rule parseSummary:
 		df3=pd.read_csv(input.tsv, sep="\t",header=None, names=["name", "id", "rank", "taxonomy_mmseqs"])
 		df3=df3[["name","rank", "taxonomy_mmseqs"]]
 		df4=pd.read_csv(input.taxonomy_results, sep="\t",header=None, names=["name", "taxonomy_vcontact2"])
-		df1.merge(df2, left_on='contig_id', right_on='seqname', how="outer").merge(df3, left_on='contig_id', right_on='name', how="outer").merge(df4, left_on='contig_id', right_on='name', how="outer").to_csv(output.summary)
+		df5=pd.read_csv(input.parsed_abundances,sep="\t")
+		df1.merge(df2, left_on='contig_id', right_on='seqname', how="outer").merge(df3, left_on='contig_id', right_on='name', how="outer").merge(df4, left_on='contig_id', right_on='name', how="outer").merge(df5, left_on='contig_id', right_on='OTU', how="outer").to_csv(output.summary)
