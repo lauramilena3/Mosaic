@@ -6,6 +6,7 @@ rule virSorter:
 		positive_fasta=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-combined.fa",
 		table_virsorter=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-score.tsv",
 		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt",
+		viral_boundary=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-boundary.tsv",
 	params:
 		out_folder=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}"
 	message:

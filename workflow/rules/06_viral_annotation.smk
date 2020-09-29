@@ -65,7 +65,7 @@ rule annotate_BLAST:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
 		blast=(os.path.join(workflow.basedir,"db/ncbi/NCBI_viral_proteins.faa")),
 	output:
-		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output.{sampling}.csv"),
+		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_viralRefSeq.{sampling}.csv"),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/viga.yaml"
 	message:
@@ -281,3 +281,49 @@ rule detectNucleotideModifications:
 		tombo text_output browser_files --fast5-basedirs {input.fast5_dir} --statistics-filename {params.representative_basename}.de_novo.tombo.stats \
 		--genome-fasta {input.representatives} --browser-file-basename {params.representative_basename} --file-types fraction
 		"""
+rule estimateGenomeCompletness:
+	input:
+		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+	output:
+		quality_summary=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
+		completeness=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/completeness.tsv",
+		contamination=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/contamination.tsv",
+		repeats=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/repeats.tsv",
+	params:
+		checkv_outdir=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
+		checkv_db=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
+
+	message:
+		"Estimating genome completeness with CheckV "
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 4
+	shell:
+		"""
+		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv repeats {input.representatives} {params.checkv_outdir}
+		checkv quality_summary {input.representatives} {params.checkv_outdir}
+		"""
+
+ule parseSummary:
+	input:
+		quality_summary=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
+		viral_boundary=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-boundary.tsv",
+		tsv=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
+		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv",
+	output:
+		summary=dirs_dict["ANNOTATION"] + "/summary_information.tot.csv")
+	message:
+		"Assigning viral taxonomy with vContact2 results"
+	threads: 1
+	run:
+		import pandas as pd
+		df1=pd.read_csv(input.quality_summary, sep="\t")
+		df1=df1[["contig_id","contig_length","gene_count","viral_genes","host_genes","checkv_quality","provirus","termini"]]
+		df2=pd.read_csv(input.viral_boundary, sep="\t")
+		df2=df2[["seqname","group"]]
+		df3=pd.read_csv(input.tsv, sep="\t",header=None, names=["name", "id", "rank", "taxonomy_mmseqs"])
+		df3=df3[["name","rank", "taxonomy_mmseqs"]]
+		df4=pd.read_csv(input.taxonomy_results, sep="\t",header=None, names=["name", "taxonomy_vcontact2"])
+		df1.merge(df2, left_on='contig_id', right_on='seqname', how="outer").merge(df3, left_on='contig_id', right_on='name', how="outer").merge(df4, left_on='contig_id', right_on='name', how="outer").to_csv(output.summary)
