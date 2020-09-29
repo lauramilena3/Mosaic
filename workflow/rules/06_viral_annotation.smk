@@ -313,7 +313,7 @@ rule parseSummary:
 		tsv=(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tsv"),
 		taxonomy_results=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv",
 	output:
-		summary=dirs_dict["ANNOTATION"] + "/summary_information.tot.csv")
+		summary=dirs_dict["ANNOTATION"] + "/summary_information.tot.csv",
 	message:
 		"Assigning viral taxonomy with vContact2 results"
 	threads: 1
