@@ -306,7 +306,7 @@ rule estimateGenomeCompletness:
 		checkv quality_summary {input.representatives} {params.checkv_outdir}
 		"""
 
-ule parseSummary:
+rule parseSummary:
 	input:
 		quality_summary=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv",
 		viral_boundary=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/final-viral-boundary.tsv",
