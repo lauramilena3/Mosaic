@@ -150,6 +150,9 @@ def inputCleanReads(wildcards):
 rule clean_reads:
 	input:
 		inputCleanReads
+		dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png"
+		dirs_dict["QC_DIR"]+ "/preQC_illumina_report.html"
+		dirs_dict["QC_DIR"]+ "/postQC_illumina_report.html"
 
 rule abundance_from_db_contigs:
 	input:
