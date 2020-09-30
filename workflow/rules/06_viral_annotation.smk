@@ -80,7 +80,7 @@ rule annotate_BLAST:
 rule blasToIMGVR:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
-		img_vr_db="/home/lmf/" + (config['img_vr_db']) + "IMG_VR.fasta",
+		img_vr_db="/home/lmf/" + (config['img_vr_db']) + "IMGVR.fasta",
 	output:
 		blast_output=(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv"),
 	conda:
