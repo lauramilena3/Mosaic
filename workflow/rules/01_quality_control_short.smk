@@ -444,7 +444,7 @@ rule kmer_rarefraction:
 	threads: 1
 	shell:
 		"""
-		bbcountunique.sh in1={input.forward_paired} in2={input.reverse_paired} out={output.histogram}
+		bbcountunique.sh in1={input.forward_paired} in2={input.reverse_paired} out={output.histogram} interval={config[kmer_window]}
 		"""
 
 rule plot_kmer:

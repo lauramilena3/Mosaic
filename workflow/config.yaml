@@ -23,6 +23,9 @@ sra_list: ""
 #species
 p_ident: "95"
 
+#Count Unique
+kmer_window: "25000"
+
 #bbnorm
 min_norm: "2"
 max_norm: "100"
