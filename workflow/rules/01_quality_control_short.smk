@@ -456,8 +456,6 @@ rule plot_kmer:
 
 	message:
 		"Plot unique reads with BBtools"
-	conda:
-		dirs_dict["ENVS_DIR"]+ "/env5.yaml"
 	threads: 1
 	run:
 		import pandas as pd
