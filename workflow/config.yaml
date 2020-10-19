@@ -27,7 +27,7 @@ p_ident: "95"
 kmer_window: "25000"
 
 #bbnorm
-min_norm: "2"
+min_norm: "0"
 max_norm: "100"
 max_subsample: "20000000"
 #Spades and canu assembly
