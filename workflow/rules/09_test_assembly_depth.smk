@@ -114,8 +114,8 @@ rule IDBA_UD_test_depth:
 	threads: 4
 	shell:
 		"""
-		fq2fa --merge {input.forward_paired} {input.forward_paired} {output.interleaved}
-		idba_ud -r {output.interleaved} --num_threads {threads} -o {params.assembly_dir}
+		./tools/idba/idba/bin/fq2fa --merge {input.forward_paired} {input.forward_paired} {output.interleaved}
+		./tools/idba/idba/bin/idba_ud -r {output.interleaved} --num_threads {threads} -o {params.assembly_dir}
 		cp {output.scaffolds} {output.filtered_scaffolds}
 		"""
 
