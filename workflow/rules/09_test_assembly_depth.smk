@@ -211,7 +211,7 @@ rule viralStatsILLUMINA_test_depth:
 rule assemblyStatsILLUMINA_test_depth:
 	input:
 		quast_dir=(config["quast_dir"]),
-		scaffolds_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_{assemblers}_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test, assemblers=["spades","metaspades", "idbaud"]),
+		scaffolds_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_{assemblers}_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test, assemblers=["spades","metaspades"]),
 	output:
 		quast_report_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/assembly_statistics_quast_{sampling}"),
 		quast_txt=dirs_dict["ASSEMBLY_TEST"] + "/assembly_quast_report.{sampling}.txt",
