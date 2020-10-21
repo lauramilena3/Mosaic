@@ -103,7 +103,7 @@ rule IDBA_UD_test_depth:
 		interleaved=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_interleaved_paired_norm.{sampling}.fastq"),
 		#scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_filtered_scaffolds.{sampling}.fasta"),
 		scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_idbaud_{sampling}/contig.fa",
-		filtered_scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_idbaud_filtered_scaffolds.{sampling}.fasta"),
+		filtered_scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_idbaud_filtered_scaffolds.{sampling}.fasta"),
 	params:
 		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/scaffolds.fasta",
 		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_idbaud_{sampling}"),
