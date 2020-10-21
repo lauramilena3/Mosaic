@@ -64,7 +64,7 @@ rule metaspadesPE_test_depth:
 	shell:
 		"""
 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired} -o {params.assembly_dir} \
-		-t {threads} --only-assembler --memory 350
+		--meta -t {threads} --only-assembler --memory 350
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
@@ -88,7 +88,7 @@ rule spadesPE_test_depth:
 	shell:
 		"""
 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired} -o {params.assembly_dir} \
-		--meta -t {threads} --only-assembler --memory 350
+		-t {threads} --only-assembler --memory 350
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
