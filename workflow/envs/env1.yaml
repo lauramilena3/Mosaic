@@ -14,7 +14,8 @@ dependencies:
   - bbmap =38.86
 #  - bmtagger =3.101
   - spades =3.14.0
-  - flye =2.7.1
+  - flye =2.8.1
+  - idba =1.1.3
   - bowtie2 =2.3.5
   - samtools =1.10
   - pilon =1.23
