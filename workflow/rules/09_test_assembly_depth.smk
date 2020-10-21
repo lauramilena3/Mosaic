@@ -46,7 +46,7 @@ rule normalizeReads_test_depth:
 		target={params.max_depth} mindepth={params.min_depth} t={threads}
 		"""
 
-rule spadesPE_test_depth:
+rule metaspadesPE_test_depth:
 	input:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
@@ -70,7 +70,7 @@ rule spadesPE_test_depth:
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
 		"""
 
-rule metaSpadesPE_test_depth:
+rule spadesPE_test_depth:
 	input:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
