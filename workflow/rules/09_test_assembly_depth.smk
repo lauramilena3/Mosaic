@@ -1,11 +1,11 @@
 rule subsampleReadsIllumina_PE_test_depth:
 	input:
-		paired_sizes=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",),
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+		paired_sizes=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.{sampling}.txt",),
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 	output:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.tot.fastq"),
+		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.{sampling}.fastq"),
 	message:
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -23,8 +23,8 @@ rule subsampleReadsIllumina_PE_test_depth:
 
 rule normalizeReads_test_depth:
 	input:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.tot.fastq"),
+		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.{sampling}.fastq"),
 	output:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
@@ -48,8 +48,8 @@ rule normalizeReads_test_depth:
 
 rule spadesPE_test_depth:
 	input:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.tot.fastq"),
+		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
 	output:
 		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{sampling}.fasta"),
 		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_{sampling}/filtered_list.txt"),
@@ -72,14 +72,14 @@ rule spadesPE_test_depth:
 
 rule metaSpadesPE_test_depth:
 	input:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_forward_paired_norm.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_reverse_paired_norm.tot.fastq"),
+		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
 	output:
-		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_filtered_scaffolds.{sampling}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_{sampling}/filtered_list.txt"),
+		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{sampling}.fasta"),
+		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/filtered_list.txt"),
 	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_{sampling}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_{sampling}"),
+		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/scaffolds.fasta",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}"),
 	message:
 		"Assembling PE reads with metaSpades"
 	conda:
@@ -95,18 +95,18 @@ rule metaSpadesPE_test_depth:
 
 		"""
 
-rule IDBA_UD_test_iterations:
+rule IDBA_UD_test_depth:
 	input:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_forward_paired_norm.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_reverse_paired_norm.tot.fastq"),
+		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
+		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
 	output:
-		interleaved=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_interleaved_paired_norm.tot.fastq"),
+		interleaved=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_interleaved_paired_norm.{sampling}.fastq"),
 		#scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_filtered_scaffolds.{sampling}.fasta"),
-		scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_idbaud_{sampling}/contig.fa",
+		scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_idbaud_{sampling}/contig.fa",
 		#filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_{sampling}/filtered_list.txt"),
 	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_spades_{sampling}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{iteration}_idbaud_{sampling}"),
+		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/scaffolds.fasta",
+		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_idbaud_{sampling}"),
 	message:
 		"Assembling PE reads with metaSpades"
 	conda:
