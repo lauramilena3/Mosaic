@@ -176,7 +176,7 @@ rule checkViralCompletness:
 		checkV=dirs_dict["VIRAL_DIR"] + "/checkV_tot/quality_summary.tsv"
 
 #subsample_test=[10,20,30,40,50,60,70,80,90,100]
-subsample_test=[10]
+subsample_test=[10,20]
 
 rule test_assembly_depth:
 	input:
