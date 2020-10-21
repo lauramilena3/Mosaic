@@ -120,29 +120,29 @@ rule IDBA_UD_test_depth:
 
 ###ITERATIVE ASSEMBLY
 
-rule shortReadAsemblySpadesPE__test_depth:
-	input:
-		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_iteration_{iteration}_forward_paired_norm.tot.fastq"),
-		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_iteration_{iteration}}_reverse_paired_norm.tot.fastq"),
-	output:
-		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{sampling}.fasta"),
-		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/filtered_list.txt"),
-	params:
-		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/scaffolds.fasta",
-		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}"),
-	message:
-		"Assembling PE reads with metaSpades"
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 4
-	shell:
-		"""
-		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired} -o {params.assembly_dir} \
-		--meta -t {threads} --only-assembler --memory 350
-		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
-		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
-		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
-		"""
+# rule shortReadAsemblySpadesPE__test_depth:
+# 	input:
+# 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_iteration_{iteration}_forward_paired_norm.tot.fastq"),
+# 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_iteration_{iteration}}_reverse_paired_norm.tot.fastq"),
+# 	output:
+# 		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{sampling}.fasta"),
+# 		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/filtered_list.txt"),
+# 	params:
+# 		raw_scaffolds=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}/scaffolds.fasta",
+# 		assembly_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_{sampling}"),
+# 	message:
+# 		"Assembling PE reads with metaSpades"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+# 	threads: 4
+# 	shell:
+# 		"""
+# 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired} -o {params.assembly_dir} \
+# 		--meta -t {threads} --only-assembler --memory 350
+# 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
+# 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
+# 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
+# 		"""
 
 rule virSorter_test_depth:
 	input:
