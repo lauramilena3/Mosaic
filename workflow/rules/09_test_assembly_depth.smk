@@ -148,10 +148,10 @@ rule IDBA_UD_test_depth:
 
 rule virSorter_test_depth:
 	input:
-		all_assemblies=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test),
+		all_assemblies=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test),
 		virSorter_db=config['virSorter_db'],
 	output:
-		merged_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/merged_spades_filtered_scaffolds.{{sampling}}.fasta"),
+		merged_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/merged_metaspades_filtered_scaffolds.{{sampling}}.fasta"),
 		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-combined.fa",
 		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-score.tsv",
 		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-boundary.tsv",
