@@ -170,7 +170,7 @@ rule virSorter_test_depth:
 		cp {output.positive_fasta} {output.final_viral_contigs}
 		"""
 
-rule vOUTclustering:
+rule vOUTclustering_test_depth:
 	input:
 		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/merged_positive_virsorter.{sampling}.fasta",
 	output:
