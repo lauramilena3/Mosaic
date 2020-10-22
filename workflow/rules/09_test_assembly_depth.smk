@@ -185,7 +185,7 @@ rule vOUTclustering_test_depth:
 	threads: 1
 	shell:
 		"""
-		./scripts/stampede-Cluster_genomes.pl -f {input.positive_contigs} -c 80 -i 95
+		./scripts/stampede-Cluster_genomes.pl -f {input.final_viral_contigs} -c 80 -i 95
 		cat {output.representatives_temp} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		cp {output.representatives_temp} {output.representatives}
