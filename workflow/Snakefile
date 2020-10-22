@@ -182,7 +182,7 @@ rule test_assembly_depth:
 	input:
 		checkV=(dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_tot/quality_summary.tsv"),
 		quast_txt_assembly=dirs_dict["ASSEMBLY_TEST"] + "/assembly_quast_report.tot.txt",
-		quast_txt_viral=dirs_dict["ASSEMBLY_TEST"] + "/viral_quast_report.tot.txt",
+		quast_txt_viral=dirs_dict["ASSEMBLY_TEST"] + "/viral_representatives_quast_report.tot.txt",
 
 rule annotate_VIGA_contigs:
 	input:
