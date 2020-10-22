@@ -117,6 +117,7 @@ rule IDBA_UD_test_depth:
 		./tools/idba/idba/bin/fq2fa --merge {input.forward_paired} {input.forward_paired} {output.interleaved}
 		./tools/idba/idba/bin/idba_ud -r {output.interleaved} --num_threads {threads} -o {params.assembly_dir}
 		cp {output.scaffolds} {output.filtered_scaffolds}
+		sed -i "s/>/>{wildcards.sample}_{wildcards.subsample}_/g" {output.filtered_scaffolds}
 		"""
 
 ###ITERATIVE ASSEMBLY
@@ -147,15 +148,16 @@ rule IDBA_UD_test_depth:
 
 rule virSorter_test_depth:
 	input:
-		merged_assembly=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{sampling}.fasta"),
+		all_assemblies=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test),
 		virSorter_db=config['virSorter_db'],
 	output:
-		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-combined.fa",
-		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-score.tsv",
-		positive_list=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/positive_VS_list_{sampling}.txt",
-		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-boundary.tsv",
+		merged_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/merged_spades_filtered_scaffolds.{{sampling}}.fasta"),
+		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-combined.fa",
+		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-score.tsv",
+		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-boundary.tsv",
+		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/merged_positive_virsorter.{sampling}.fasta",
 	params:
-		out_folder=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}"
+		out_folder=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}",
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -163,22 +165,43 @@ rule virSorter_test_depth:
 	threads: 4
 	shell:
 		"""
-		virsorter run -w {params.out_folder} -i {input.merged_assembly} -j {threads}
-		grep ">" {output.positive_fasta} | cut -f1 -d\| | sed "s/>//g" > {output.positive_list}
+		cat {input.all_assemblies} > {output.merged_assembly}
+		virsorter run -w {params.out_folder} -i {output.merged_assembly} -j {threads}
+		cp {output.positive_fasta} {output.final_viral_contigs}
+		"""
+
+rule vOUTclustering:
+	input:
+		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/merged_positive_virsorter.{sampling}.fasta",
+	output:
+		clusters=dirs_dict["ASSEMBLY_TEST"] + "/merged_positive_virsorter.{sampling}_95-80.clstr",
+		representatives_temp=temp(dirs_dict["ASSEMBLY_TEST"]+ "/merged_positive_virsorter.{sampling}_95-80.fna"),
+		representatives=dirs_dict["ASSEMBLY_TEST"]+ "/95-80_merged_positive_virsorter.{sampling}.fasta",
+		representative_lengths=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_lengths.{sampling}.txt",
+	message:
+		"Creating vOUTs with stampede"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
+	threads: 1
+	shell:
+		"""
+		./scripts/stampede-Cluster_genomes.pl -f {input.positive_contigs} -c 80 -i 95
+		cat {output.representatives_temp} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
+		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
+		cp {output.representatives_temp} {output.representatives}
 		"""
 
 rule estimateGenomeCompletness_test_depth:
 	input:
-		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-combined.fa",
+		representatives=dirs_dict["ASSEMBLY_TEST"]+ "/95-80_merged_positive_virsorter.{sampling}.fasta",
 	output:
-		quality_summary=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}/quality_summary.tsv",
-		completeness=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}/completeness.tsv",
-		contamination=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}/contamination.tsv",
-		repeats=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}/repeats.tsv",
+		quality_summary=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/quality_summary.tsv",
+		completeness=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/completeness.tsv",
+		contamination=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/contamination.tsv",
+		repeats=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/repeats.tsv",
 	params:
-		checkv_outdir=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}",
-		checkv_db=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_{sampling}",
-
+		checkv_outdir=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}",
+		checkv_db=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}",
 	message:
 		"Estimating genome completeness with CheckV "
 	conda:
@@ -186,18 +209,18 @@ rule estimateGenomeCompletness_test_depth:
 	threads: 4
 	shell:
 		"""
-		checkv contamination {input.positive_fasta} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv completeness {input.positive_fasta} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv repeats {input.positive_fasta} {params.checkv_outdir}
-		checkv quality_summary {input.positive_fasta} {params.checkv_outdir}
+		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv repeats {input.representatives} {params.checkv_outdir}
+		checkv quality_summary {input.representatives} {params.checkv_outdir}
 		"""
 rule viralStatsILLUMINA_test_depth:
 	input:
 		quast_dir=(config["quast_dir"]),
-		scaffolds_viral=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{{sampling}}/final-viral-combined.fa", sample=SAMPLES, subsample=subsample_test),
+		representatives=dirs_dict["ASSEMBLY_TEST"]+ "/95-80_merged_positive_virsorter.{sampling}.fasta",
 	output:
-		quast_report_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/viral_statistics_quast_{sampling}"),
-		quast_txt=dirs_dict["ASSEMBLY_TEST"] + "/viral_quast_report.{sampling}.txt",
+		quast_report_dir=directory(dirs_dict["ASSEMBLY_TEST"] + "/viral_representatives_statistics_quast_{sampling}"),
+		quast_txt=dirs_dict["ASSEMBLY_TEST"] + "/viral_representatives_quast_report.{sampling}.txt",
 	message:
 		"Creating viral stats with quast"
 	conda:
@@ -205,7 +228,7 @@ rule viralStatsILLUMINA_test_depth:
 	threads: 4
 	shell:
 		"""
-		{input.quast_dir}/quast.py {input.scaffolds_viral} -o {output.quast_report_dir} --threads {threads}
+		{input.quast_dir}/quast.py {input.representatives} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
 rule assemblyStatsILLUMINA_test_depth:

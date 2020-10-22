@@ -180,9 +180,9 @@ subsample_test=[10,20,30,40,50,60,70,80,90,100]
 
 rule test_assembly_depth:
 	input:
-		#checkV=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_checkV_tot/quality_summary.tsv", sample=SAMPLES, subsample=subsample_test),
+		checkV=(dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_tot/quality_summary.tsv"),
 		quast_txt_assembly=dirs_dict["ASSEMBLY_TEST"] + "/assembly_quast_report.tot.txt",
-		#quast_txt_viral=dirs_dict["ASSEMBLY_TEST"] + "/viral_quast_report.tot.txt",
+		quast_txt_viral=dirs_dict["ASSEMBLY_TEST"] + "/viral_quast_report.tot.txt",
 
 rule annotate_VIGA_contigs:
 	input:
