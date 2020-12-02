@@ -186,10 +186,10 @@ rule estimateGenomeCompletness_test_depth:
 	threads: 4
 	shell:
 		"""
-		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv repeats {input.representatives} {params.checkv_outdir}
-		checkv quality_summary {input.representatives} {params.checkv_outdir}
+		checkv contamination {input.final_viral_contigs} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.final_viral_contigs} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv repeats {input.final_viral_contigs} {params.checkv_outdir}
+		checkv quality_summary {input.final_viral_contigs} {params.checkv_outdir}
 		"""
 
 rule vOUTclustering_test_depth:
