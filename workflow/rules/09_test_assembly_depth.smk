@@ -148,16 +148,15 @@ rule IDBA_UD_test_depth:
 
 rule virSorter_test_depth:
 	input:
-		all_assemblies=expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES, subsample=subsample_test),
+		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_spades_filtered_scaffolds.{sampling}.fasta"),
 		virSorter_db=config['virSorter_db'],
 	output:
-		merged_assembly=expand(dirs_dict["ASSEMBLY_TEST"] + "/merged_metaspades_filtered_scaffolds.{{sampling}}.fasta"),
-		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-combined.fa",
-		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-score.tsv",
-		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}/final-viral-boundary.tsv",
-		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/merged_positive_virsorter.{sampling}.fasta",
+		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-combined.fa",
+		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-score.tsv",
+		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-boundary.tsv",
+		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_positive_virsorter.{sampling}.fasta",
 	params:
-		out_folder=dirs_dict["ASSEMBLY_TEST"] + "/merged_virSorter_{sampling}",
+		out_folder=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}",
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
@@ -165,9 +164,32 @@ rule virSorter_test_depth:
 	threads: 4
 	shell:
 		"""
-		cat {input.all_assemblies} > {output.merged_assembly}
-		virsorter run -w {params.out_folder} -i {output.merged_assembly} -j {threads}
+		virsorter run -w {params.out_folder} -i {input.scaffolds} -j {threads}
 		cp {output.positive_fasta} {output.final_viral_contigs}
+		"""
+
+rule estimateGenomeCompletness_test_depth:
+	input:
+		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_positive_virsorter.{sampling}.fasta",
+	output:
+		quality_summary=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virsorter_checkV_{sampling}/quality_summary.tsv",
+		completeness=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virsorter_checkV_{sampling}/completeness.tsv",
+		contamination=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virsorter_checkV_{sampling}/contamination.tsv",
+		repeats=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virsorter_checkV_{sampling}/repeats.tsv",
+	params:
+		checkv_outdir=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virsorter_checkV_{sampling}",
+#		checkv_db=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}",
+	message:
+		"Estimating genome completeness with CheckV "
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 4
+	shell:
+		"""
+		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
+		checkv repeats {input.representatives} {params.checkv_outdir}
+		checkv quality_summary {input.representatives} {params.checkv_outdir}
 		"""
 
 rule vOUTclustering_test_depth:
@@ -191,29 +213,6 @@ rule vOUTclustering_test_depth:
 		cp {output.representatives_temp} {output.representatives}
 		"""
 
-rule estimateGenomeCompletness_test_depth:
-	input:
-		representatives=dirs_dict["ASSEMBLY_TEST"]+ "/95-80_merged_positive_virsorter.{sampling}.fasta",
-	output:
-		quality_summary=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/quality_summary.tsv",
-		completeness=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/completeness.tsv",
-		contamination=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/contamination.tsv",
-		repeats=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}/repeats.tsv",
-	params:
-		checkv_outdir=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}",
-		checkv_db=dirs_dict["ASSEMBLY_TEST"] + "/95-80_merged_positive_virsorter_checkV_{sampling}",
-	message:
-		"Estimating genome completeness with CheckV "
-	conda:
-		dirs_dict["ENVS_DIR"] + "/vir.yaml"
-	threads: 4
-	shell:
-		"""
-		checkv contamination {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv completeness {input.representatives} {params.checkv_outdir} -t {threads} -d {config[checkv_db]}
-		checkv repeats {input.representatives} {params.checkv_outdir}
-		checkv quality_summary {input.representatives} {params.checkv_outdir}
-		"""
 rule viralStatsILLUMINA_test_depth:
 	input:
 		quast_dir=(config["quast_dir"]),
@@ -231,6 +230,7 @@ rule viralStatsILLUMINA_test_depth:
 		{input.quast_dir}/quast.py {input.representatives} -o {output.quast_report_dir} --threads {threads}
 		cp {output.quast_report_dir}/report.txt {output.quast_txt}
 		"""
+
 rule assemblyStatsILLUMINA_test_depth:
 	input:
 		quast_dir=(config["quast_dir"]),
