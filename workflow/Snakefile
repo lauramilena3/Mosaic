@@ -165,6 +165,10 @@ rule assembly_vs_reference:
 rule assembly:
 	input:
 		expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE),
+		(dirs_dict["QC_DIR"]+ "/preQC_illumina_report.html"),
+		(dirs_dict["QC_DIR"]+ "/postQC_illumina_report.html"),
+		(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png"),
+
 #		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample=SAMPLES),
 
 rule annotate_VIBRANT_contigs:
