@@ -14,11 +14,11 @@ rule annotate_VIGA:
 		GenBank_table=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + ".tbl",
 		GenBank_fasta=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.fasta",
 		csv=dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.csv",
-		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt",
 		viga_names=temp(dirs_dict["ANNOTATION"] + "/viga_names_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt"),
 		viga_topology_temp=temp(dirs_dict["ANNOTATION"] + "/viga_topology_temp" + REPRESENTATIVE_CONTIGS_BASE + "tot.txt"),
 		viga_topology=(dirs_dict["ANNOTATION"] + "/viga_topology_" + REPRESENTATIVE_CONTIGS_BASE + "tot.txt"),
 	params:
+		viga_log=dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt",
 		representatives_name=dirs_dict["MMSEQS"] + "/" + "representatives",
 		reference_name=dirs_dict["MMSEQS"] + "/" + REPRESENTATIVE_CONTIGS_BASE,
 		results_name=dirs_dict["MMSEQS"] + "/" +  REPRESENTATIVE_CONTIGS_BASE + "_search_results",
@@ -39,11 +39,15 @@ rule annotate_VIGA:
 		mkdir -p {output.temp_viga_dir}
 		cd {output.temp_viga_dir}
 		touch {output.modifiers}
+		echo "viga.1"
 		{input.VIGA_dir}/VIGA.py --input {output.temp_symlink} --diamonddb {input.VIGA_dir}/databases/RefSeq_Viral_DIAMOND/refseq_viral_proteins.dmnd \
 		--blastdb {input.VIGA_dir}/databases/RefSeq_Viral_BLAST/refseq_viral_proteins --hmmerdb {input.VIGA_dir}/databases/pvogs/pvogs.hmm \
-		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads} &> {output.viga_log}
-		cat {output.viga_log} | grep "was renamed as" > {output.viga_names}
-		cat {output.viga_log} | grep "according to LASTZ" > {output.viga_topology_temp}
+		--rfamdb {input.VIGA_dir}/databases/rfam/Rfam.cm --modifiers {output.modifiers} --threads {threads} &> {params.viga_log}
+		echo "viga.2"
+		cat {params.viga_log} | grep "was renamed as" > {output.viga_names}
+		echo "viga.3"
+		cat {params.viga_log} | grep "according to LASTZ" > {output.viga_topology_temp}
+		echo "viga.4"
 		cat {output.viga_names} | while read line
 		do
 			stringarray=($line)
@@ -55,10 +59,15 @@ rule annotate_VIGA:
 			sed -i "s/>${{new}} $/>${{old}}/g" {output.GenBank_fasta}
 			sed -i -e "s/${{new}} /${{old}} /g" {output.viga_topology_temp}
 		done
+		echo "viga.5"
 		awk  '{{print $1 "\t" $6}}'  {output.viga_topology_temp} > {output.viga_topology}
+		echo "viga.6"
 		grep -v "gene$" {output.GenBank_table_temp1} > {output.GenBank_table_temp2}
+		echo "viga.7"
 		grep -n "CDS$" {output.GenBank_table_temp2} | cut -d : -f 1 | awk '{{$1+=-1}}1' | sed 's%$%d%' | sed -f - {output.GenBank_table_temp2} > {output.GenBank_table}
+		echo "viga.8"
 		sed -i "s/tRNA-?(Asp|Gly)(atcc)/tRNA-Xxx/g" {output.GenBank_table}
+		echo "viga.9"
 		"""
 rule annotate_BLAST:
 	input:

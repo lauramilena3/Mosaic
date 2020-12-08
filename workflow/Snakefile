@@ -128,7 +128,9 @@ def inputAll(wildcards):
 	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv", sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_domains_tot.csv", sample=SAMPLES)),
 	inputs.append(dirs_dict["ANNOTATION"] + "/summary_information.tot.csv")
-	inputs.append(dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt"),
+	#inputs.append(dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt"),
+	inputs.append(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.gbk")
+
 
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
