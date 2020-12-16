@@ -354,3 +354,21 @@ rule get_WIsH:
 		#for i in $(cat < ../.{input.representative_list}); do acc="${{i%.*}}"; echo $acc; COUNTER=$[COUNTER + 1]; echo $COUNTER; wget -qN "ftp://ftp.patricbrc.org/genomes/$i/$i.fna" & done;
 		cat ../../../{input.representative_list} | xargs -I {{}} -n 1 -t -P {threads} wget -qN "ftp://ftp.patricbrc.org/genomes/{{}}/{{}}.fna"
 		"""
+
+rule get_WTP:
+	output:
+		WTP_dir=directory(os.path.join(workflow.basedir, config['WTP_dir'])),
+	message:
+		"Downloading What the Phage"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env6.yaml"
+	threads: 1
+	shell:
+		"""c
+		mkdir -p tools
+		cd tools
+		mkdir {output.WTP_dir}
+		cd {output.WTP_dir}
+		singularity pull  --name nanozoo-sourmash-3.4.1--16a8db7.img docker://nanozoo/sourmash:3.4.1--16a8db7
+		nextflow run replikation/What_the_Phage -r v1.0.0 --setup -profile local,singularity --cachedir cache_dir
+		"""
