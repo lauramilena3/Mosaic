@@ -46,6 +46,7 @@ checkv_db: "db/checkv-db-v0.6"
 canu_dir: "tools/canu-2.0/Linux-amd64/bin" #linux
 quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
+WTP_dir: "tools/WTP"
 virFinder_dir: "tools/VirFinder"
 clusterONE_dir: "tools/clusterONE"
 vcontact_dir: "tools/vcontact2"
