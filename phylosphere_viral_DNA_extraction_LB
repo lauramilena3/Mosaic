@@ -5,15 +5,14 @@ http://microbes.sites.haverford.edu/LaboratoryWiki/Removal_and_DNA_Extraction_of
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2612226/pdf/1630-08.pdfm
 
 
-2194  grep ">" merged_scaffolds.tot.fasta | grep -v "cov_1\." | grep -v "cov_0\." | grep -v "length_..._" | grep -v "length_.._" > valid_merged_scaffolds.list.txt
-2198  grep ">" positive_contigs.tot.fasta | grep -v "cov_1\." | grep -v "cov_0\." | grep -v "length_..._" | grep -v "length_.._" > valid_positive_contigs.tot.list.txt
-2199  sed -i "s/>//g" *list.txt
-2200  seqtk subseq merged_scaffolds.tot.fasta valid_merged_scaffolds.list.txt > valid_merged_scaffolds.fasta
-2201  seqtk subseq positive_contigs.tot.fasta valid_positive_contigs.tot.list.txt > valid_positive_contigs.tot.fasta
-2203  grep -vxFf sorted_valid_positive_contigs.tot.list.txt sorted_valid_merged_scaffolds.list.txt > valid_non_viral_contigs.list.txt
-2204  seqtk subseq merged_scaffolds.tot.fasta valid_non_viral_contigs.list.txt > valid_non_viral_contigs.fasta
-2205  /home/lmf/apps/Mosaic/workflow/tools/quast-5.0.2/quast.py valid_*fasta -o comparison_Valid_scaffolds -t 32
-
+grep ">" merged_scaffolds.tot.fasta | grep -v "cov_1\." | grep -v "cov_0\." | grep -v "length_..._" | grep -v "length_.._" > valid_merged_scaffolds.list.txt
+grep ">" positive_contigs.tot.fasta | grep -v "cov_1\." | grep -v "cov_0\." | grep -v "length_..._" | grep -v "length_.._" > valid_positive_contigs.tot.list.txt
+sed -i "s/>//g" *list.txt
+seqtk subseq merged_scaffolds.tot.fasta valid_merged_scaffolds.list.txt > valid_merged_scaffolds.fasta
+seqtk subseq positive_contigs.tot.fasta valid_positive_contigs.tot.list.txt > valid_positive_contigs.tot.fasta
+grep -vxFf sorted_valid_positive_contigs.tot.list.txt sorted_valid_merged_scaffolds.list.txt > valid_non_viral_contigs.list.txt
+seqtk subseq merged_scaffolds.tot.fasta valid_non_viral_contigs.list.txt > valid_non_viral_contigs.fasta
+/home/lmf/apps/Mosaic/workflow/tools/quast-5.0.2/quast.py valid_*fasta -o comparison_Valid_scaffolds -t 32
 
 grep ">" 95-80_positive_contigs.tot.fasta | grep -v "cov_1\." | grep -v "cov_0\." | grep -v "length_..._" | grep -v "length_.._" | grep -v "length_1..._"| grep -v "length_2..._"| grep -v "length_3..._" | grep -v "length_4..._" > vOTU_representatives_valid.tot.list.txt
 
@@ -22,9 +21,6 @@ bbcountunique.sh in1=FL_forward_paired.fastq in2=FL_reverse_paired.fastq out=his
 
 
 blastp -num_threads 8 -db db/IMG_VR/IMG_VR.fasta -query /home/lmf/PhylloVir/Wheat_Virome_2/05_vOTUs/95-80_positive_contigs.tot.fasta -outfmt "6 qseqid sseqid qstart qend qlen slen qcovs evalue length" > /home/lmf/PhylloVir/Wheat_Virome_2/07_ANNOTATION/95-80_positive_contigs_blast_output_IMG_VR.tot.csv
-
-
-
 
 3   Corn, switchgrass and miscanthus rhizosphere microbial communities from Kellogg Biological Station, Michigan, USA
 1   Agave microbial communities from California, USA, and Mexico

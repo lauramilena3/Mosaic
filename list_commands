@@ -46,8 +46,14 @@ jupyter-notebook --no-browser --port=8889 --ip=0.0.0.0
 lsof -ti:8889 | xargs kill -9
 ssh -N -f -L 8889:node-18.local:8889 lm.forero10@magnus.uniandes.edu.co
 
+#get read statistics
+awk 'NR == 0 || NR % 4 == 0' 02_CLEAN_DATA/WEC_unpaired.fastq | awk '$0=$0"\t"length($1)' | cut -f2 | awk '{for(i=1;i<=NF;i++) {sum[i] += $i; sumsq[i] += ($i)^2}} END {for (i=1;i<=NF;i++) {  printf "%f %f %f \n", NR, sum[i]/NR, sqrt((sumsq[i]-sum[i]^2/NR)/NR)}}'
+
 
 cat renamed_viga.txt | while read line ; do echo "$line" ; stringarray=($line) ; new=${stringarray[-1]} ; old=${stringarray[1]} ; echo $old ; echo $new ; sed -i -e "s/${new}\t/${old}\t/g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.csv ; sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.gbk ; sed -i -e "s/${new}$/${old}/g" -e "s/${new} /${old} /g" -e "s/${new}_/${old}_/g" Erwinia.tot_annotated.tbl ; sed -i "s/>${new} $/>${old}/g" Erwinia.tot_annotated.fasta ; done
+
+# weeSAM
+/home/lmf/apps/Mosaic/workflow/tools/weeSAM/weeSAM --bam 06_MAPPING/BamM_OL_sorted.tot.bam --html weeSAM_plots_OL
 
 snakemake -j 32 --use-conda -p clean_reads --config input_dir=/home/lmf/05_NANOPORE_VIROME/00_RAW_DATA/ contaminants_list="GCF_000001405.39"
 
@@ -180,9 +186,27 @@ grep "^>" representative_contigs.tot.fasta | sed s"/_/ /"g | awk '{{ if ($4 >= {
 	| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 
 
+	#ANNOTATE CONTIGS
+	#activate environment
+	conda activate Mosaic
+
+	#if multifasta;
+	#format fasta file (remove spaces, commas and dots)
+	sed "s/ /_/g" phages.fasta | sed "s/,//g"  | sed "s/\.//g" > formatted_phages.fasta
+	#create annotation directory
+	mkdir phage_annotation_folder; cd phage_annotation_folder
+	#split contigs in fasta files
+	awk '{ if (substr($0, 1, 1)==">") {filename=(substr($0,2) ".fasta")} print $0 > filename }' < ../formatted_phages.fasta; rename "s/\r//g" *fasta
+	#if viga:
+	for fasta in *fasta; do name=${fasta%.*}; mkdir $name; mv $fasta $name; cd $name; /home/lmf/scripts/annotate_phages.sh $fasta; cd ..; done
+
+	#if no viga
+	for fasta in *fasta; name=${fasta%.*}; mkdir $name; mv $fasta $name; cd $name; annotate_phages.sh $fasta; cd ..; done
+
+
 
 /home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_circular.tot.txt, /home/lmf/MOSAIC/WARWICK/WEC/04_VIRAL_ID/VIBRANT_merged_scaffolds_positive_list.tot.txt
-
+f
 cat full_taxonomy_genbank.csv | taxonkit reformat --miss-rank-repl "__"  --data-dir .    | csvtk -H -t cut -f 1,3  > formatted_lineage.csv
 
 	./tools/canu-1.8/Linux-amd64/bin/canu genomeSize=5m minReadLength=1000 -p contigFilter="2 1000 1.0 1.0 2" corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 redMemory=32 oeaMemory=32 batMemory=200 -nanopore-raw /home/lmf/KATRINE/05_NANOPORE_VIROME/02_CLEAN_DATA/Vir_3_2_nanopore_clean.tot.fastq -d /home/lmf/KATRINE/05_NANOPORE_VIROME/03_CONTIGS/canu_Vir_3_2_tot -p Vir_3_2 useGrid=false maxThreads=16

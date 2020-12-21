@@ -1,0 +1,8 @@
+channels:
+  - bioconda
+  - biobuilds
+  - conda-forge
+  - r
+dependencies:
+  - nextflow =20.07.01
+  - singularity =3.6.3
