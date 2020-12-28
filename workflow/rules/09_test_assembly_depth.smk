@@ -1,11 +1,15 @@
 rule subsampleReadsIllumina_PE_test_depth:
 	input:
 		paired_sizes=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.{sampling}.txt",),
+		unpaired_sizes=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.txt",),
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq"),
+
 	output:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_unpaired_clean.{sampling}.fastq"),
 	message:
 		"Subsampling Illumina reads with BBtools"
 	conda:
@@ -18,16 +22,22 @@ rule subsampleReadsIllumina_PE_test_depth:
 		#paired
 		paired=$( cat {input.paired_sizes} )
 		p=$(echo "$paired"*{wildcards.subsample}/100 | bc)
-		reformat.sh in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} reads=$p
+		reformat.sh in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} reads=$p sampleseed=1
+		#unpaired
+		unpaired=$( cat {input.unpaired_sizes} )
+		up=$(echo "$unpaired"*{wildcards.subsample}/100 | bc)
+		reformat.sh in={input.unpaired} out={output.unpaired} reads=$up sampleseed=1
 		"""
 
 rule normalizeReads_test_depth:
 	input:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_clean.{sampling}.fastq"),
+		unpaired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_unpaired_clean.{sampling}.fastq"),
 	output:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
+		unpaired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_unpaired_norm.{sampling}.fastq"),
 	message:
 		"Normalizing reads with BBtools"
 	conda:
@@ -44,12 +54,15 @@ rule normalizeReads_test_depth:
 		#paired
 		bbnorm.sh -Xmx{resources.mem_mb}m ecc in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} \
 		target={params.max_depth} mindepth={params.min_depth} t={threads}
+		#unpaired
+		bbnorm.sh -Xmx{resources.mem_mb}m ecc in={input.unpaired} out={output.unpaired} target={params.max_depth} mindepth={params.min_depth}
 		"""
 
 rule metaspadesPE_test_depth:
 	input:
 		forward_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_forward_paired_norm.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_reverse_paired_norm.{sampling}.fastq"),
+		unpaired=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_unpaired_norm.{sampling}.fastq"),
 	output:
 		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{sampling}.fasta"),
 		filtered_list=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_{sampling}/filtered_list.txt"),
@@ -63,7 +76,7 @@ rule metaspadesPE_test_depth:
 	threads: 4
 	shell:
 		"""
-		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired} -o {params.assembly_dir} \
+		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired}  --pe1-s {input.unpaired} -o {params.assembly_dir} \
 		--meta -t {threads} --only-assembler --memory 350
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
@@ -92,7 +105,6 @@ rule spadesPE_test_depth:
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {output.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {output.filtered_list} > {output.scaffolds}
-
 		"""
 
 rule IDBA_UD_test_depth:
@@ -167,6 +179,8 @@ rule virSorter_test_depth:
 		virsorter run -w {params.out_folder} -i {input.scaffolds} -j {threads}
 		cp {output.positive_fasta} {output.final_viral_contigs}
 		"""
+
+
 
 rule estimateGenomeCompletness_test_depth:
 	input:
