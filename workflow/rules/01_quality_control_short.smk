@@ -371,7 +371,7 @@ rule subsampleReadsIllumina_SE:
 		mem_mb=4000
 	shell:
 		"""
-		#unpairedte
+		#unpaired
 		unpaired_temp=$( cat {params.files_unpaired} | sort -n | head -1 )
 		echo $unpaired_temp
 		un=$([ $unpaired_temp -le {params.max_subsample} ] && echo "$unpaired_temp" || echo {params.max_subsample})
@@ -495,7 +495,7 @@ rule contaminants_KRAKEN:
 	params:
 		kraken_db=config['kraken_db']+ "/minikraken2_v2_8GB_201904_UPDATE",
 	message:
-		"Performing fastqQC statistics"
+		"Kraken contamination"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	threads: 4
