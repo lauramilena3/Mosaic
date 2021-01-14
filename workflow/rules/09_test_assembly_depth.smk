@@ -178,7 +178,6 @@ rule virSorter_test_depth:
 		"""
 		virsorter run -w {params.out_folder} -i {input.scaffolds} -j {threads}
 		grep ">" {output.positive_fasta} | cut -f1 -d\| | sed "s/>//g" > {output.positive_list}
-		#cp {output.positive_fasta} {output.final_viral_contigs}
 		"""
 
 rule extractViralContigs_test_depth:
