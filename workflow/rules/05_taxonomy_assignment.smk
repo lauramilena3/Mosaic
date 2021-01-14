@@ -86,7 +86,6 @@ rule parseVcontact:
 		taxonomies=[]
 
 		with open(output.taxonomy_results, 'w') as f:
-
 			for index, row in df.iterrows():
 				accession1=([x for x in row['Members'] if not 'NODE' in x])
 		        accession=[item for item in accession1 if not item.startswith("tig00")]
