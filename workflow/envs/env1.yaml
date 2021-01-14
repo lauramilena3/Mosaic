@@ -19,7 +19,7 @@ dependencies:
   - bowtie2 =2.3.5
   - samtools =1.10
   - pilon =1.23
-  - mummer =3.23
+  - mummer4 =4.0.0rc1
   - prodigal =2.6.3
   - bwa =0.7.17
   - perl =5.26.2
