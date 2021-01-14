@@ -166,7 +166,7 @@ rule virSorter_test_depth:
 		positive_fasta=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-combined.fa",
 		table_virsorter=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-score.tsv",
 		viral_boundary=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/final-viral-boundary.tsv",
-		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_positive_virsorter.{sampling}.fasta",
+		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt",
 	params:
 		out_folder=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}",
 	message:
@@ -177,10 +177,25 @@ rule virSorter_test_depth:
 	shell:
 		"""
 		virsorter run -w {params.out_folder} -i {input.scaffolds} -j {threads}
-		cp {output.positive_fasta} {output.final_viral_contigs}
+		grep ">" {output.positive_fasta} | cut -f1 -d\| | sed "s/>//g" > {output.positive_list}
+		#cp {output.positive_fasta} {output.final_viral_contigs}
 		"""
 
-
+rule extractViralContigs:
+	input:
+		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{sampling}.fasta"),
+		positive_list=dirs_dict["VIRAL_DIR"] + "/virSorter_{sampling}/positive_VS_list_{sampling}.txt",
+	output:
+		final_viral_contigs=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_positive_virsorter.{sampling}.fasta",
+	message:
+		"Selecting Viral Contigs"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
+	threads: 1
+	shell:
+		"""
+		seqtk subseq {input.scaffolds} {input.positive_list} > {output.final_viral_contigs}
+		"""
 
 rule estimateGenomeCompletness_test_depth:
 	input:

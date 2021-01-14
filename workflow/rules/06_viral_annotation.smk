@@ -301,7 +301,6 @@ rule estimateGenomeCompletness:
 	params:
 		checkv_outdir=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
 		checkv_db=dirs_dict["vOUT_DIR"] + "/checkV_{sampling}",
-
 	message:
 		"Estimating genome completeness with CheckV "
 	conda:

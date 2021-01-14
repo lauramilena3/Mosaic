@@ -361,7 +361,7 @@ rule get_WTP:
 	message:
 		"Downloading What the Phage"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env6.yaml"
+		dirs_dict["ENVS_DIR"] + "/wtp.yaml"
 	threads: 1
 	shell:
 		"""c

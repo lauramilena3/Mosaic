@@ -66,7 +66,20 @@ rule parseVcontact:
 
 		taxonomy_df=pd.read_csv(input.formatting_taxonomy_affiliations)
 		df=pd.read_csv(input.viral_cluster_overview, index_col=0)
-		df=df[df['Members'].str.contains("NODE|tig0")]
+
+		df[['cluster','subcluster']] = df.VC.str.rsplit('_', 1, expand=True)
+		grouped_df=df.groupby('cluster')
+		grouped_results_df=pd.DataFrame()
+		members=[]
+		vc=[]
+		for name, group in grouped_df:
+		    members.append(','.join([str(elem) for elem in group.Members.tolist()]))
+		    vc.append(name)
+		grouped_results_df["Members"]=members
+		grouped_results_df["VC"]=vc
+
+
+		df=grouped_results_df[grouped_results_df['Members'].str.contains("NODE|tig0")]
 		df["Members"]=df["Members"].str.split(",")
 		accessions=[]
 		nodes=[]
@@ -75,30 +88,35 @@ rule parseVcontact:
 		with open(output.taxonomy_results, 'w') as f:
 
 			for index, row in df.iterrows():
-			        accession1=([x for x in row['Members'] if not 'NODE' in x])
-			        accession=[item for item in accession1 if not item.startswith("tig00")]
-			        accession=([x for x in accession if not '~' in x])
-			        accessions.append(accession)
-			        node=[x for x in row['Members'] if 'NODE' in x]
-			        nodes.append(node)
-			        taxonomy=[]
-			        for acc in accession:
-			            print(acc)
-			            taxonomy.append(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
-			        if taxonomy:
-			            tax_df=pd.DataFrame(taxonomy)
-			            tax_df.columns=["kindom", "phylum", "class", "order", "family", "genus", "species"]
-			            #print(tax_df)
-			            tax_df=tax_df.drop(columns="species")
-			            consensus_tax=""
-			            for (columnName, columnData) in tax_df.iteritems():
-			                #print('Colunm Name : ', columnName)
-			                if (is_unique(tax_df[columnName])):
-			                    if not tax_df[columnName].to_numpy()[0] =="__":
-			                        consensus_tax=(columnName, tax_df[columnName].to_numpy()[0])
-			            #print(tax_df)
-			            for n in node:
-			                print(n + "\t" + consensus_tax[1] +" [" + consensus_tax[0] + "]", file=f)
+				accession1=([x for x in row['Members'] if not 'NODE' in x])
+		        accession=[item for item in accession1 if not item.startswith("tig00")]
+		        accession=([x for x in accession if not '~' in x])
+		        accessions.append(accession)
+		        #node=[x for x in row['Members'] if 'NODE' in x]
+		        node1=([x for x in row['Members'] if 'NODE' in x])
+		        node2=([x for x in row['Members'] if 'tig00' in x])
+		        node=node1+node2
+		        print(node)
+		        nodes.append(node)
+		        taxonomy=[]
+		        for acc in accession:
+		            print(acc)
+		            print(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
+		            taxonomy.append(taxonomy_df[taxonomy_df["acc"]==acc]["lineage"].values[0].split(";"))
+		        if taxonomy:
+		            tax_df=pd.DataFrame(taxonomy)
+		            tax_df.columns=["kindom", "phylum", "class", "order", "family", "genus", "species"]
+		            #print(tax_df)
+		            tax_df=tax_df.drop(columns="species")
+		            consensus_tax=""
+		            for (columnName, columnData) in tax_df.iteritems():
+		                #print('Colunm Name : ', columnName)
+		                if (is_unique(tax_df[columnName])):
+		                    if not tax_df[columnName].to_numpy()[0] =="__":
+		                        consensus_tax=(columnName, tax_df[columnName].to_numpy()[0])
+		            #print(tax_df)
+		            for n in node:
+		                print(n + "\t" + consensus_tax[1] +" [" + consensus_tax[0] + "]", file=f)
 
 rule mmseqsTaxonomy:
 	input:

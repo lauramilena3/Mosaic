@@ -10,10 +10,10 @@ rule vOUTclustering:
 		"Creating vOUTs with stampede"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1.yaml"
-	threads: 1
+	threads: 32
 	shell:
 		"""
-		./scripts/stampede-Cluster_genomes.pl -f {input.positive_contigs} -c 80 -i 95
+		./scripts/stampede-Cluster_genomes_threaded.pl -f {input.positive_contigs} -c 80 -i 95 -t {threads}
 		cat {output.representatives_temp} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
 		cp {output.representatives_temp} {output.representatives}
