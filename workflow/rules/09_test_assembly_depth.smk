@@ -181,7 +181,7 @@ rule virSorter_test_depth:
 		#cp {output.positive_fasta} {output.final_viral_contigs}
 		"""
 
-rule extractViralContigs:
+rule extractViralContigs_test_depth:
 	input:
 		scaffolds=(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.{sampling}.fasta"),
 		positive_list=dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_virSorter_{sampling}/{sample}_{subsample}_positive_VS_list_{sampling}.txt",
