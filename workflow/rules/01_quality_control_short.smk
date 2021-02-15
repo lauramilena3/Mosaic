@@ -269,19 +269,19 @@ rule remove_contaminants_PE:
 		"Removing phiX174 and user given contaminants with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	threads: 8
+	threads: 4
 	resources:
-		mem_mb=16000
+		mem_gb=12
 	shell:
 		"""
 		cat {input.contaminants_fasta} > {output.phix_contaminants_fasta}
 		#PE
 		#PAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}g in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}g in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}g in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
 		"""
