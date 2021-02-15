@@ -43,7 +43,7 @@ rule remove_contaminants_nanopore:
 	output:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
 		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt",
-		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_nanopore_contaminants.fasta",
+		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample_nanopore}_nanopore_contaminants.fasta",
 	message:
 		"Remove contamination with Porechop"
 	conda:
