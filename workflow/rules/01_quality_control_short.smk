@@ -271,7 +271,7 @@ rule remove_contaminants_PE:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 4
 	resources:
-		mem_mb=4000
+		mem_mb=12000
 	shell:
 		"""
 		cat {input.contaminants_fasta} > {output.phix_contaminants_fasta}
