@@ -269,9 +269,9 @@ rule remove_contaminants_PE:
 		"Removing phiX174 and user given contaminants with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
-	threads: 4
+	threads: 8
 	resources:
-		mem_mb=12000
+		mem_mb=16000
 	shell:
 		"""
 		cat {input.contaminants_fasta} > {output.phix_contaminants_fasta}

@@ -11,7 +11,7 @@ dependencies:
 #  - joblib =0.13.2
   - trimmomatic =0.39
   - entrez-direct =11.0
-  - bbmap =38.86
+  - bbmap =38.90
 #  - bmtagger =3.101
   - spades =3.14.1
   - flye =2.8.1
