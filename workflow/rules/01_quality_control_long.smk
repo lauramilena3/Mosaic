@@ -19,9 +19,8 @@ rule remove_adapters_quality_nanopore:
 	input:
 		raw_data=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore.fastq",
 	output:
-		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
+		trimmed_data=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore_nanofilt.fastq",
 		porechopped=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_porechopped.fastq"),
-		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
 	params:
 		headcrop=50,
 		tailcrop=50,
@@ -34,9 +33,30 @@ rule remove_adapters_quality_nanopore:
 	shell:
 		"""
 		porechop -i {input.raw_data} -o {output.porechopped} --threads {threads}
-		NanoFilt -q {params.quality} -l 1000 --headcrop {params.headcrop} --tailcrop {params.tailcrop} {output.porechopped} > {output.fastq}
+		NanoFilt -q {params.quality} -l 1000 --headcrop {params.headcrop} --tailcrop {params.tailcrop} {output.porechopped} > {output.trimmed_data}
+		"""
+
+rule remove_contaminants_nanopore:
+	input:
+		trimmed_data=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore_nanofilt.fastq",
+		contaminants_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta",contaminants=CONTAMINANTS),
+	output:
+		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
+		size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt"
+		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_nanopore_contaminants.fasta"
+	message:
+		"Remove contamination with Porechop"
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	threads: 2
+	shell:
+		"""
+		cat {input.contaminants_fasta} > {output.phix_contaminants_fasta}
+		minimap2 -ax map-ont {output.phix_contaminants_fasta} {input.trimmed_data} | samtools fastq -n -f 4 - > {output.fastq}
 		grep -c "^@" {output.fastq} > {output.size}
 		"""
+
+
 rule postQualityCheckNanopore:
 	input:
 		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),

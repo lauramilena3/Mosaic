@@ -48,6 +48,7 @@ SRA_list=config['sra_list'].split()
 CONTAMINANTS=config['contaminants_list'].split()
 CONTAMINANTS.append("GCF_000819615.1")
 
+
 NANOPORE=False
 TOMBO=False
 PAIRED=False
