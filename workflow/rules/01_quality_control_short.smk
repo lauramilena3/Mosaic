@@ -264,7 +264,7 @@ rule remove_contaminants_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
-		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
+		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_contaminants.fasta"
 	message:
 		"Removing phiX174 and user given contaminants with BBtools"
 	conda:
