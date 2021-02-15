@@ -214,13 +214,48 @@ rule trim_adapters_quality_illumina_SE:
 # 		fi
 # 		"""
 
-rule remove_phiX174_PE:
+# rule remove_phiX174_PE:
+# 	input:
+# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
+# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
+# 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq",
+# 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq",
+# 		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/GCF_000819615.1.fasta",
+# 	output:
+# 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+# 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+# 		forward_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired_clean.tot.fastq"),
+# 		reverse_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired_clean.tot.fastq"),
+# 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
+# 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
+# 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
+# 	message:
+# 		"Removing phiX174 with BBtools"
+# 	conda:
+# 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+# 	threads: 4
+# 	resources:
+# 		mem_mb=4000
+# 	shell:
+# 		"""
+# 		#PE
+# 		#PAIRED
+# 		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+# 		grep -c "^@" {output.forward_paired} > {output.paired_size}
+# 		#UNPAIRED
+# 		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+# 		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+# 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
+# 		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
+# 		"""
+
+rule remove_contaminants_PE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq"),
 		forward_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired.fastq",
 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq",
-		phiX_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/GCF_000819615.1.fasta",
+		contaminants_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta",contaminants=CONTAMINANTS),
 	output:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
@@ -229,8 +264,9 @@ rule remove_phiX174_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
+		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/contaminants.fasta"
 	message:
-		"Removing phiX174 with BBtools"
+		"Removing phiX174 and user given contaminants with BBtools"
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 4
@@ -238,17 +274,17 @@ rule remove_phiX174_PE:
 		mem_mb=4000
 	shell:
 		"""
+		cat {input.contaminants_fasta} > {output.phix_contaminants_fasta}
 		#PE
 		#PAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}m in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
-		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={input.phiX_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		bbduk.sh -Xmx{resources.mem_mb}m in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
 		"""
-
 rule postQualityCheckIlluminaPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
@@ -504,5 +540,6 @@ rule contaminants_KRAKEN:
 		kraken2 --db {params.kraken_db} --threads {threads} \
 			--paired {input.forward_paired} {input.reverse_paired} \
 			--output {output.kraken_output} --report {output.kraken_report}
+
 		grep -P 'D\t' {output.kraken_report} | sort -r > {output.kraken_domain}
 		"""
