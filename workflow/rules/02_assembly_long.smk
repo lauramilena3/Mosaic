@@ -124,12 +124,19 @@ rule asemblyCanu:
 	threads: 4
 	shell:
 		"""
-		./{config[canu_dir]}/canu genomeSize=100k minReadLength=1000 -p \
+		# ./{config[canu_dir]}/canu genomeSize=100k minReadLength=1000 -p \
+		# contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
+		# corOutCoverage=all corMhapSensitivity=high correctedErrorRate=0.105 corMinCoverage=0 \
+		# corMaxEvidenceCoverageLocal=10 corMaxEvidenceCoverageGlobal=10 \
+		# redMemory=32 oeaMemory=32 batMemory=200 -nanopore {input.nanopore} \
+		# -d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
+
+		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=all corMhapSensitivity=high correctedErrorRate=0.105 corMinCoverage=0 \
-		corMaxEvidenceCoverageLocal=10 corMaxEvidenceCoverageGlobal=10 \
+		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore {input.nanopore} \
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
+	
 		cp {output.scaffolds} {output.scaffolds_final}
 		sed -i s"/ /_/"g {output.scaffolds_final}
 		"""
