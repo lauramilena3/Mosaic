@@ -94,6 +94,6 @@ rule subsampleReadsNanopore:
 	shell:
 		"""
 		nanopore=$( cat {params.sizes} | sort -n | head -1 )
-		reformat.sh in={input.nanopore} out={output.nanopore} reads=$nanopore
+		reformat.sh in={input.nanopore} out={output.nanopore} reads=$nanopore ignorebadquality
 		grep -c "^@" {output.nanopore} > {output.size}
 		"""
