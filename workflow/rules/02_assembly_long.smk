@@ -343,7 +343,7 @@ rule mergeAssembliesHYBRID:
 		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 		hybrid_contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
-		corrected_scaffolds=temp(dirs_dict["ASSEMBLY_DIR"] + "/merged_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
+		corrected_scaffolds=temp(dirs_dict["ASSEMBLY_DIR"] + "/merged_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta"),
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
 	message:
