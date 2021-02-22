@@ -136,7 +136,7 @@ rule asemblyCanu:
 		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore {input.nanopore} \
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
-	
+
 		cp {output.scaffolds} {output.scaffolds_final}
 		sed -i s"/ /_/"g {output.scaffolds_final}
 		"""
@@ -343,6 +343,7 @@ rule mergeAssembliesHYBRID:
 		corrected_scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 		hybrid_contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{{sampling}}.fasta", sample=SAMPLES),
 	output:
+		corrected_scaffolds=temp(dirs_dict["ASSEMBLY_DIR"] + "/merged_"+ LONG_ASSEMBLER + "_corrected_scaffolds.{{sampling}}.fasta", sample_nanopore=NANOPORE_SAMPLES),
 		merged_assembly=(dirs_dict["VIRAL_DIR"] + "/merged_scaffolds.{sampling}.fasta"),
 		merged_assembly_len=dirs_dict["VIRAL_DIR"] + "/merged_scaffolds_lengths.{sampling}.txt",
 	message:
@@ -352,7 +353,9 @@ rule mergeAssembliesHYBRID:
 	threads: 1
 	shell:
 		"""
-		cat {input.hybrid_contigs} {input.corrected_scaffolds} > {output.merged_assembly}
+		cat {input.corrected_scaffolds} > {output.corrected_scaffolds}
+		sed -i "s/=/_/g" {output.corrected_scaffolds}
+		cat {input.hybrid_contigs} {output.corrected_scaffolds} > {output.merged_assembly}
 		cat {output.merged_assembly} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.merged_assembly_len}
 		"""
