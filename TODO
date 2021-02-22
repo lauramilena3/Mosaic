@@ -1,0 +1,4 @@
+# GENBANK CLUSTERED
+Add /home/lmf/KATRINE/ORGANIC_WASTE_2/Extended_database/GenBank_Jacob_organic_95-80.fna as a file in the clustering step. 
+If not clusterd with anything in the dataset, remove contig.
+
