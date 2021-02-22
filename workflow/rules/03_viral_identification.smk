@@ -13,7 +13,7 @@ rule virSorter:
 		"Classifing contigs with VirSorter"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
-	threads: 32
+	threads: 64
 	shell:
 		"""
 		virsorter run -w {params.out_folder} -i {input.merged_assembly} -j {threads}
