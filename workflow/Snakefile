@@ -80,6 +80,7 @@ if POOLED:
 	NANOPORE_SAMPLES=config['nanopore_pooled_name']
 if len(SAMPLES)==1:
 	SAMPLING_TYPE=["tot"]
+SAMPLING_TYPE_TOT=["tot"]
 
 dir_list = ["RULES_DIR","ENVS_DIR", "ADAPTERS_DIR", "CONTAMINANTS_DIR","RAW_DATA_DIR", "QC_DIR", "CLEAN_DATA_DIR", "ASSEMBLY_DIR", "VIRAL_DIR", "vOUT_DIR", "MAPPING_DIR", "MMSEQS", "ANNOTATION", "ASSEMBLY_TEST"]
 dir_names = ["rules", "../envs", "db/adapters",  RESULTS_DIR + "/db/contaminants" ,RAW_DATA_DIR, RESULTS_DIR + "/01_QC", RESULTS_DIR + "/02_CLEAN_DATA", RESULTS_DIR + "/03_CONTIGS", VIRAL_CONTIGS_DIR , REPRESENTATIVE_CONTIGS_DIR ,RESULTS_DIR + "/06_MAPPING", RESULTS_DIR + "/08_MMSEQS", RESULTS_DIR + "/07_ANNOTATION", RESULTS_DIR + "/08_ASSEMBLY_TEST"]
@@ -116,19 +117,19 @@ def inputAll(wildcards):
 	inputs=[]
 	inputs.append(dirs_dict["QC_DIR"]+ "/preQC_illumina_report.html")
 	inputs.append(dirs_dict["QC_DIR"]+ "/postQC_illumina_report.html")
-	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE_TOT))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
 	#inputs.extend(expand(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.csv",sampling=SAMPLING_TYPE))
-	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html",sampling=SAMPLING_TYPE))
-	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE))
-	inputs.extend(directory(expand(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}",sampling=SAMPLING_TYPE)))
-	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv", sampling=SAMPLING_TYPE))
-	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv", sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html",sampling=SAMPLING_TYPE_TOT))
+	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE_TOT))
+	inputs.extend(directory(expand(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + ".{sampling}",sampling=SAMPLING_TYPE_TOT)))
+	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vContact.{sampling}/genome_by_genome_overview.csv", sampling=SAMPLING_TYPE_TOT))
+	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/checkV_{sampling}/quality_summary.tsv", sampling=SAMPLING_TYPE_TOT))
 	inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_output_IMG_VR.tot.csv")
 	#inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + "_blast_viralRefSeq.tot.csv")
 	inputs.append(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png")
-	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv", sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_vcontact2_taxonomy.{sampling}.csv", sampling=SAMPLING_TYPE_TOT))
 	inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_domains_tot.csv", sample=SAMPLES)),
 	inputs.append(dirs_dict["ANNOTATION"] + "/summary_information.tot.csv")
 	#inputs.append(dirs_dict["ANNOTATION"] + "/viga_log_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.txt"),
