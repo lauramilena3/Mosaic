@@ -119,7 +119,7 @@ def inputAll(wildcards):
 	inputs.append(dirs_dict["QC_DIR"]+ "/postQC_illumina_report.html")
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE_TOT))
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_abundance_table_json.{sampling}.biom", sampling=SAMPLING_TYPE, confidence=CONFIDENCE_TYPES))
-	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE))
+	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/vOTU_summary.{sampling}.txt",sampling=SAMPLING_TYPE_TOT))
 	#inputs.extend(expand(dirs_dict["ANNOTATION"] + "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot" + "_annotated.csv",sampling=SAMPLING_TYPE))
 	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.html",sampling=SAMPLING_TYPE_TOT))
 	inputs.extend(expand(dirs_dict["vOUT_DIR"] + "/taxonomy_report_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.tbl",sampling=SAMPLING_TYPE_TOT))
