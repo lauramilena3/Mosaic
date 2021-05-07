@@ -38,7 +38,7 @@ rule clusterTaxonomy:
 		"Clustering viral genomes with vContact2"
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
-	threads: 8
+	threads: 64
 	shell:
 		"""
 		vcontact2_gene2genome -p {input.aa} -s Prodigal-FAA -o {output.gene2genome}
