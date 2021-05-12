@@ -28,4 +28,4 @@ dependencies:
   - numpy =1.16.5
   - pip =19.3.1
   - pip:
-    - bcbio-nextgen==1.1.5
+    - bcbio-gff==0.6.6
