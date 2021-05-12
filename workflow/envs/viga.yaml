@@ -26,4 +26,6 @@ dependencies:
   - biopython =1.74
   - scipy =1.2.1
   - numpy =1.16.5
-  - bcbio-nextgen==1.2.8
+  - pip =19.3.1
+  - pip:
+    - bcbio-nextgen==1.1.5
