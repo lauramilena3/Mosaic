@@ -27,4 +27,4 @@ dependencies:
   - scipy =1.2.1
   - numpy =1.16.5
   - pip =19.3.1
-  - bcbiogff==0.6.6
+  - bcbio-nextgen==1.2.8
