@@ -47,7 +47,7 @@ rule createContigBowtieDb:
 rule mapReadsToContigsPE:
 	input:
 #		contigs_bt2=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.1.bt2",
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+		filtered_representatives=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + "_list.{sampling}.txt",
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.{sampling}.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.{sampling}.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.{sampling}.fastq",
@@ -74,7 +74,7 @@ rule mapReadsToContigsPE:
 		"""
 		#bowtie2 --non-deterministic -x {params.contigs} -1 {input.forward_paired} \
 		#-2 {input.reverse_paired} -U {input.unpaired} -S {output.sam} -p {threads}
-		bbmap.sh -Xmx{resources.mem_mb}m ref={input.representatives} nodisk in1={input.forward_paired} in2={input.reverse_paired}  \
+		bbmap.sh -Xmx{resources.mem_mb}m ref={input.filtered_representatives} nodisk in1={input.forward_paired} in2={input.reverse_paired}  \
 		outm={output.sam} threads={threads} covstats={output.covstats} covhist={output.covhist} basecov={output.basecov} \
 		bincov={output.bincov} scafstats={output.scafstats}
 		#Sam to Bam
