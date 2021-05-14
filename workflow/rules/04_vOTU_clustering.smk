@@ -41,7 +41,7 @@ rule vOUTclustering_references:
 	shell:
 		"""
 		cat {input.positive_contigs} {input.additional_reference_contigs} > {output.combined_contigs}
-		mv {output.combined_contigs} {input.positive_contigs}
+		cp {output.combined_contigs} {input.positive_contigs}
 		./scripts/stampede-Cluster_genomes_threaded.pl -f {input.positive_contigs} -c 85 -i 95 -t {threads}
 		cat {output.representatives_temp} | awk '$0 ~ ">" {{print c; c=0;printf substr($0,2,100) "\t"; }} \
 		$0 !~ ">" {{c+=length($0);}} END {{ print c; }}' > {output.representative_lengths}
