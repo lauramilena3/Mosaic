@@ -1,9 +1,9 @@
 rule getORFs:
 	input:
-		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
+		filtered_representatives=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + "_list.{sampling}.txt",
 	output:
-		coords=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.coords",
-		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
+		coords=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.coords",
+		aa=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 	message:
 		"Calling ORFs with prodigal"
 	conda:
@@ -11,9 +11,9 @@ rule getORFs:
 	threads: 1
 	shell:
 		"""
-		if [ -s {input.representatives} ]
+		if [ -s {input.filtered_representatives} ]
 		then
-			prodigal -i {input.representatives} -o {output.coords} -a {output.aa} -p meta
+			prodigal -i {input.filtered_representatives} -o {output.coords} -a {output.aa} -p meta
 		else
 			echo "Empty contigs file, no ORFs to detect"
 			touch {output.coords} {output.aa}
@@ -21,7 +21,7 @@ rule getORFs:
 		"""
 rule clusterTaxonomy:
 	input:
-		aa=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
+		aa=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + "_ORFs.{sampling}.fasta",
 		clusterONE_dir=config["clusterONE_dir"],
 		gene2genome_format_csv=(os.path.join(workflow.basedir,"db/vcontact2/gene-to-genome.30May2020.csv")),
 		vcontact_format_aa=(os.path.join(workflow.basedir,"db/vcontact2/vcontact_format_30May2020.faa")),

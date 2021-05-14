@@ -36,6 +36,7 @@ min_cov: "2"
 
 contaminants_list: ""
 adapters_file: "adapters.fa"
+additional_reference_contigs: ""
 basecalled_dir: "data/basecalled/"
 
 img_vr_db: "db/IMG_VR/"
