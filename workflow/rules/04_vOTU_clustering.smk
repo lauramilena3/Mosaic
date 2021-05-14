@@ -90,7 +90,7 @@ rule filter_vOTUs:
 		grep "High-quality" {input.quality_summary} | cut -f1 > {output.filtered_list_temp}
 		cat UNFILTERED/95-80_positive_contigs_UNFILTERED_lengths.tot.txt | awk '$2>=10000' | cut -f1 >> cut -f1 > {output.filtered_list_temp}
 		cat {output.filtered_list_temp} | sort | uniq > {output.filtered_list}
-		seqtk subseq {input.env1} {output.filtered_list} > {output.filtered_representatives}
+		seqtk subseq {input.representatives} {output.filtered_list} > {output.filtered_representatives}
 		"""
 
 #rule circularizeContigs:
