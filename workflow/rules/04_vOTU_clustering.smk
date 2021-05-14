@@ -88,7 +88,7 @@ rule filter_vOTUs:
 	shell:
 		"""
 		grep "High-quality" {input.quality_summary} | cut -f1 > {output.filtered_list_temp}
-		cat {input.representative_lengths} | awk '$2>=10000' | cut -f1 >> cut -f1 > {output.filtered_list_temp}
+		cat {input.representative_lengths} | awk '$2>=10000' | cut -f1 >>  {output.filtered_list_temp}
 		cat {output.filtered_list_temp} | sort | uniq > {output.filtered_list}
 		seqtk subseq {input.representatives} {output.filtered_list} > {output.filtered_representatives}
 		"""
