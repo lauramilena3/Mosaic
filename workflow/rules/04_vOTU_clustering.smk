@@ -4,8 +4,8 @@ rule vOUTclustering:
 	input:
 		positive_contigs=dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}.fasta",
 	output:
-		clusters=dirs_dict["VIRAL_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-80.clstr",
-		representatives_temp=temp(dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-80.fna"),
+		clusters=dirs_dict["VIRAL_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-85.clstr",
+		representatives_temp=temp(dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-85.fna"),
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_lengths.{sampling}.txt",
 	message:
@@ -27,8 +27,8 @@ rule vOUTclustering_references:
 		additional_reference_contigs=config['additional_reference_contigs'],
 	output:
 		combined_contigs=temp(dirs_dict["vOUT_DIR"]+ "/temp_merged_contigs.{sampling}.fasta"),
-		clusters=dirs_dict["VIRAL_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-80.clstr",
-		representatives_temp=temp(dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-80.fna"),
+		clusters=dirs_dict["VIRAL_DIR"] + "/"+ VIRAL_CONTIGS_BASE + ".{sampling}_95-85.clstr",
+		representatives_temp=temp(dirs_dict["VIRAL_DIR"]+ "/" + VIRAL_CONTIGS_BASE + ".{sampling}_95-85.fna"),
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
 		representative_lengths=dirs_dict["vOUT_DIR"] + "/" + REPRESENTATIVE_CONTIGS_BASE + "_lengths.{sampling}.txt",
 	message:
@@ -88,7 +88,7 @@ rule filter_vOTUs:
 	shell:
 		"""
 		grep "High-quality" {input.quality_summary} | cut -f1 > {output.filtered_list_temp}
-		cat UNFILTERED/95-80_positive_contigs_UNFILTERED_lengths.tot.txt | awk '$2>=10000' | cut -f1 >> cut -f1 > {output.filtered_list_temp}
+		cat {input.representative_lengths} | awk '$2>=10000' | cut -f1 >> cut -f1 > {output.filtered_list_temp}
 		cat {output.filtered_list_temp} | sort | uniq > {output.filtered_list}
 		seqtk subseq {input.representatives} {output.filtered_list} > {output.filtered_representatives}
 		"""
