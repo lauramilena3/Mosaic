@@ -15,6 +15,7 @@ rule qualityCheckNanopore:
 		mv {output.nanoqc_dir}/nanoQC.html {output.nanoqc}
 		"""
 
+
 rule remove_adapters_quality_nanopore:
 	input:
 		raw_data=dirs_dict["RAW_DATA_DIR"] + "/{sample_nanopore}_nanopore.fastq",
@@ -73,6 +74,22 @@ rule postQualityCheckNanopore:
 		nanoQC -o {output.nanoqc_dir} {input.fastq}
 		mv {output.nanoqc_dir}/nanoQC.html {output.nanoqc}
 		"""
+
+rule qualityStatsNanopore:
+	input:
+		fastq=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.fastq"),
+	output:
+		nanostats=dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanostats_postQC.html",
+	message:
+		"Performing nanoQC statistics"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env3.yaml"
+#	threads: 1
+	shell:
+		"""
+		NanoStat --fastq {input.fastq} > {output.nanostats}
+		"""
+		
 rule subsampleReadsNanopore:
 	input:
 		nano_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt", sample_nanopore=NANOPORE_SAMPLES),

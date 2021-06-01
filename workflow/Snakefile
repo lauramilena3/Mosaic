@@ -139,6 +139,8 @@ def inputAll(wildcards):
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
+		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
+		inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_contigs_canu.tot.fasta", sample_nanopore=NANOPORE_SAMPLES))
 	if TOMBO:
 		inputs.append(dirs_dict["ANNOTATION"] + "/"+ REPRESENTATIVE_CONTIGS_BASE + ".fraction_modified_reads.plus.wig")
 	return inputs
