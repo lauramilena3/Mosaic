@@ -3,11 +3,11 @@ channels:
   - bioconda
   - biobuilds
 dependencies:
-  - porechop =0.2.3
+  - porechop =0.2.4
   - nanoQC =0.9.4
-  - nanofilt 2.7.1
+  - nanofilt =2.8.0
   - quast==5.0.2
-  - NanoPlot==1.30.1
+  - NanoPlot==1.37.0
   - seaborn==0.10.1
   - pip:
 #    - nanoQC==0.9.0
