@@ -9,7 +9,7 @@ dependencies:
   - quast==5.0.2
   - NanoPlot==1.37.0
   - seaborn==0.10.1
-  - pip:
+#  - pip:
 #    - nanoQC==0.9.0
 #    - nanofilt==2.3.0
 #    - quast==5.0.2
