@@ -1,0 +1,57 @@
+
+├── 00_RAW_READS
+│   ├── WEC_R1.fastq
+│   ├── WEC_R2.fastq
+│   └── WEC_nanopore.fastq
+├── 01_QC
+│   ├── WEC_nanopore_report_postQC.html
+│   ├── WEC_nanopore_report_preQC.html
+│   ├── postQC_illumina_report.html
+│   └── preQC_illumina_report.html
+├── 02_CLEAN_DATA
+│   ├── WEC_forward_paired_clean.tot.fastq
+│   ├── WEC_forward_paired_norm.tot.fastq
+│   ├── WEC_nanopore_clean.tot.fastq
+│   ├── WEC_paired_clean.tot.txt
+│   ├── WEC_reverse_paired_clean.tot.fastq
+│   ├── WEC_reverse_paired_norm.tot.fastq
+│   ├── WEC_unpaired.fastq
+│   ├── WEC_unpaired_clean.tot.fastq
+│   ├── WEC_unpaired_norm.tot.fastq
+│   └── kmer_rarefraction_plot.tot.png
+├── 03_CONTIGS
+│   ├── WEC_canu_corrected_scaffolds.tot.fasta
+│   ├── WEC_spades_filtered_scaffolds.tot.fasta
+│   └── statistics_quast_tot
+│       ├── quast.log
+│       ├── report.html
+│       └── report.pdf
+├── 04_VIRAL_ID
+│   ├── merged_scaffold.tot.fasta
+│   ├── positive_contigs.tot.fasta
+│   └── virSorter_tot
+│       ├── positive_contigs.tot.fasta
+│       └── positive_VS_list_tot.txt
+├── 05_vOTUs
+│   ├── 95-80_positive_contigs.tot.fasta
+│   ├── 95-80_positive_contigs_ORFs.tot.fasta
+│   ├── 95-80_positive_contigs_vContact.tot
+│   │   ├── c1.ntw
+│   │   ├── genome_by_genome_overview.csv
+│   │   └── viral_cluster_overview.csv
+├── 06_MAPPING
+│   ├── bbmap_WEC.tot.bam
+│   ├── bbmap_WEC.tot.sam
+│   ├── vOTU_abundance_table_DB_70.tot.txt
+│   ├── vOTU_abundance_table_json.tot.biom
+│   └── vOTU_summary.tot.txt
+├── 07_ANNOTATION
+│   ├── VIBRANT_95-80_positive_contigs.tot
+│   │   ├── VIBRANT_figures_95-80_positive_contigs.tot
+│   │   ├── VIBRANT_phages_95-80_positive_contigs.tot
+│   │   └── VIBRANT_results_95-80_positive_contigs.tot
+│   ├── checkV_tot
+│   │   └── quality_summary.tsv
+│   ├── taxonomy_mmseqs_95-80_positive_contigs.tot
+│   │   └── taxonomy_report_95-80_positive_contigs.tot.html
+│   └── vOTU_summary.tot.txt

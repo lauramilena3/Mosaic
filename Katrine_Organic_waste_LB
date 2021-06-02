@@ -1,0 +1,11 @@
+#first virome
+snakemake --use-conda --config input_dir=/home/lmf/KATRINE/ORGANIC_WASTE/00_RAW_DATA nanopore_pooled="True" nanopore_pooled_name=direct_virome sampling="tot" -j 16 -k -n
+
+
+#find JACOB_phages
+
+#second VIROME
+snakemake --use-conda --config input_dir=/home/lmf/KATRINE/ORGANIC_WASTE_2/00_RAW_DATA sampling="tot" -j 32 -k -n
+
+#find JACOB_phages
+snakemake --use-conda -p abundance_from_db_contigs --config input_dir=/home/lmf/KATRINE/ORGANIC_WASTE_2/Jacob_23_phages/00_RAW_DATA representative_contigs=/home/lmf/ORGANIC_WASTE_2/Jacob_23_phages/Jacob_23_phages.tot.fasta -n -r

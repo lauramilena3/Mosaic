@@ -16,7 +16,7 @@ snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/Wheat_Virome_3/00_R
 snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/Wheat_Virome_5/00_RAW_READS sampling="tot" -k -j 32 -n
 
 #Nanopore
-snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/Wheat_Virome_6/00_RAW_READS nanopore_pooled="True" nanopore_pooled_name=rapid_virome sampling="tot" -j 64 -k
+snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/Wheat_Virome_6/00_RAW_READS nanopore_pooled="True" nanopore_pooled_name=rapid_virome sampling="tot" -j 64 -k -n
 
 #APSE phages
 
@@ -45,14 +45,38 @@ contig_id	contig_length	gene_count	viral_genes	host_genes	checkv_quality	proviru
 
 #Test depth
 snakemake -p test_assembly_depth --use-conda --config input_dir=/home/lmf/PhylloVir/Wheat_Virome_4/00_RAW_READS sampling="tot" max_norm=10000  -k -j 32 -n
+snakemake -p test_assembly_depth --use-conda --config input_dir=/home/lmf/PhylloVir/WHEAT/00_RAW_READS sampling="tot" -k -j 32 -n
 
 #WGS
 snakemake -p assembly --use-conda --config input_dir=/home/lmf/PhylloVir/WGS_2/00_RAW_READS sampling="tot" -k -j 32 -n
 snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/WGS_2/00_RAW_READS sampling="tot" -k -j 32 -n
 
+snakemake --use-conda --config input_dir=/home/lmf/PhylloVir/WHEAT/00_RAW_READS sampling="tot" -k -j 32 -n
+
+#MMSEQS wgs
+cd ~/PhylloVir/WGS_2/04_VIRAL_ID/taxonomy
+conda activate Mosaic #last version mmseqs2
+mmseqs createdb merged_scaffolds.tot.fasta wgsContigsDB
+mmseqs taxonomy --threads 32 wgsContigsDB /home/lmf/db/mmseqs/ref_viruses_prok_rep_genomesDB taxonomyResultDB tmp --search-type 3 --lca-mode 2 -c 0.3 --cov-mode 2
+mmseqs taxonomyreport /home/lmf/db/mmseqs/ref_viruses_prok_rep_genomesDB taxonomyResultDB mmseqs_taxonomy.tsv
+mmseqs taxonomyreport /home/lmf/db/mmseqs/ref_viruses_prok_rep_genomesDB taxonomyResultDB mmseqs_taxonomy.html --report-mode 1
+mmseqs createtsv wgsContigsDB taxonomyResultDB taxonomyResult.tsv
+
+
 #kraken2
+conda activate env1
+cd ~/PhylloVir/WGS_2/
 kraken2 --db /home/lmf/db/KRAKEN/kraken/ --paired 02_CLEAN_DATA/OL_forward_paired_clean.tot.fastq 02_CLEAN_DATA/OL_reverse_paired_clean.tot.fastq --threads 32 --output OL_full_kraken_out.txt --use-names --report OL_full_kraken_report.txt &
 kraken2 --db /home/lmf/db/KRAKEN/kraken/ --paired 02_CLEAN_DATA/FL_forward_paired_clean.tot.fastq 02_CLEAN_DATA/FL_reverse_paired_clean.tot.fastq --threads 32 --output FL_full_kraken_out.txt --use-names --report FL_full_kraken_report.txt
+bracken-build -d /home/lmf/db/KRAKEN/kraken/ -t 32
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i OL_full_kraken_report.txt  -o OL_full_braken_report_P.txt -l P -t 10000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i FL_full_kraken_report.txt  -o FL_full_braken_report_P.txt -l P -t 10000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i OL_full_kraken_report.txt  -o OL_full_braken_report_C.txt -l C -t 8000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i FL_full_kraken_report.txt  -o FL_full_braken_report_C.txt -l C -t 8000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i OL_full_kraken_report.txt  -o OL_full_braken_report_O.txt -l O -t 6000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i FL_full_kraken_report.txt  -o FL_full_braken_report_O.txt -l O -t 6000
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i OL_full_kraken_report.txt  -o OL_full_braken_report_F.txt -l F -t 4000 &
+bracken -d /home/lmf/db/KRAKEN/kraken/  -i FL_full_kraken_report.txt  -o FL_full_braken_report_F.txt -l F -t 4000 &
 
 #What the phage
 nextflow run replikation/What_the_Phage -r v1.0.0 --cores 8 -profile local,docker --fasta merged_scaffolds.tot.fasta
@@ -74,5 +98,12 @@ minced -spacers merged_scaffolds.tot.fasta minced.txt
 
 /home/lmf/apps/spacepharer/build/bin/spacepharer predictmatch spacers_mincedSetDB viralTargetDB viralTargetDB_rev spacepharer_minced.tsv tmpFolder
 /home/lmf/apps/spacepharer/build/bin/spacepharer predictmatch spacers_pilerDBSetDB viralTargetDB viralTargetDB_rev spacepharer_piler.tsv tmpFolder
-/home/lmf/apps/spacepharer/build/bin/spacepharer predictmatch shmakovSetDB viralTargetDB viralTargetDB_rev spacepharer_shmakov.tsv tmpFolder
+/home/lmf/apps/spacepharer/build/bin/spacepharer predictmatch shmakovSetDB viralTargetDB viralTargetDB_rev spacepharer_shmakov.tsv tmpFolder  --tax-lineage 1
 rm *DB*
+
+
+## TOXINS
+grep "tox"  results_*.hhr | grep ">" | grep "cytole" -i | cut -d">" -f1 | sort | uniq -c
+grep "tox"  results_*.hhr | grep ">" | grep "RHS" -i | cut -d">" -f1 | sort | uniq -c
+grep "tox"  results_*.hhr | grep ">" | grep "shiga" -i | cut -d">" -f1 | sort | uniq -c
+grep "tox"  results_*.hhr | grep ">" | grep "tcd" -i | cut -d">" -f1 | sort | uniq -c
