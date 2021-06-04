@@ -111,7 +111,7 @@ rule hybridAsemblySpades:
 rule asemblyCanu:
 	input:
 		nanopore=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nanopore_clean.{sampling}.fastq",
-		canu_dir=config['canu_dir'],
+		#canu_dir=config['canu_dir'],
 	output:
 		scaffolds=dirs_dict["ASSEMBLY_DIR"] + "/canu_{sample}_{sampling}/{sample}.contigs.fasta",
 		scaffolds_final=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_contigs_canu.{sampling}.fasta"
@@ -131,12 +131,14 @@ rule asemblyCanu:
 		# redMemory=32 oeaMemory=32 batMemory=200 -nanopore {input.nanopore} \
 		# -d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
 
-		./{config[canu_dir]}/canu genomeSize=5m minReadLength=1000 -p \
+
+
+
+		canu genomeSize=50k minReadLength=1000 -fast\
 		contigFilter="{config[min_cov]} {config[min_len]} 1.0 1.0 2" \
-		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 \
+		corOutCoverage=10000 corMhapSensitivity=high corMinCoverage=0 maxInputCoverage=10000\
 		redMemory=32 oeaMemory=32 batMemory=200 -nanopore {input.nanopore} \
 		-d {params.assembly_dir} -p {wildcards.sample} useGrid=false maxThreads={threads}
-
 		cp {output.scaffolds} {output.scaffolds_final}
 		sed -i s"/ /_/"g {output.scaffolds_final}
 		"""
