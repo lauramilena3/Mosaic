@@ -183,7 +183,9 @@ rule assembly:
 		(dirs_dict["CLEAN_DATA_DIR"] + "/kmer_rarefraction_plot.tot.png"),
 
 #		scaffolds=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample=SAMPLES),
-
+rule assembly_long:
+	input:
+		expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample_nanopore=NANOPORE_SAMPLES)
 rule annotate_VIBRANT_contigs:
 	input:
 		vibrant=(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE + ".tot"),
