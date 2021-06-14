@@ -318,7 +318,7 @@ rule remove_human_PE:
 		cp {output.reverse_paired_temp} {output.reverse_paired}
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		kraken2 --paired --db {input.kraken_db_human} --threads {threads} --output {output.kraken_output_unpaired} \
+		kraken2 --db {input.kraken_db_human} --threads {threads} --output {output.kraken_output_unpaired} \
 		        --report {output.kraken_report_unpaired} --unclassified-out {output.unpaired} {input.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
 		"""
