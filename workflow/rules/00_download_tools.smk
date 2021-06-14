@@ -234,6 +234,23 @@ rule downloadKrakenDB:
 		mkdir {output.kraken_db}
 		tar -xvf minikraken2_v2_8GB_201904.tgz -C {output.kraken_db}
 		"""
+
+rule downloadKrakenDB_human:
+	output:
+		kraken_db_human=directory(config['kraken_db_human']),
+	message:
+		"Downloading human Kraken database"
+	threads: 4
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+	shell:
+		"""
+		kraken2-build --download-library human --db {output.kraken_db_human} --threads {threads}
+		kraken2-build --download-taxonomy --db {output.kraken_db_human}
+		kraken2-build --build --db {output.kraken_db_human} --threads {threads}
+		kraken2-build --clean --db {output.kraken_db_human}
+		"""
+
 # rule downloadVirSorterDB:
 # 	output:
 # 		virSorter_db=directory(config['virSorter_db']),
