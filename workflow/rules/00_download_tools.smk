@@ -242,7 +242,7 @@ rule downloadKrakenDB_human:
 		"Downloading human Kraken database"
 	threads: 4
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+		dirs_dict["ENVS_DIR"] + "/env1.yaml"
 	shell:
 		"""
 		kraken2-build --download-library human --db {output.kraken_db_human} --threads {threads}
