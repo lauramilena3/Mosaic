@@ -276,7 +276,7 @@ rule remove_contaminants_PE:
 		#PAIRED
 		bbduk.sh -Xmx{resources.mem_gb}g in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		#UNPAIRED
-		cat {input.forward_unpaired} {input.reverse_unpaired} > {output.unpaired_temp}
+		cat {input.forward_unpaired} {input.reverse_unpaired} > {output.merged_unpaired}
 		bbduk.sh -Xmx{resources.mem_gb}g in={output.merged_unpaired} out={output.clean_unpaired_bbduk} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
 		"""
 
