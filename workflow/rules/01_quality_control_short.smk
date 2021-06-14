@@ -287,8 +287,8 @@ rule remove_human_PE:
 		unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_merged_unpaired_bbduk.tot.fastq"),
 		kraken_db_human=directory(config['kraken_db_human']),
 	output:
-		forward_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R1.tot.fastq"),
-		reverse_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R2.tot.fastq"),
+		forward_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R_1.tot.fastq"),
+		reverse_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R_2.tot.fastq"),
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
