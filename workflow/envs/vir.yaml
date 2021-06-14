@@ -9,9 +9,9 @@ dependencies:
   - checkv =0.6.0
   - python =3.7
 #VirSorter
-#  - virsorter =2.1
+  - virsorter =2.1
 #  - pandas=0.25.3
-  - numpy=1.19.5
+#  - numpy=1.19.5
   # - mcl =14.137
   # - muscle =3.8.1551
   # - blast =2.9.0
