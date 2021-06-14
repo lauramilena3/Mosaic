@@ -43,7 +43,7 @@ img_vr_db: "db/IMG_VR/"
 virSorter_db: "db/VirSorter/virsorter-data"
 #raken_db: "db/NCBI-bacteria-01.04.2019"
 kraken_db: "db/KRAKEN"
-kraken_db_human: "db/KRAKEN/kraken2_human_db"
+kraken_db_human: "db/kraken2_human_db"
 
 checkv_db: "db/checkv-db-v0.6"
 canu_dir: "tools/canu-2.0/Linux-amd64/bin" #linux
