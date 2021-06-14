@@ -294,14 +294,14 @@ rule remove_human_PE:
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
 		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_contaminants.fasta",
-		kraken_output_paired="{sample}-kraken2-out_paired.txt",
-		kraken_report_paired="{sample}-kraken2-report_paired.txt",
-		kraken_output_unpaired="{sample}-kraken2-out_unpaired.txt",
-		kraken_report_unpaired="{sample}-kraken2-report_unpaired.txt",
+		kraken_output_paired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-out_paired.txt",
+		kraken_report_paired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-report_paired.txt",
+		kraken_output_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-out_unpaired.txt",
+		kraken_report_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-report_unpaired.txt",
 	message:
 		"Removing human reads with Kraken"
 	params:
-		unclassified_name_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R#.tot.fastq"),
+		unclassified_name_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R#.tot.fastq",
 	conda:
 		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
 	threads: 4
