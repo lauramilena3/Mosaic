@@ -257,13 +257,9 @@ rule remove_contaminants_PE:
 		reverse_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired.fastq",
 		contaminants_fasta=expand(dirs_dict["CONTAMINANTS_DIR"] +"/{contaminants}.fasta",contaminants=CONTAMINANTS),
 	output:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
-		forward_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_unpaired_clean.tot.fastq"),
-		reverse_unpaired=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_unpaired_clean.tot.fastq"),
-		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
-		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
-		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_bbduk.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_bbduk.tot.fastq"),
+		unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_merged_unpaired_bbduk.tot.fastq"),
 		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_contaminants.fasta"
 	message:
 		"Removing phiX174 and user given contaminants with BBtools"
@@ -278,13 +274,54 @@ rule remove_contaminants_PE:
 		#PE
 		#PAIRED
 		bbduk.sh -Xmx{resources.mem_gb}g in1={input.forward_paired} in2={input.reverse_paired} out1={output.forward_paired} out2={output.reverse_paired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		#UNPAIRED
+		cat {input.forward_unpaired} {input.reverse_unpaired} > {output.merged_unpaired}
+		bbduk.sh -Xmx{resources.mem_gb}g in={output.merged_unpaired} out={output.clean_unpaired_bbduk} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
+		"""
+
+rule remove_human_PE:
+	input:
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_bbduk.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_bbduk.tot.fastq"),
+		unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_merged_unpaired_bbduk.tot.fastq"),
+		kraken_db_human=directory(config['kraken_db_human']),
+	output:
+		forward_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R1.tot.fastq"),
+		reverse_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R2.tot.fastq"),
+		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
+		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
+		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
+		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
+		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
+		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_contaminants.fasta"
+		kraken_output_paired="{sample}-kraken2-out_paired.txt"
+		kraken_report_paired="{sample}-kraken2-report_paired.txt"
+		kraken_output_unpaired="{sample}-kraken2-out_unpaired.txt"
+		kraken_report_unpaired="{sample}-kraken2-report_unpaired.txt"
+	message:
+		"Removing human reads with Kraken"
+	params:
+		unclassified_name_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R#.tot.fastq"),
+	conda:
+		dirs_dict["ENVS_DIR"]+ "/env1.yaml"
+	threads: 4
+	resources:
+		mem_gb=40
+	shell:
+		"""
+		#PAIRED
+		kraken2 --paired --db {input.kraken_db_human} --threads {threads} --output {output.kraken_output_paired} \
+		        --report {output.kraken_report_paired} --unclassified-out {params.unclassified_name_paired} \
+		        {input.forward_paired} {input.reverse_paired}
+		cp {output.forward_paired_temp} {output.forward_paired}
+		cp {output.reverse_paired_temp} {output.reverse_paired}
 		grep -c "^@" {output.forward_paired} > {output.paired_size}
 		#UNPAIRED
-		bbduk.sh -Xmx{resources.mem_gb}g in={input.forward_unpaired} out={output.forward_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
-		bbduk.sh -Xmx{resources.mem_gb}g in={input.reverse_unpaired} out={output.reverse_unpaired} ref={output.phix_contaminants_fasta} k=31 hdist=1 threads={threads}
-		cat {output.forward_unpaired} {output.reverse_unpaired} > {output.unpaired}
+		kraken2 --paired --db {input.kraken_db_human} --threads {threads} --output {output.kraken_output_unpaired} \
+		        --report {output.kraken_report_unpaired} --unclassified-out {output.unpaired} {input.unpaired}
 		grep -c "^@" {output.unpaired} > {output.unpaired_size} ||  echo "0" > {output.unpaired_size}
 		"""
+
 rule postQualityCheckIlluminaPE:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
