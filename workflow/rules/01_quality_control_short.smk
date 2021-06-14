@@ -294,7 +294,6 @@ rule remove_human_PE:
 		unpaired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.fastq",
 		paired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_paired_clean.tot.txt",
 		unpaired_size=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_unpaired_clean.tot.txt",
-		phix_contaminants_fasta=dirs_dict["CONTAMINANTS_DIR"] +"/{sample}_contaminants.fasta",
 		kraken_output_paired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-out_paired.txt",
 		kraken_report_paired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-report_paired.txt",
 		kraken_output_unpaired=dirs_dict["CLEAN_DATA_DIR"] + "{sample}-kraken2-out_unpaired.txt",
