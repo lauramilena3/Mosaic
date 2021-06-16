@@ -89,7 +89,7 @@ rule qualityStatsNanopore:
 		"""
 		NanoStat --fastq {input.fastq} > {output.nanostats}
 		"""
-		
+
 rule subsampleReadsNanopore:
 	input:
 		nano_sizes=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample_nanopore}_nanopore_clean.tot.txt", sample_nanopore=NANOPORE_SAMPLES),

@@ -285,7 +285,7 @@ rule remove_human_PE:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_bbduk.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_bbduk.tot.fastq"),
 		unpaired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_merged_unpaired_bbduk.tot.fastq"),
-		kraken_db_human=directory(config['kraken_db_human']),
+		kraken_db_human=(config['kraken_db_human']),
 	output:
 		forward_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R_1.tot.fastq"),
 		reverse_paired_temp=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken_paired_R_2.tot.fastq"),
@@ -560,7 +560,7 @@ rule contaminants_KRAKEN:
 	input:
 		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq"),
 		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq"),
-		kraken_db=directory(config['kraken_db']),
+		kraken_db=(config['kraken_db']),
 	output:
 		kraken_output=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_output_tot.csv"),
 		kraken_report=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_kraken2_report_tot.csv"),

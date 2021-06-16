@@ -158,7 +158,7 @@ rule search_contigs_mmseqs2:
 rule create_WIsH_models:
 	input:
 		wish_dir=os.path.join(workflow.basedir, (config['wish_dir'])),
-		FNA=directory("db/PATRIC/FNA"),
+		FNA=("db/PATRIC/FNA"),
 	output:
 		model_dir=directory("db/PATRIC/FNA/wish_modelDir"),
 	params:

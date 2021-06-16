@@ -8,7 +8,7 @@ dependencies:
   - vcontact2 =0.9.19
   - checkv =0.6.0
   - python =3.7
-  - virsorter =2.1
+  - virsorter =2.2.2
   - pandas=0.25.3
   - numpy=1.19.5
 
