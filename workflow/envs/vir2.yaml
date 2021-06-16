@@ -4,26 +4,19 @@ channels:
   - conda-forge
   - r
 dependencies:
-  - seqtk =1.3
-  - vcontact2 =0.9.19
-  - checkv =0.6.0
   - python =3.7
-  - pandas=0.25.3
-  - numpy=1.19.5
-
-# #VirSorter
-#
-#     - scikit-learn=0.22.1
-#     - imbalanced-learn
-#     - pandas
-#     - seaborn
-#     - hmmer==3.3
-#     - prodigal= 2.6.3
-#     - screed
-#     - ruamel.yaml
-#     - snakemake ==5.26
-#     - click
-#     - mamba
+#  - virsorter =2.2.2
+  - scikit-learn=0.22.1
+  - imbalanced-learn
+  - pandas
+  - seaborn
+  - hmmer==3.3
+  - prodigal= 2.6.3
+  - screed
+  - ruamel.yaml
+  - snakemake ==5.26
+  - click
+  - mamba
 
   # - mcl =14.137
   # - muscle =3.8.1551
