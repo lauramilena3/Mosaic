@@ -210,7 +210,7 @@ rule downloadVirSorterDB:
 		git clone https://github.com/jiarong/VirSorter2.git {output.virSorter_dir}
 		cd {output.virSorter_dir}
 		pip install -e .
-		virsorter setup -d {output} -j 4
+		virsorter setup -d {output.virSorter_db} -j 4
 		"""
 rule downloadCheckvDB:
 	output:
