@@ -197,6 +197,7 @@ rule downloadViralTools:
 rule downloadVirSorterDB:
 	output:
 		virSorter_db=directory(config['virSorter_db']),
+		virSorter_dir=directory(config['virSorter_dir']),
 	message:
 		"Downloading VirSorter database"
 	threads: 4
@@ -206,6 +207,9 @@ rule downloadVirSorterDB:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
+		git clone https://github.com/jiarong/VirSorter2.git {output.virSorter_dir}
+		cd {output.virSorter_dir}
+		pip install -e .
 		virsorter setup -d {output} -j 4
 		"""
 rule downloadCheckvDB:
