@@ -6,15 +6,15 @@ channels:
 dependencies:
   - python =3.7
 #  - virsorter =2.2.2
-  - scikit-learn=0.22.1
+  - scikit-learn =0.22.1
   - imbalanced-learn
   - pandas
   - seaborn
-  - hmmer==3.3
+  - hmmer =3.3
   - prodigal= 2.6.3
   - screed
   - ruamel.yaml
-  - snakemake ==5.26
+  - snakemake  =5.26
   - click
   - mamba
 
