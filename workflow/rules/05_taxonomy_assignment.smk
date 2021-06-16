@@ -120,7 +120,7 @@ rule parseVcontact:
 rule mmseqsTaxonomy:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",
-		mmseqs_dir=directory(os.path.join(workflow.basedir, config['mmseqs_dir'])),
+		mmseqs_dir=(os.path.join(workflow.basedir, config['mmseqs_dir'])),
 		refseq=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna")),
 		refseq_taxid=(os.path.join(workflow.basedir,"db/ncbi-taxdump/RefSeqViral.fna.taxidmapping")),
 	output:
