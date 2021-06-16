@@ -157,43 +157,43 @@ rule get_VIGA:
 		chmod 744 trf irf
 		"""
 
-rule downloadViralTools:
-	output:
-		virSorter_dir=directory(config['virSorter_dir']),
-		virFinder_dir=directory(config['virFinder_dir']),
-	message:
-		"Downloading required VirSorter and VirFinder"
-	threads: 1
-	shell:
-		"""
-		#VIRSORTER
-		VS_dir="{config[virSorter_dir]}"
-		echo $VS_dir
-		if [ ! -d $VS_dir ]
-		then
-			mkdir -p tools
-			cd tools
-			git clone https://github.com/simroux/VirSorter.git
-			cd VirSorter/Scripts
-			make clean
-			make
-			cd ../../../
-		fi
-		#VIRFNDER
-		VF_dir="{config[virFinder_dir]}"
-		echo $VF_dir
-   		if [ ! -d $VF_dir ]
-		then
-			if [ ! {config[operating_system]} == "linux" ]
-			then
-				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
-			else
-				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
-			fi
-			mkdir -p {output.virFinder_dir}
-			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
-		fi
-		"""
+# rule downloadViralTools:
+# 	output:
+# 		virSorter_dir=directory(config['virSorter_dir']),
+# 		virFinder_dir=directory(config['virFinder_dir']),
+# 	message:
+# 		"Downloading required VirSorter and VirFinder"
+# 	threads: 1
+# 	shell:
+# 		"""
+# 		#VIRSORTER
+# 		VS_dir="{config[virSorter_dir]}"
+# 		echo $VS_dir
+# 		if [ ! -d $VS_dir ]
+# 		then
+# 			mkdir -p tools
+# 			cd tools
+# 			git clone https://github.com/simroux/VirSorter.git
+# 			cd VirSorter/Scripts
+# 			make clean
+# 			make
+# 			cd ../../../
+# 		fi
+# 		#VIRFNDER
+# 		VF_dir="{config[virFinder_dir]}"
+# 		echo $VF_dir
+#    		if [ ! -d $VF_dir ]
+# 		then
+# 			if [ ! {config[operating_system]} == "linux" ]
+# 			then
+# 				curl -OL https://raw.github.com/jessieren/VirFinder/blob/master/mac/VirFinder_1.1.tar.gz?raw=true
+# 			else
+# 				curl -OL https://github.com/jessieren/VirFinder/blob/master/linux/VirFinder_1.1.tar.gz?raw=true
+# 			fi
+# 			mkdir -p {output.virFinder_dir}
+# 			mv VirFinder*tar.gz* {output.virFinder_dir}/VirFinder_1.1.tar.gz
+# 		fi
+# 		"""
 rule downloadVirSorterDB:
 	output:
 		virSorter_dir=directory(config['virSorter_dir']),
