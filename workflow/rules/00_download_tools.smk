@@ -209,7 +209,7 @@ rule downloadVirSorterDB:
 		git clone https://github.com/jiarong/VirSorter2.git {output.virSorter_dir}
 		cd {output.virSorter_dir}
 		pip install -e .
-		virsorter setup -j 4
+		virsorter setup -d db -j 4
 		"""
 rule downloadCheckvDB:
 	output:
