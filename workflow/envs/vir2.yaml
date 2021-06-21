@@ -18,8 +18,8 @@ dependencies:
   - click
   - mamba
   - pip =19.3.1
-  - pip:
-    - git+https://github.com/jiarong/VirSorter2.git
+#  - pip:
+#    - git+https://github.com/jiarong/VirSorter2.git
 
   # - mcl =14.137
   # - muscle =3.8.1551
