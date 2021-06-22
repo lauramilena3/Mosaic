@@ -210,7 +210,7 @@ rule downloadVirSorterDB:
 		cd {output.virSorter_dir}
 		pip install .
 		virsorter setup -d db -j 4
-		mkdir {output.virSorter_dir}
+		#mkdir {output.virSorter_dir}
 		"""
 rule downloadCheckvDB:
 	output:
