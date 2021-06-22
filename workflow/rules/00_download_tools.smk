@@ -199,18 +199,18 @@ rule downloadVirSorterDB:
 		virSorter_dir=directory(config['virSorter_dir']),
 	message:
 		"Downloading VirSorter database"
-	threads: 4
+	threads: 8
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	params:
 		virSorter_db="db/VirSorter"
 	shell:
 		"""
-		git clone https://github.com/jiarong/VirSorter2.git {output.virSorter_dir}
-		cd {output.virSorter_dir}
-		pip install .
-		virsorter setup -d db -j 4
-		#mkdir {output.virSorter_dir}
+		#git clone https://github.com/jiarong/VirSorter2.git {output.virSorter_dir}
+		#cd {output.virSorter_dir}
+		#pip install .
+		virsorter setup -d db -j {threads}
+		mkdir {output.virSorter_dir}
 		"""
 rule downloadCheckvDB:
 	output:
