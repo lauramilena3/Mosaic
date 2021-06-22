@@ -14,7 +14,7 @@ dependencies:
   - prodigal= 2.6.3
   - screed
   - ruamel.yaml
-  - snakemake  =5.26
+  - snakemake 
   - click
   - mamba
   - pip =19.3.1
