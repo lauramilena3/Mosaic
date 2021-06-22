@@ -201,7 +201,7 @@ rule downloadVirSorterDB:
 		"Downloading VirSorter database"
 	threads: 4
 	conda:
-		dirs_dict["ENVS_DIR"] + "/vir2.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	params:
 		virSorter_db="db/VirSorter"
 	shell:

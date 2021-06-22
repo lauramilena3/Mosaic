@@ -12,7 +12,7 @@ rule virSorter:
 	message:
 		"Classifing contigs with VirSorter"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/vir2.yaml"
+		dirs_dict["ENVS_DIR"] + "/vir.yaml"
 	threads: 64
 	shell:
 		"""
