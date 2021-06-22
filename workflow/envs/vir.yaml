@@ -10,7 +10,7 @@ dependencies:
 #  - python =3.7
   - pandas=0.25.3
   - numpy=1.19.5
-  - virsorter =2.1
+  - virsorter =2.0
 
 # #VirSorter
 #
