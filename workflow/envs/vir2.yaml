@@ -4,20 +4,20 @@ channels:
   - conda-forge
   - r
 dependencies:
-  - python =3.7
-  - virsorter =2.0
-  - scikit-learn =0.22.1
-  - imbalanced-learn
-  - pandas
-  - seaborn
-  - hmmer =3.3
-  - prodigal= 2.6.3
-  - screed
-  - ruamel.yaml
-  - snakemake 
-  - click
-  - mamba
-  - pip =19.3.1
+#  - python =3.7
+  - virsorter =2.1
+  # - scikit-learn =0.22.1
+  # - imbalanced-learn
+  # - pandas
+  # - seaborn
+  # - hmmer =3.3
+  # - prodigal= 2.6.3
+  # - screed
+  # - ruamel.yaml
+  # - snakemake
+  # - click
+  # - mamba
+  # - pip =19.3.1
 #  - pip:
 #    - git+https://github.com/jiarong/VirSorter2.git
 
