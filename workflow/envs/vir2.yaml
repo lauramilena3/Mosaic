@@ -5,7 +5,7 @@ channels:
   - r
 dependencies:
 #  - python =3.7
-  - virsorter =2.1
+  - virsorter =2.2.2     
   # - scikit-learn =0.22.1
   # - imbalanced-learn
   # - pandas
