@@ -2,10 +2,9 @@ channels:
   - bioconda
   - biobuilds
   - conda-forge
-  - r
 dependencies:
 #  - python =3.7
-  - virsorter =2.2.2     
+#  - virsorter =2.2.2
   # - scikit-learn =0.22.1
   # - imbalanced-learn
   # - pandas
@@ -17,10 +16,9 @@ dependencies:
   # - snakemake
   # - click
   # - mamba
-  # - pip =19.3.1
-#  - pip:
-#    - git+https://github.com/jiarong/VirSorter2.git
-
+  - pip =19.3.1
+  - pip:
+    - git+https://github.com/jiarong/VirSorter2.git
   # - mcl =14.137
   # - muscle =3.8.1551
   # - blast =2.9.0
