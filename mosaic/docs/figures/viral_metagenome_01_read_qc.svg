@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="422.4pt" viewBox="0 0 864 422.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.5, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 422.4
+L 864 422.4
+L 864 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.52 76.8
+L 257.28 76.8
+Q 264 76.8 264 83.52
+L 264 137.76
+Q 264 144.48 257.28 144.48
+L 35.52 144.48
+Q 28.8 144.48 28.8 137.76
+L 28.8 83.52
+Q 28.8 76.8 35.52 76.8
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 318.72 76.8
+L 828.48 76.8
+Q 835.2 76.8 835.2 83.52
+L 835.2 152.64
+Q 835.2 159.36 828.48 159.36
+L 318.72 159.36
+Q 312 159.36 312 152.64
+L 312 83.52
+Q 312 76.8 318.72 76.8
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 264 110.64
+Q 286.519043 114.130452 307.491309 117.381153
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 302.386269 113.756436
+L 307.491309 117.381153
+L 301.528512 119.290355
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #3a72ed; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 318.72 211.2
+L 540.48 211.2
+Q 547.2 211.2 547.2 217.92
+L 547.2 287.04
+Q 547.2 293.76 540.48 293.76
+L 318.72 293.76
+Q 312 293.76 312 287.04
+L 312 217.92
+Q 312 211.2 318.72 211.2
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 606.72 211.2
+L 828.48 211.2
+Q 835.2 211.2 835.2 217.92
+L 835.2 287.04
+Q 835.2 293.76 828.48 293.76
+L 606.72 293.76
+Q 600 293.76 600 287.04
+L 600 217.92
+Q 600 211.2 606.72 211.2
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 573.6 159.36
+Q 503.012842 184.771377 433.898405 209.652574
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 440.115789 210.39023
+L 433.898405 209.652574
+L 438.21896 205.12126
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #3a72ed; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 547.2 252.48
+Q 572.099854 252.48 595.434459 252.48
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 589.834459 249.68
+L 595.434459 252.48
+L 589.834459 255.28
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #3a72ed; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 35.52 211.2
+L 257.28 211.2
+Q 264 211.2 264 217.92
+L 264 287.04
+Q 264 293.76 257.28 293.76
+L 35.52 293.76
+Q 28.8 293.76 28.8 287.04
+L 28.8 217.92
+Q 28.8 211.2 35.52 211.2
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #ffffff; stroke: #526277; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 35.52 340.8
+L 828.48 340.8
+Q 835.2 340.8 835.2 347.52
+L 835.2 382.08
+Q 835.2 388.8 828.48 388.8
+L 35.52 388.8
+Q 28.8 388.8 28.8 382.08
+L 28.8 347.52
+Q 28.8 340.8 35.52 340.8
+z
+" clip-path="url(#pab7bdb8750)" style="fill: #f1f6ff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 36 85.92
+L 36 135.36
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 319.2 85.92
+L 319.2 150.24
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 319.2 220.32
+L 319.2 284.64
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 607.2 220.32
+L 607.2 284.64
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 36 220.32
+L 36 284.64
+" clip-path="url(#pab7bdb8750)" style="fill: none; stroke: #526277; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">01 / READ QC AND BIOLOGICAL CLEANING</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Virome mode removes configured biological contaminants; isolate mode does not</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Raw paired FASTQs</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">FastQC / counts / SuperDeduper</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">Duplicate estimate: report only</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="327.36" y="95.287575" transform="rotate(-0 327.36 95.287575)">fastp → trimmed paired reads + merged orphans</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="114.468675" transform="rotate(-0 327.36 114.468675)">PE overlap analysis + adapter detection; no adapter FASTA</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="129.348675" transform="rotate(-0 327.36 129.348675)">Poly-G ≥10 nt; front/right quality trimming</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="144.228675" transform="rotate(-0 327.36 144.228675)">Keep reads ≥50 bp; save HTML/JSON reports</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="327.36" y="229.687575" transform="rotate(-0 327.36 229.687575)">Kraken + cleaning</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="248.50395" transform="rotate(-0 327.36 248.50395)">Remove Eukaryota by default</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="263.38395" transform="rotate(-0 327.36 263.38395)">BBDuk if contaminant references exist</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="278.26395" transform="rotate(-0 327.36 278.26395)">Empty list: bypass BBDuk</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="615.36" y="229.687575" transform="rotate(-0 615.36 229.687575)">Cleaned libraries</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="615.36" y="248.50395" transform="rotate(-0 615.36 248.50395)">Paired FASTQs + cleaned orphans</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="615.36" y="263.38395" transform="rotate(-0 615.36 263.38395)">Post-QC / post-cleaning reporting</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="615.36" y="278.26395" transform="rotate(-0 615.36 278.26395)">Retain trimmed files for reuse</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="44.16" y="229.687575" transform="rotate(-0 44.16 229.687575)">QC interpretation</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="248.50395" transform="rotate(-0 44.16 248.50395)">Filtering loss / PCR duplicates</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="263.38395" transform="rotate(-0 44.16 263.38395)">Kraken eukaryotic fraction</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="278.26395" transform="rotate(-0 44.16 278.26395)">K-mer sampling evidence</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="39.36" y="356.7534" transform="rotate(-0 39.36 356.7534)">DEFAULTS</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="39.36" y="374.628675" transform="rotate(-0 39.36 374.628675)">remove_euk=True · contaminants_list empty · no implicit PhiX-reference removal</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="414.10395" transform="rotate(-0 28.8 414.10395)">MOSAIC / viral_metagenome · conceptual methods diagram · config.yaml defaults</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pab7bdb8750">
+   <rect x="0" y="0" width="864" height="422.4"/>
+  </clipPath>
+ </defs>
+</svg>

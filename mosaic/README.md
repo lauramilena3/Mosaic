@@ -122,6 +122,12 @@ inputs, outputs and decision thresholds, with a colour-coded overview and seven
 step diagrams. It uses all QC-passed reads and treats geNomad as evidence, not a
 viral selection gate.
 
+The [viral metagenome manual](docs/viral_metagenome.md) documents the
+`viral_metagenome` / `runWorkflow` mode in the same step-by-step format, with a
+colour-coded overview and seven step diagrams. It covers strict viral selection,
+the shared DNA/RNA catalogue, read subsets, abundance/annotation reports, optional
+branches, database downloads, memory profiles and storage.
+
 An optional [interactive genome network](docs/isolate_purity.md#optional-interactive-genome-network)
 (`isolate_network=True`) connects retained contigs and selected RefSeq/METAVR
 relatives using Mash distances, with browser filters and offline HTML export.

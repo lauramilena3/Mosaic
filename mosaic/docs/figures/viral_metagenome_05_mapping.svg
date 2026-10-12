@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="489.6pt" viewBox="0 0 864 489.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.5, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 489.6
+L 864 489.6
+L 864 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.52 76.8
+L 262.08 76.8
+Q 268.8 76.8 268.8 83.52
+L 268.8 137.76
+Q 268.8 144.48 262.08 144.48
+L 35.52 144.48
+Q 28.8 144.48 28.8 137.76
+L 28.8 83.52
+Q 28.8 76.8 35.52 76.8
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 318.72 76.8
+L 545.28 76.8
+Q 552 76.8 552 83.52
+L 552 152.64
+Q 552 159.36 545.28 159.36
+L 318.72 159.36
+Q 312 159.36 312 152.64
+L 312 83.52
+Q 312 76.8 318.72 76.8
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 601.92 76.8
+L 828.48 76.8
+Q 835.2 76.8 835.2 83.52
+L 835.2 152.64
+Q 835.2 159.36 828.48 159.36
+L 601.92 159.36
+Q 595.2 159.36 595.2 152.64
+L 595.2 83.52
+Q 595.2 76.8 601.92 76.8
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 35.52 218.4
+L 545.28 218.4
+Q 552 218.4 552 225.12
+L 552 294.24
+Q 552 300.96 545.28 300.96
+L 35.52 300.96
+Q 28.8 300.96 28.8 294.24
+L 28.8 225.12
+Q 28.8 218.4 35.52 218.4
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 601.92 218.4
+L 828.48 218.4
+Q 835.2 218.4 835.2 225.12
+L 835.2 309.12
+Q 835.2 315.84 828.48 315.84
+L 601.92 315.84
+Q 595.2 315.84 595.2 309.12
+L 595.2 225.12
+Q 595.2 218.4 601.92 218.4
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 148.8 144.48
+Q 218.271204 180.746323 286.35485 216.288295
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 282.686335 211.214637
+L 286.35485 216.288295
+L 280.094815 216.178912
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #3a72ed; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 715.2 159.36
+Q 715.2 187.379136 715.2 213.833024
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #0f766e; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 718 208.233024
+L 715.2 213.833024
+L 712.4 208.233024
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #0f766e; stroke: #0f766e; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 35.52 362.4
+L 545.28 362.4
+Q 552 362.4 552 369.12
+L 552 423.36
+Q 552 430.08 545.28 430.08
+L 35.52 430.08
+Q 28.8 430.08 28.8 423.36
+L 28.8 369.12
+Q 28.8 362.4 35.52 362.4
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 601.92 362.4
+L 828.48 362.4
+Q 835.2 362.4 835.2 369.12
+L 835.2 423.36
+Q 835.2 430.08 828.48 430.08
+L 601.92 430.08
+Q 595.2 430.08 595.2 423.36
+L 595.2 369.12
+Q 595.2 362.4 601.92 362.4
+z
+" clip-path="url(#pca85ba9e40)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 36 85.92
+L 36 135.36
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 319.2 85.92
+L 319.2 150.24
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 602.4 85.92
+L 602.4 150.24
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 36 227.52
+L 36 291.84
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 602.4 227.52
+L 602.4 306.72
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 36 371.52
+L 36 420.96
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 602.4 371.52
+L 602.4 420.96
+" clip-path="url(#pca85ba9e40)" style="fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">05 / MAPPING AND ABUNDANCE NORMALISATION</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Do not confuse BBNorm assembly inputs, diagnostic subsets and final abundance reads</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Full cleaned paired reads</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">Final filtered vOTUs: tot abundance</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">RefSeq / variation: separate branches</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="327.36" y="95.287575" transform="rotate(-0 327.36 95.287575)">2M-named paired subset</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="114.10395" transform="rotate(-0 327.36 114.10395)">BBTools reads=2000000; seed=1</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="128.98395" transform="rotate(-0 327.36 128.98395)">Assembly / unfiltered diagnostics</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="143.86395" transform="rotate(-0 327.36 143.86395)">Optional all-assembled catalogue</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="610.56" y="95.287575" transform="rotate(-0 610.56 95.287575)">Bowtie2 + CoverM</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="114.10395" transform="rotate(-0 610.56 114.10395)">≥95% read identity</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="128.98395" transform="rotate(-0 610.56 128.98395)">≥85% aligned read length</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="143.86395" transform="rotate(-0 610.56 143.86395)">All / operational unique summaries</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="44.16" y="236.887575" transform="rotate(-0 44.16 236.887575)">Coverage tables → 07_Normalise notebook</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="255.70395" transform="rotate(-0 44.16 255.70395)">Raw counts / RPKM + ambiguity-adjusted counts / RPKM</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="270.58395" transform="rotate(-0 44.16 270.58395)">Breadth (%) / covered bases; mean depth in per-sample CoverM files</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="285.46395" transform="rotate(-0 44.16 285.46395)">Normalised RPKM denominator: adjusted mapped reads, not library size</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="610.56" y="236.887575" transform="rotate(-0 610.56 236.887575)">Filtered abundance cells</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="255.70395" transform="rotate(-0 610.56 255.70395)">Reference ≥6,667 bp:</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="270.58395" transform="rotate(-0 610.56 270.58395)">  &gt;5,000 covered bases</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="285.46395" transform="rotate(-0 610.56 285.46395)">Shorter reference:</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="300.34395" transform="rotate(-0 610.56 300.34395)">  &gt;75% breadth</text>
+   </g>
+   <g id="text_23">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="44.16" y="380.887575" transform="rotate(-0 44.16 380.887575)">Optional per-base exports</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="399.70395" transform="rotate(-0 44.16 399.70395)">per_base_coverage=True → *_basecov.txt.gz</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="414.58395" transform="rotate(-0 44.16 414.58395)">Nonzero positions; 0-based coordinates; summaries always saved</text>
+   </g>
+   <g id="text_26">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="610.56" y="380.887575" transform="rotate(-0 610.56 380.887575)">What the filter changes</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="399.70395" transform="rotate(-0 610.56 399.70395)">Nonpassing matrix cells become 0</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="414.58395" transform="rotate(-0 610.56 414.58395)">FASTA records are not removed</text>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="463.06395" transform="rotate(-0 28.8 463.06395)">raw RPKM = before abundance adjustment, not mapping raw FASTQs. Counts are not molecule counts.</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="481.30395" transform="rotate(-0 28.8 481.30395)">MOSAIC / viral_metagenome · conceptual methods diagram · config.yaml defaults</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pca85ba9e40">
+   <rect x="0" y="0" width="864" height="489.6"/>
+  </clipPath>
+ </defs>
+</svg>

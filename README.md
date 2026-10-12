@@ -123,6 +123,11 @@ and seven step diagrams. It uses all QC-passed reads, preserves host-associated
 exclusions and unexplained reads, and treats geNomad as evidence rather than a
 viral selection gate.
 
+The [viral metagenome manual](mosaic/docs/viral_metagenome.md) follows the same
+step-by-step format, with a colour-coded overview and seven step diagrams. It
+covers strict viral selection, the shared DNA/RNA catalogue, read subsets,
+abundance and annotation outputs, optional branches, databases, memory and storage.
+
 ## Long-Read and Hybrid Modes
 
 These modes are also available through the wrapper:

@@ -47,8 +47,9 @@ def number(value):
 class Diagram:
     """Pixel-based layout, with text-fitted cards and checked text boundaries."""
 
-    def __init__(self, title, subtitle, height, width=1800):
+    def __init__(self, title, subtitle, height, width=1800, workflow="phage_isolates"):
         self.width, self.height = width, height
+        self.workflow = workflow
         self.fig = plt.figure(figsize=(width / DPI, height / DPI), dpi=DPI, facecolor="white")
         self.ax = self.fig.add_axes([0, 0, 1, 1])
         self.ax.set(xlim=(0, width), ylim=(height, 0))
@@ -115,7 +116,7 @@ class Diagram:
         self.text(82, y + 53, value, size=23)
 
     def save(self, directory, stem):
-        self.note(self.height - 34, "MOSAIC / phage_isolates · conceptual methods diagram · config.yaml defaults")
+        self.note(self.height - 34, f"MOSAIC / {self.workflow} · conceptual methods diagram · config.yaml defaults")
         self.fig.canvas.draw()
         renderer = self.fig.canvas.get_renderer()
         for label, bounds in self.labels:

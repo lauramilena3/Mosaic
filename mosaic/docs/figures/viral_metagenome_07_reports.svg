@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="432pt" viewBox="0 0 864 432" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.5, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 432
+L 864 432
+L 864 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.52 76.8
+L 545.28 76.8
+Q 552 76.8 552 83.52
+L 552 152.64
+Q 552 159.36 545.28 159.36
+L 35.52 159.36
+Q 28.8 159.36 28.8 152.64
+L 28.8 83.52
+Q 28.8 76.8 35.52 76.8
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #ffffff; stroke: #526277; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 601.92 76.8
+L 828.48 76.8
+Q 835.2 76.8 835.2 83.52
+L 835.2 152.64
+Q 835.2 159.36 828.48 159.36
+L 601.92 159.36
+Q 595.2 159.36 595.2 152.64
+L 595.2 83.52
+Q 595.2 76.8 601.92 76.8
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #ffffff; stroke: #526277; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 35.52 228
+L 262.08 228
+Q 268.8 228 268.8 234.72
+L 268.8 303.84
+Q 268.8 310.56 262.08 310.56
+L 35.52 310.56
+Q 28.8 310.56 28.8 303.84
+L 28.8 234.72
+Q 28.8 228 35.52 228
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #ffffff; stroke: #b45309; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 318.72 228
+L 545.28 228
+Q 552 228 552 234.72
+L 552 303.84
+Q 552 310.56 545.28 310.56
+L 318.72 310.56
+Q 312 310.56 312 303.84
+L 312 234.72
+Q 312 228 318.72 228
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #ffffff; stroke: #3a72ed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 601.92 228
+L 828.48 228
+Q 835.2 228 835.2 234.72
+L 835.2 303.84
+Q 835.2 310.56 828.48 310.56
+L 601.92 310.56
+Q 595.2 310.56 595.2 303.84
+L 595.2 234.72
+Q 595.2 228 601.92 228
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #ffffff; stroke: #7c3aed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 35.52 355.2
+L 828.48 355.2
+Q 835.2 355.2 835.2 361.92
+L 835.2 396.48
+Q 835.2 403.2 828.48 403.2
+L 35.52 403.2
+Q 28.8 403.2 28.8 396.48
+L 28.8 361.92
+Q 28.8 355.2 35.52 355.2
+z
+" clip-path="url(#p7090ff2f4e)" style="fill: #f3f5f8; stroke: #526277; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 36 85.92
+L 36 150.24
+" clip-path="url(#p7090ff2f4e)" style="fill: none; stroke: #526277; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 602.4 85.92
+L 602.4 150.24
+" clip-path="url(#p7090ff2f4e)" style="fill: none; stroke: #526277; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 36 237.12
+L 36 301.44
+" clip-path="url(#p7090ff2f4e)" style="fill: none; stroke: #b45309; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 319.2 237.12
+L 319.2 301.44
+" clip-path="url(#p7090ff2f4e)" style="fill: none; stroke: #3a72ed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 602.4 237.12
+L 602.4 301.44
+" clip-path="url(#p7090ff2f4e)" style="fill: none; stroke: #7c3aed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">07 / REPORTS AND INTERPRETATION</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Start with final metadata and abundance; return to the intermediate evidence when needed</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">10_abundance_lifestyle_summary</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">vOTU_metadata_polished.csv: all final catalogue sequences</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">Sample / quality / taxonomy / host / lifestyle summaries</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="143.86395" transform="rotate(-0 44.16 143.86395)">Presence, prevalence, relative abundance and sample accumulation</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="610.56" y="95.186325" transform="rotate(-0 610.56 95.186325)">Stage reports</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="113.739225" transform="rotate(-0 610.56 113.739225)">01 QC / 03 assembly / 04 viral ID</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="128.619225" transform="rotate(-0 610.56 128.619225)">05 representative selection/filtering</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="143.499225" transform="rotate(-0 610.56 143.499225)">07 normalisation / mapping stats</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #b45309" x="44.16" y="246.487575" transform="rotate(-0 44.16 246.487575)">Optional reports</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="265.30395" transform="rotate(-0 44.16 265.30395)">03 RNA assembly / 08 METAVR</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="280.18395" transform="rotate(-0 44.16 280.18395)">07 RefSeq detection</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="295.06395" transform="rotate(-0 44.16 295.06395)">11 microdiversity (separate)</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 12.783241px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="327.36" y="246.353265" transform="rotate(-0 327.36 246.353265)">Interpret abundance correctly</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="264.939225" transform="rotate(-0 327.36 264.939225)">Presence: filtered normalised RPKM &gt;0</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="279.819225" transform="rotate(-0 327.36 279.819225)">Relative abundance: catalogue share</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="294.699225" transform="rotate(-0 327.36 294.699225)">NC not automatically removed</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="610.56" y="246.487575" transform="rotate(-0 610.56 246.487575)">Keep uncertainty visible</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="265.30395" transform="rotate(-0 610.56 265.30395)">Similarity ≠ confirmed species</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="280.18395" transform="rotate(-0 610.56 280.18395)">Terminal repeats ≠ circular proof</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="295.06395" transform="rotate(-0 610.56 295.06395)">Read-level diversity ≠ activity</text>
+   </g>
+   <g id="text_23">
+    <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="39.36" y="371.1534" transform="rotate(-0 39.36 371.1534)">FILES</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="39.36" y="389.028675" transform="rotate(-0 39.36 389.028675)">NOTEBOOKS: executed analysis · FIGURES_AND_TABLES: reports/tables/plots · BENCHMARK: per-job measurements</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="423.70395" transform="rotate(-0 28.8 423.70395)">MOSAIC / viral_metagenome · conceptual methods diagram · config.yaml defaults</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p7090ff2f4e">
+   <rect x="0" y="0" width="864" height="432"/>
+  </clipPath>
+ </defs>
+</svg>

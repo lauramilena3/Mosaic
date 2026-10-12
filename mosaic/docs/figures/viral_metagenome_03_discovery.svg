@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="412.8pt" viewBox="0 0 864 412.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.5, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 412.8
+L 864 412.8
+L 864 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.52 76.8
+L 262.08 76.8
+Q 268.8 76.8 268.8 83.52
+L 268.8 137.76
+Q 268.8 144.48 262.08 144.48
+L 35.52 144.48
+Q 28.8 144.48 28.8 137.76
+L 28.8 83.52
+Q 28.8 76.8 35.52 76.8
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 318.72 76.8
+L 545.28 76.8
+Q 552 76.8 552 83.52
+L 552 137.76
+Q 552 144.48 545.28 144.48
+L 318.72 144.48
+Q 312 144.48 312 137.76
+L 312 83.52
+Q 312 76.8 318.72 76.8
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 601.92 76.8
+L 828.48 76.8
+Q 835.2 76.8 835.2 83.52
+L 835.2 137.76
+Q 835.2 144.48 828.48 144.48
+L 601.92 144.48
+Q 595.2 144.48 595.2 137.76
+L 595.2 83.52
+Q 595.2 76.8 601.92 76.8
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #ffffff; stroke: #7c3aed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 552 110.64
+Q 572.101025 110.64 590.636803 110.64
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #7c3aed; stroke-width: 1.4; stroke-linecap: round"/>
+    <path d="M 585.036803 107.84
+L 590.636803 110.64
+L 585.036803 113.44
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #7c3aed; stroke: #7c3aed; stroke-width: 1.4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 35.52 208.8
+L 545.28 208.8
+Q 552 208.8 552 215.52
+L 552 284.64
+Q 552 291.36 545.28 291.36
+L 35.52 291.36
+Q 28.8 291.36 28.8 284.64
+L 28.8 215.52
+Q 28.8 208.8 35.52 208.8
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 601.92 208.8
+L 828.48 208.8
+Q 835.2 208.8 835.2 215.52
+L 835.2 284.64
+Q 835.2 291.36 828.48 291.36
+L 601.92 291.36
+Q 595.2 291.36 595.2 284.64
+L 595.2 215.52
+Q 595.2 208.8 601.92 208.8
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #ffffff; stroke: #7c3aed; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 35.52 331.2
+L 828.48 331.2
+Q 835.2 331.2 835.2 337.92
+L 835.2 372.48
+Q 835.2 379.2 828.48 379.2
+L 35.52 379.2
+Q 28.8 379.2 28.8 372.48
+L 28.8 337.92
+Q 28.8 331.2 35.52 331.2
+z
+" clip-path="url(#pdc21b75ae5)" style="fill: #f3f5f8; stroke: #526277; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 36 85.92
+L 36 135.36
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 319.2 85.92
+L 319.2 135.36
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 602.4 85.92
+L 602.4 135.36
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #7c3aed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 36 217.92
+L 36 282.24
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 602.4 217.92
+L 602.4 282.24
+" clip-path="url(#pdc21b75ae5)" style="fill: none; stroke: #7c3aed; stroke-width: 3; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">03 / VIRAL DISCOVERY AND TERMINAL REPEATS</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Viral candidate extraction is distinct from whole-assembly evidence</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Saved DNA scaffolds</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">geNomad relaxed end-to-end</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">Extract virus / provirus candidates</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="327.36" y="95.287575" transform="rotate(-0 327.36 95.287575)">RNA combined_derreplicated</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="114.10395" transform="rotate(-0 327.36 114.10395)">VirSorter2 groups: RNA</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="128.98395" transform="rotate(-0 327.36 128.98395)">Keep original candidate sequences</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="610.56" y="95.287575" transform="rotate(-0 610.56 95.287575)">CheckV evidence</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="114.10395" transform="rotate(-0 610.56 114.10395)">Candidate quality / completeness</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="128.98395" transform="rotate(-0 610.56 128.98395)">Contamination / provirus evidence</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="227.287575" transform="rotate(-0 44.16 227.287575)">Every saved DNA/RNA assembly: terminal-repeat table</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="246.10395" transform="rotate(-0 44.16 246.10395)">Exact DTR / ITR threshold: ≥30 bp</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="260.98395" transform="rotate(-0 44.16 260.98395)">One row per contig; sequence, length and end coordinates</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="275.86395" transform="rotate(-0 44.16 275.86395)">Non-overlapping ends; geNomad topology shown alongside</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 12.306555px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="610.56" y="226.791059" transform="rotate(-0 610.56 226.791059)">Each RNA assembler: geNomad</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="245.739225" transform="rotate(-0 610.56 245.739225)">RNAviralSPAdes / MEGAHIT / Trinity</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="260.619225" transform="rotate(-0 610.56 260.619225)">Evidence before combining</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="275.499225" transform="rotate(-0 610.56 275.499225)">Does not replace the RNA screen</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="39.36" y="347.1534" transform="rotate(-0 39.36 347.1534)">INTERPRETATION</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="39.36" y="365.028675" transform="rotate(-0 39.36 365.028675)">Terminal repeats are sequence-end evidence, not proof of a circular molecule or a complete genome.</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="404.50395" transform="rotate(-0 28.8 404.50395)">MOSAIC / viral_metagenome · conceptual methods diagram · config.yaml defaults</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pdc21b75ae5">
+   <rect x="0" y="0" width="864" height="412.8"/>
+  </clipPath>
+ </defs>
+</svg>
