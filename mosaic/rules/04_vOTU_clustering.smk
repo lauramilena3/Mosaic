@@ -49,6 +49,7 @@ rule derreplicate_assembly:
 		cd {params.dir_votu}
 		mmseqs easy-cluster --threads {threads} --createdb-mode 1 --min-seq-id 1 -c 1 --cov-mode 1 {output.combined_positive_contigs} {params.rep_name} {params.rep_temp} 
 		mv {params.rep_name_full} {output.derreplicated_positive_contigs}
+		rm -f -- {params.rep_name:q}_all_seqs.fasta
 		"""
 
 rule combine_all_assembled_contigs:
@@ -125,6 +126,7 @@ rule derreplicate_all_assembled_contigs:
 			printf '' > {output.fasta:q}
 			printf '' > {output.clusters:q}
 		fi
+		rm -f -- {params.prefix:q}_all_seqs.fasta
 		"""
 
 if not RNA_MODE:

@@ -723,6 +723,7 @@ rule cluster_proteins_viga:
 		"""
 		cd {params.dir_mmseqs}
 		mmseqs easy-cluster {input.faa} {params.rep_name} tmp --threads {threads} 
+		rm -f -- {params.rep_name:q}_all_seqs.fasta
 		"""
 
 rule cluster_proteins:
@@ -746,6 +747,7 @@ rule cluster_proteins:
 		"""
 		cd {params.dir_mmseqs}
 		mmseqs easy-cluster {input.faa} {params.rep_name} tmp --threads {threads}
+		rm -f -- {params.rep_name:q}_all_seqs.fasta
 		"""
 
 rule phynteny_annotation:

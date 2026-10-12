@@ -94,8 +94,10 @@ rule rna_assemble_trinity:
 			Trinity --seqType fq --left {input.forward_paired:q} --right {input.reverse_paired:q} \
 				--output {params.assembly_dir:q} --CPU {threads} --max_memory {params.mem_gb}G \
 				--bflyHeapSpaceMax {params.bfly_heap_gb}G \
-				--no_normalize_reads --no_salmon --min_contig_length {params.min_length} {params.strand_flag}
+				--no_normalize_reads --no_salmon --full_cleanup --min_contig_length {params.min_length} {params.strand_flag}
 			cp {params.assembled_fasta:q} {output.fasta:q}
+			test -s {output.fasta:q}
+			rm -rf -- {params.assembly_dir:q}
 		) > {log:q} 2>&1
 		"""
 
@@ -267,6 +269,12 @@ rule rna_identify_candidates:
 			printf 'seqname\tmax_score\tmax_score_group\n' > {output.scores:q}
 			printf 'No contigs passed the assembly length filter.\n' > {log:q}
 		fi
+		test -f {output.fasta:q}
+		test -f {output.scores:q}
+		find {params.outdir:q} -mindepth 1 -maxdepth 1 \
+			! -name 'final-viral-combined.fa' ! -name 'final-viral-score.tsv' \
+			! -name 'final-viral-boundary.tsv' -exec rm -rf -- {{}} +
+		rm -f -- {log:q}
 		"""
 
 rule rna_viral_positive_fasta:

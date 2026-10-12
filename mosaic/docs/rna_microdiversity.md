@@ -117,6 +117,11 @@ sequence data or rerunning VirSorter2 just to create the link. CheckV and the sh
 vOTU combination use this symlink.
 The RNA branch also writes `final-viral-score.tsv` there, but no separate ID-only
 positive list.
+After a successful RNA VirSorter2 job, only the final FASTA, score table and
+boundary table (when produced) remain in its working directory. Intermediate
+files, internal logs and `<sample>/virsorter.log` are removed. Failed jobs retain
+their diagnostics. CheckV and the viral-positive symlink still use the same
+final outputs.
 The existing clustering tables track membership in the shared catalogue.
 
 Existing FASTAs in the former `RNA/<sample>/<assembler>.fasta` layout are not
@@ -171,17 +176,23 @@ examples. Profiles scale DNA SPAdes/BBtools, while RNA allowances have their own
 defaults. Python abundance normalisation is unchanged.
 
 The assembled transcripts continue through the existing viral-candidate and vOTU filters.
-Trinity's working directory (`03_CONTIGS/RNA/<sample>/trinity_out`) is retained
-on success and failure. The rule copies Trinity's sibling output
+Trinity uses `--full_cleanup` to remove its working directory
+(`03_CONTIGS/RNA/<sample>/trinity_out`) after successful assembly. The rule copies
+Trinity's sibling output
 `trinity_out.Trinity.fasta` to a temporary FASTA, then filters and names it as
 `03_CONTIGS/RNA/<sample>_trinity.fasta`; it does not
-look for `Trinity.fasta` inside the working directory. SPAdes and MEGAHIT use
+look for `Trinity.fasta` inside the working directory. After checking that the
+exported FASTA is non-empty, it removes any remaining working directory, including
+those retained by Trinity during resumed runs. Failed assemblies retain their
+working files for resumption. Existing completed working directories are not
+removed automatically: check their final FASTAs and active processes before
+cleaning them manually, without rerunning assembly. SPAdes and MEGAHIT use
 fresh working directories that are automatically removed when their jobs exit.
 Leave `rna_trinity_strandedness` empty for mixed library types;
 only set `RF` or `FR` if that orientation is appropriate for every input library.
-The flag does not change existing cleanup settings. Review `remove_euk` and
-contaminant filtering for your experiment. The optional wrapper `rna_viruses` preset
-sets `remove_euk=False`; adding `--rna-enriched` to another preset does not.
+Review `remove_euk` and contaminant filtering for your experiment. The optional
+wrapper `rna_viruses` preset sets `remove_euk=False`; adding `--rna-enriched` to
+another preset does not.
 
 ## Microdiversity outputs and interpretation
 
