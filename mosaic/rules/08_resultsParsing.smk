@@ -50,6 +50,34 @@ rule sourmash_clean_reads_report:
 	notebook:
 		dirs_dict["RAW_NOTEBOOKS"] + "/01_sourmash_clean_reads.py.ipynb"
 
+rule sourmash_contig_metadata:
+	input:
+		queries=dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_sourmash_queries.tsv",
+		gather=dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_gather_sourmash.csv",
+		taxonomy=dirs_dict["ANNOTATION"] + "/sourmash_{sourmash_catalogue}.classifications.csv",
+	output:
+		metadata=dirs_dict["ANNOTATION"] + "/sourmash_{sourmash_catalogue}.metadata.tsv",
+	wildcard_constraints:
+		sourmash_catalogue="|".join(SOURMASH_CONTIG_FASTAS),
+	params:
+		phase="sourmash",
+		sampling="tot",
+		samples=[],
+		results_dir=RESULTS_DIR,
+		database=config["sourmash_rocksdb"],
+		minimum_length=lambda wildcards: 0 if wildcards.sourmash_catalogue == "combined_microbial_derreplicated_tot" else int(config.get("sourmash_contig_catalogue_min_length", 5000)),
+	message:
+		"Collecting per-representative Sourmash evidence with the existing catalogue parser"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/sourmash_contig_metadata/catalogue={sourmash_catalogue}.tsv"
+	threads: 1
+	resources:
+		mem_mb=4000,
+	log:
+		notebook=dirs_dict["BENCHMARKS"] + "/sourmash_contig_metadata/catalogue={sourmash_catalogue}.ipynb"
+	notebook:
+		dirs_dict["RAW_NOTEBOOKS"] + "/08_isolate_contig_catalogue.py.ipynb"
+
 rule abundance_lifestyle_summary:
 	input:
 		fasta=dirs_dict["vOUT_DIR"] + "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
@@ -66,6 +94,7 @@ rule abundance_lifestyle_summary:
 		metavr=[dirs_dict["PLOTS_DIR"] + "/08_METAVR_analysis.tot/vOTU_summary.tsv"] if METAVR_blast else [],
 		crispr=[dirs_dict["ANNOTATION"] + "/spacepharer_minced_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.tsv"] if config["microbial_spacers"] else [],
 		crispr_hosts=[config["abundance_crispr_host_metadata"]] if config.get("abundance_crispr_host_metadata", "") else [],
+		sourmash=[dirs_dict["ANNOTATION"] + "/sourmash_filtered_votus_tot.metadata.tsv"] if SOURMASH_CONTIG_CATALOGUE else [],
 		sample_metadata=[config["abundance_sample_metadata"]] if config.get("abundance_sample_metadata", "") else [],
 	output:
 		html=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
@@ -1159,6 +1188,7 @@ rule all_assembled_top_metadata:
 		metavr_metadata=dirs_dict["PLOTS_DIR"] + "/" + ALL_ASSEMBLED_TOP_NAME + "_METAVR.tot/METAVR_main_table_for_hits.tsv",
 		pharokka=ALL_ASSEMBLED_TOP_PREFIX + "_pharokka",
 		cenote=[ALL_ASSEMBLED_TOP_CENOTE] if MAP_TO_ALL_ASSEMBLED and RUN_CENOTE else [],
+		sourmash=[dirs_dict["ANNOTATION"] + "/sourmash_all_assembled_top_contigs_tot.metadata.tsv"] if SOURMASH_CONTIG_CATALOGUE else [],
 	output:
 		metadata=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_metadata_tot.tsv",
 		pharokka_cds=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_contigs_pharokka_cds_tot.tsv",
@@ -1183,6 +1213,9 @@ rule all_assembled_top_metadata:
 		metadata=table(input.ranking).set_index("contig_id")
 		existing=table(input.existing).set_index("contig_id")
 		metadata=metadata.join(existing)
+		if getattr(input, "sourmash", []):
+			sourmash=table(input.sourmash[0]).set_index("cluster_rep")
+			metadata=metadata.join(sourmash.reindex(metadata.index))
 		for path, key, prefix in [(input.virsorter, "seqname", "VirSorter2"), (input.checkv, "contig_id", "CheckV")]:
 			frame=table(path)
 			if key in frame:

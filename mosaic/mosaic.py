@@ -661,6 +661,10 @@ def unlock(snakefile: Path, workflow_dir: Path, print_only: bool) -> None:
               help="Memory profile; medium by default. Does not change the biological workflow mode.")
 @click.option("--sourmash-clean-reads/--no-sourmash-clean-reads", default=None,
               help="Report per-sample and pooled bacterial/archaeal profiles from all final clean reads.")
+@click.option("--sourmash-contig-catalogue/--no-sourmash-contig-catalogue", default=None,
+              help="Add GTDB screening evidence to cluster/vOTU and selected all-assembled metadata.")
+@click.option("--sourmash-contig-catalogue-min-length", type=int,
+              help="Minimum representative length for the optional GTDB screen (5000 bp by default).")
 @click.option("--remove-euk/--no-remove-euk", default=None, help="Override config remove_euk.")
 @click.option("--assembly-stats/--no-assembly-stats", default=None, help="Override config assembly_stats.")
 @click.option("--subsampling/--no-subsampling", default=None, help="Override config subsampling.")
@@ -712,6 +716,8 @@ def run(
     ecc_memory: Optional[int],
     complexity: Optional[str],
     sourmash_clean_reads: Optional[bool],
+    sourmash_contig_catalogue: Optional[bool],
+    sourmash_contig_catalogue_min_length: Optional[int],
     remove_euk: Optional[bool],
     assembly_stats: Optional[bool],
     subsampling: Optional[bool],
@@ -768,6 +774,9 @@ def run(
         config_values["visualization_max_contigs"] = visualization_max_contigs
 
     set_optional_bool(config_values, "sourmash_clean_reads", sourmash_clean_reads)
+    set_optional_bool(config_values, "sourmash_contig_catalogue", sourmash_contig_catalogue)
+    if sourmash_contig_catalogue_min_length is not None:
+        config_values["sourmash_contig_catalogue_min_length"] = sourmash_contig_catalogue_min_length
     set_optional_bool(config_values, "remove_euk", remove_euk)
     set_optional_bool(config_values, "assembly_stats", assembly_stats)
     set_optional_bool(config_values, "subsampling", subsampling)

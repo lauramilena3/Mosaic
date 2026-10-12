@@ -234,6 +234,12 @@ ALL_ASSEMBLED_SELECTED_PREFIX=ALL_ASSEMBLED_DIR + "/all_assembled_selected_conti
 ALL_ASSEMBLED_TOP_NAME="all_assembled_top_contigs"
 ALL_ASSEMBLED_TOP_PREFIX=ALL_ASSEMBLED_DIR + "/" + ALL_ASSEMBLED_TOP_NAME + "_tot"
 PHAGE_ISOLATES_CLUSTER_PREFIX=ALL_ASSEMBLED_DIR + "/phage_isolates_cluster_representatives"
+SOURMASH_CONTIG_FASTAS={
+	"combined_microbial_derreplicated_tot": dirs_dict["ASSEMBLY_DIR"] + "/combined_microbial_derreplicated_tot.fasta",
+	"phage_isolates_cluster_representatives_tot": PHAGE_ISOLATES_CLUSTER_PREFIX + ".tot.fasta",
+	"filtered_votus_tot": dirs_dict["vOUT_DIR"] + "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
+	"all_assembled_top_contigs_tot": ALL_ASSEMBLED_TOP_PREFIX + ".fasta",
+}
 SOURMASH_CLEAN_DIR=dirs_dict["ANNOTATION"] + "/SOURMASH_CLEAN"
 ALL_ASSEMBLED_TOP_CENOTE=dirs_dict["ANNOTATION"] + "/Cenote_" + ALL_ASSEMBLED_TOP_NAME + ".tot"
 ISOLATE_CONTIG_DIR=dirs_dict["ASSEMBLY_DIR"] + "/ISOLATES"

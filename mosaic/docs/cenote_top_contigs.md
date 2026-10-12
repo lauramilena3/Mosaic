@@ -54,6 +54,13 @@ metadata retains virus/plasmid calls, scores, taxonomy/topology, provirus-region
 and hallmark evidence, including `not reported` where evidence is absent.
 Previously generated combined geNomad results are not used or deleted.
 
+With `sourmash_contig_catalogue=True`, selected representatives at least
+`sourmash_contig_catalogue_min_length` (default 5,000 bp) also receive the existing
+GTDB Sourmash screen. `sourmash_` evidence is joined by sequence ID into
+`03_CONTIGS/ALL_ASSEMBLED/all_assembled_top_contigs_metadata_tot.tsv`.
+Shorter/no-match rows remain visible; ranking, cluster membership and abundance
+values are unchanged. See [representative screening](sourmash_contig_catalogue.md).
+
 ### Annotation reuse audit
 
 | Analysis | Current decision | Reason |

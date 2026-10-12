@@ -297,11 +297,11 @@ rule taxonomy_gtdbtk_bacteria:
 
 rule single_fasta_microbial:
 	input:
-		derreplicated_microbial_contigs=lambda wildcards: PHAGE_ISOLATES_CLUSTER_PREFIX + ".tot.fasta" if wildcards.sourmash_catalogue == "phage_isolates_cluster_representatives_tot" else dirs_dict["ASSEMBLY_DIR"] + "/combined_microbial_derreplicated_tot.fasta",
+		derreplicated_microbial_contigs=lambda wildcards: SOURMASH_CONTIG_FASTAS[wildcards.sourmash_catalogue],
 	output:
 		derreplicated_microbial_contigs_dir=temp(directory(dirs_dict["ASSEMBLY_DIR"] + "/single_{sourmash_catalogue}")),
 	wildcard_constraints:
-		sourmash_catalogue="combined_microbial_derreplicated_tot|phage_isolates_cluster_representatives_tot",
+		sourmash_catalogue="|".join(SOURMASH_CONTIG_FASTAS),
 	message:
 		"Formatting contig representatives into single FASTA files"
 	conda:
@@ -319,16 +319,16 @@ rule single_fasta_microbial:
 
 rule sourmash_sketch_microbial:
 	input:
-		derreplicated_microbial_contigs=lambda wildcards: PHAGE_ISOLATES_CLUSTER_PREFIX + ".tot.fasta" if wildcards.sourmash_catalogue == "phage_isolates_cluster_representatives_tot" else dirs_dict["ASSEMBLY_DIR"] + "/combined_microbial_derreplicated_tot.fasta",
+		derreplicated_microbial_contigs=lambda wildcards: SOURMASH_CONTIG_FASTAS[wildcards.sourmash_catalogue],
 		derreplicated_microbial_contigs_dir=dirs_dict["ASSEMBLY_DIR"] + "/single_{sourmash_catalogue}",
 	output:
 		manysketch_csv=temp(dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_manysketch.csv"),
 		sketch=temp(dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_sourmash.sig.zip"),
 		query_stats=dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_sourmash_queries.tsv",
 	wildcard_constraints:
-		sourmash_catalogue="combined_microbial_derreplicated_tot|phage_isolates_cluster_representatives_tot",
+		sourmash_catalogue="|".join(SOURMASH_CONTIG_FASTAS),
 	params: 
-		min_length=lambda wildcards: int(config.get("sourmash_contig_catalogue_min_length", 5000)) if wildcards.sourmash_catalogue == "phage_isolates_cluster_representatives_tot" else 0,
+		min_length=lambda wildcards: 0 if wildcards.sourmash_catalogue == "combined_microbial_derreplicated_tot" else int(config.get("sourmash_contig_catalogue_min_length", 5000)),
 	message:
 		"Building sketches with sourmash"
 	conda:
@@ -393,7 +393,7 @@ rule sourmash_gather_microbial:
 	output:
 		gather=temp(dirs_dict["ANNOTATION"] + "/{sourmash_catalogue}_gather_sourmash.csv"),
 	wildcard_constraints:
-		sourmash_catalogue="combined_microbial_derreplicated_tot|phage_isolates_cluster_representatives_tot",
+		sourmash_catalogue="|".join(SOURMASH_CONTIG_FASTAS),
 	message:
 		"Genome containtment with sourmash gather"
 	params:
@@ -421,7 +421,7 @@ rule sourmash_tax_microbial:
 	output:
 		csv_report=dirs_dict["ANNOTATION"] + "/sourmash_{sourmash_catalogue}.classifications.csv",
 	wildcard_constraints:
-		sourmash_catalogue="combined_microbial_derreplicated_tot|phage_isolates_cluster_representatives_tot",
+		sourmash_catalogue="|".join(SOURMASH_CONTIG_FASTAS),
 	params:
 		outdir=(dirs_dict["ANNOTATION"]),
 		name="sourmash_{sourmash_catalogue}",

@@ -201,6 +201,9 @@ wrapper passes these values explicitly to Snakemake so the run is reproducible.
 - `sourmash_clean_reads`: enables the shared per-sample and pooled final-clean-read
   GTDB report. Use `--sourmash-clean-reads`; it defaults to `True` only for the
   `microbial_metagenome` wrapper. It replaces the older `sourmash` option.
+- `sourmash_contig_catalogue`: adds GTDB evidence to final-vOTU, selected
+  all-assembled and isolate catalogue metadata. Use `--sourmash-contig-catalogue`;
+  `sourmash_contig_catalogue_min_length` defaults to `5000` bp.
 - `microbial`: enables microbial/fungal analysis behavior in the Snakefile.
 - `visualization_tool`: chooses the small filtered-vOTU genome visualization
   tool. Defaults to `lovis4u`; use `clinker` to generate clinker HTML instead.

@@ -45,6 +45,21 @@ and lineage ranks are retained without implicit NCBI downloads, suffix stripping
 or project-specific overrides. MetaVR fields describe reference-hit metadata;
 they are not promoted to confirmed hosts of the query vOTUs.
 
+## Optional representative Sourmash evidence
+
+`sourmash_contig_catalogue=True` screens the actual final-catalogue representatives
+against GTDB, using the inclusive `sourmash_contig_catalogue_min_length=5000`
+cutoff. `Sourmash_` columns are added to `vOTU_metadata_polished.csv`, after
+host/CRISPR evidence and before abundance. They retain screening status, query
+length/hashes, lineage/rank, taxonomy status, assigned fractions, reference
+matches and the database. Short/no-match vOTUs remain in the table. These are
+microbial-similarity annotations, not confirmed host assignments or a reason
+to remove a vOTU. The same screen annotates selected all-assembled representatives
+in their own metadata table. See [catalogue screening](sourmash_contig_catalogue.md).
+
+The read-profile report uses the separate `sourmash_clean_reads` flag;
+neither flag enables the other.
+
 ## Optional sample groups and CRISPR host metadata
 
 ```yaml

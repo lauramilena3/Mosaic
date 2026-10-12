@@ -63,7 +63,7 @@ microdiversity_min_alt_count: 5
 microdiversity_max_depth: 100000
 microdiversity_threads: 8
 microbial: False
-sourmash_contig_catalogue: False # Optional GTDB screen of the global phage-isolate cluster representatives
+sourmash_contig_catalogue: False # GTDB evidence in isolate, final-vOTU and selected all-assembled representative metadata
 sourmash_contig_catalogue_min_length: 5000 # Inclusive cutoff; shorter clusters remain in the catalogue
 sourmash_clean_reads: False # Per-sample and pooled final-clean-read GTDB report for QC, viromes and isolates
 sourmash_clean_min_shared_bp: 50000

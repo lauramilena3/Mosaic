@@ -240,6 +240,17 @@ Core annotation includes Pharokka/Phynteny, predicted genes and coding/nucleotid
 
 Phage-oriented taxonomy, host and lifestyle tools are not automatically applicable to every RNA, ssDNA or eukaryotic virus. The final abundance/lifestyle report keeps source evidence while marking recognised non-dsDNA-phage groups as not applicable for its phage-lifestyle summary. A missing prediction is not evidence that a sequence is non-viral.
 
+### Optional representative Sourmash screening
+
+`sourmash_contig_catalogue=True` adds GTDB microbial-similarity evidence to
+`vOTU_metadata_polished.csv` and, when all-assembled mapping is enabled, to
+`all_assembled_top_contigs_metadata_tot.tsv`. Only representatives at least
+`sourmash_contig_catalogue_min_length` (default 5,000 bp) are searched. Shorter
+and no-match rows remain in metadata with their screening status. The existing
+rules, database and isolate evidence parser are reused; no filtering, ranking,
+host assignment or abundance measurement is changed. See
+[representative screening](sourmash_contig_catalogue.md).
+
 ### Independent RefSeq detection
 
 `map_to_RefSeq=True` maps full cleaned pairs directly to RefSeq Viral, independently of assembled vOTUs. It saves separate count/RPKM/breadth/depth results and executes `07_RefSeq_detection.py.ipynb`. The report retrieves NCBI metadata in Python using batched requests and cached results, rather than requiring a supplied metadata table.
@@ -300,6 +311,7 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 | --- | --- |
 | `RNA_enriched=True` / `--rna-enriched` | Additional RNA assemblies for every sample, individual evidence, reconciliation, RNA screen and RNA acceptance within the one final catalogue. |
 | `sourmash_clean_reads=True` / `--sourmash-clean-reads` | Shared per-sample and pooled final-clean-read bacterial/archaeal report, including paired and orphan reads; uses full libraries, not the 2M subset. |
+| `sourmash_contig_catalogue=True` / `--sourmash-contig-catalogue` | GTDB screening evidence in final-vOTU and selected all-assembled metadata. The inclusive `sourmash_contig_catalogue_min_length` cutoff defaults to 5,000 bp; no sequences are removed. |
 | `microdiversity=True` / `--microdiversity` | Separate full-cleaned-pair mapping to the final catalogue and `11_microdiversity_summary.tot.ipynb`/HTML. Independent of RNA enrichment. Defaults include callable depth 100x, base/MAPQ 30, alternate frequency 3%, alternate count 5 and maximum depth 100,000. Low-callability values are not zero biological diversity. |
 | `map_to_RefSeq=True` / `--map-to-refseq` | Independent known-reference abundance/detection report under `06_MAPPING/REFSEQ_VIRAL/`. No assembly is required by the standalone RefSeq target. |
 | `negative_control=SampleID` | RefSeq NC comparison and exclusion from all-assembled ranking. The NC remains in assembly, the main abundance matrices and overall prevalence denominators. This parameter does not decontaminate every branch. |
