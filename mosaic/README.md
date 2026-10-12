@@ -96,12 +96,12 @@ biological modes are:
 
 | Mode | Snakemake target | Use case | Default analysis flags |
 | --- | --- | --- | --- |
-| `viral_metagenome` | `runWorkflow` | End-to-end viral metagenome workflow from Illumina reads | `metagenome=True`, `isolates=False`, `microbial=False`, `sourmash=False`, `remove_euk=True` |
+| `viral_metagenome` | `runWorkflow` | End-to-end viral metagenome workflow from Illumina reads | `metagenome=True`, `isolates=False`, `microbial=False`, `sourmash_clean_reads=False`, `remove_euk=True` |
 | `end-to-end` | `runWorkflow` | Hyphenated alias for `viral_metagenome` | Same as `viral_metagenome` |
-| `phage_isolates` | `phage_isolates` | Phage isolate workflow from Illumina reads | `metagenome=False`, `isolates=True`, `microbial=False`, `sourmash=False`, `remove_euk=False` |
-| `microbial_metagenome` | `microbial_metagenome` | Microbial metagenome workflow, including bacteria/fungi contexts | `metagenome=True`, `isolates=False`, `microbial=True`, `sourmash=True`, `remove_euk=True` |
-| `short_read_bacteria` | `assembly_short_bacteria` | Short-read bacterial isolate assembly and analysis | `metagenome=False`, `isolates=True`, `microbial=True`, `sourmash=False`, `remove_euk=False` |
-| `short_read_fungi` | `assembly_short_fungi` | Short-read fungal isolate assembly and analysis | `metagenome=False`, `isolates=True`, `microbial=True`, `sourmash=False`, `remove_euk=False` |
+| `phage_isolates` | `phage_isolates` | Phage isolate workflow from Illumina reads | `metagenome=False`, `isolates=True`, `microbial=False`, `sourmash_clean_reads=False`, `remove_euk=False` |
+| `microbial_metagenome` | `microbial_metagenome` | Microbial metagenome workflow, including bacteria/fungi contexts | `metagenome=True`, `isolates=False`, `microbial=True`, `sourmash_clean_reads=True`, `remove_euk=True` |
+| `short_read_bacteria` | `assembly_short_bacteria` | Short-read bacterial isolate assembly and analysis | `metagenome=False`, `isolates=True`, `microbial=True`, `sourmash_clean_reads=False`, `remove_euk=False` |
+| `short_read_fungi` | `assembly_short_fungi` | Short-read fungal isolate assembly and analysis | `metagenome=False`, `isolates=True`, `microbial=True`, `sourmash_clean_reads=False`, `remove_euk=False` |
 
 The old target names `assembly_phage` and `microbial` have been replaced by
 `phage_isolates` and `microbial_metagenome` for consistency.
@@ -198,8 +198,9 @@ wrapper passes these values explicitly to Snakemake so the run is reproducible.
 
 - `remove_euk`: controls whether Kraken-classified eukaryotic reads are removed
   before later read-cleaning steps.
-- `sourmash`: enables sourmash read-level microbial profiling. It defaults to
-  `True` only for `microbial_metagenome`.
+- `sourmash_clean_reads`: enables the shared per-sample and pooled final-clean-read
+  GTDB report. Use `--sourmash-clean-reads`; it defaults to `True` only for the
+  `microbial_metagenome` wrapper. It replaces the older `sourmash` option.
 - `microbial`: enables microbial/fungal analysis behavior in the Snakefile.
 - `visualization_tool`: chooses the small filtered-vOTU genome visualization
   tool. Defaults to `lovis4u`; use `clinker` to generate clinker HTML instead.

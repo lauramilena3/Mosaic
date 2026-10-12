@@ -53,7 +53,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": True,
         "isolates": False,
         "microbial": False,
-        "sourmash": False,
+        "sourmash_clean_reads": False,
         "remove_euk": False,
         "RNA_enriched": True,
     },
@@ -62,7 +62,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": True,
         "isolates": False,
         "microbial": False,
-        "sourmash": False,
+        "sourmash_clean_reads": False,
         "remove_euk": True,
     },
     "phage_isolates": {
@@ -70,7 +70,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": False,
         "isolates": True,
         "microbial": False,
-        "sourmash": False,
+        "sourmash_clean_reads": False,
         "remove_euk": False,
     },
     "microbial_metagenome": {
@@ -78,7 +78,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": True,
         "isolates": False,
         "microbial": True,
-        "sourmash": True,
+        "sourmash_clean_reads": True,
         "remove_euk": True,
     },
     "bacteria_isolate": {
@@ -86,7 +86,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": False,
         "isolates": True,
         "microbial": True,
-        "sourmash": False,
+        "sourmash_clean_reads": False,
         "remove_euk": False,
     },
     "fungi_isolate": {
@@ -94,7 +94,7 @@ PRESETS: Dict[str, Dict[str, object]] = {
         "metagenome": False,
         "isolates": True,
         "microbial": True,
-        "sourmash": False,
+        "sourmash_clean_reads": False,
         "remove_euk": False,
     },
 }
@@ -659,7 +659,8 @@ def unlock(snakefile: Path, workflow_dir: Path, print_only: bool) -> None:
 @click.option("--ecc-memory", type=int, help="Set config ecc_memory.")
 @click.option("--complexity", type=click.Choice(["low", "medium", "high", "extreme"], case_sensitive=False),
               help="Memory profile; medium by default. Does not change the biological workflow mode.")
-@click.option("--sourmash/--no-sourmash", default=None, help="Override config sourmash.")
+@click.option("--sourmash-clean-reads/--no-sourmash-clean-reads", default=None,
+              help="Report per-sample and pooled bacterial/archaeal profiles from all final clean reads.")
 @click.option("--remove-euk/--no-remove-euk", default=None, help="Override config remove_euk.")
 @click.option("--assembly-stats/--no-assembly-stats", default=None, help="Override config assembly_stats.")
 @click.option("--subsampling/--no-subsampling", default=None, help="Override config subsampling.")
@@ -710,7 +711,7 @@ def run(
     kraken_db: Optional[str],
     ecc_memory: Optional[int],
     complexity: Optional[str],
-    sourmash: Optional[bool],
+    sourmash_clean_reads: Optional[bool],
     remove_euk: Optional[bool],
     assembly_stats: Optional[bool],
     subsampling: Optional[bool],
@@ -766,7 +767,7 @@ def run(
             raise click.ClickException("--visualization-max-contigs must be zero or greater.")
         config_values["visualization_max_contigs"] = visualization_max_contigs
 
-    set_optional_bool(config_values, "sourmash", sourmash)
+    set_optional_bool(config_values, "sourmash_clean_reads", sourmash_clean_reads)
     set_optional_bool(config_values, "remove_euk", remove_euk)
     set_optional_bool(config_values, "assembly_stats", assembly_stats)
     set_optional_bool(config_values, "subsampling", subsampling)

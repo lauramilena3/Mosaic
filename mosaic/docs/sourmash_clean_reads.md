@@ -1,11 +1,19 @@
-# Clean-read Sourmash profiles for phage isolates
+# Clean-read Sourmash profiles
 
-Enable the optional screen with:
+Enable the optional report in a virome run:
+
+```bash
+snakemake --use-conda -p runWorkflow \
+  --config input_dir=/path/to/00_RAW_DATA sourmash_clean_reads=True \
+  -j 32 --rerun-incomplete -n
+```
+
+Remove `-n` to execute. For isolates, use:
 
 ```bash
 snakemake --use-conda -p phage_isolates \
   --config input_dir=/path/to/00_RAW_DATA isolates=True metagenome=False sourmash_clean_reads=True \
-  -j 32 --rerun-incomplete
+  -j 32 --rerun-incomplete -n
 ```
 
 The corresponding defaults in `config.yaml` are:
@@ -16,65 +24,80 @@ sourmash_clean_min_shared_bp: 50000
 sourmash_clean_min_reference_fraction: 0.10
 ```
 
-This flag is independent of the existing trimmed-read `sourmash` option and
-the cluster-representative `sourmash_contig_catalogue` screen. It adds inputs
-and outputs to `phage_isolates_summary`; other workflow modes do not request
-the new branch.
+`sourmash_clean_reads` is the single read-profiling flag. It replaces the older
+trimmed-pair `sourmash` setting and its `--sourmash` wrapper option. Use
+`--sourmash-clean-reads` with the Python wrapper. QC, `runWorkflow`,
+`phage_isolates` and microbial targets that request QC include the shared report
+when enabled. The `microbial_metagenome` wrapper enables it by default; other
+presets default to off. The assembled-cluster `sourmash_contig_catalogue` screen
+remains separate and unchanged.
+
+To request only this report and any missing cleaned-read prerequisites:
+
+```bash
+snakemake --use-conda -p runSourmashCleanReads \
+  --config input_dir=/path/to/00_RAW_DATA sourmash_clean_reads=True \
+  -j 32 --rerun-incomplete -n
+```
 
 ## Reads and pooling
 
-For each sample, `sourmash_sketch_clean_reads` uses all three final-clean files:
+Every sample contributes all three final-clean files:
 
-```
+```text
 02_CLEAN_DATA/{sample}_forward_paired_clean.tot.fastq.gz
 02_CLEAN_DATA/{sample}_reverse_paired_clean.tot.fastq.gz
 02_CLEAN_DATA/{sample}_unpaired_clean.tot.fastq.gz
 ```
 
-It does not use the 2M subset or normalized reads. DNA k-mer sketches use
-`k=31`, `scaled=1000`, with abundance tracking. `sourmash_pool_clean_reads`
-merges every sample sketch, including any negative control. No additional
-pooled FASTQ is created, and the negative control has no special treatment.
-The pooled profile is weighted by each library's actual read contribution,
-not an equal-weight average of sample profiles.
+These are full libraries, not the 2M subset or BBNorm-normalised reads.
+Abundance-tracking DNA sketches use `k=31`, `scaled=1000`.
+`sourmash_pool_clean_reads` merges every sample sketch, including any negative
+control. No additional pooled FASTQ is created. The pool is weighted by actual
+sequencing contribution, not an equal-weight average of sample profiles.
 
-The existing `sourmash_gather` and `sourmash_tax` rules accept the new sketch
-locations. The existing environment and configured GTDB RS226 RocksDB and
-taxonomy download rules are reused. The new locations use standard `sourmash
-gather`, which preserves abundance information; the older QC branch keeps
-`fastmultigather`. The older QC sketch, gather and kreport
-filenames remain unchanged. Each profiling rule has its own benchmark.
+The existing `sourmash_sketch_clean_reads`, `sourmash_pool_clean_reads`,
+`sourmash_gather` and `sourmash_tax` rules, environment, GTDB RS226 RocksDB
+and matching taxonomy downloaders are reused. All read profiles use standard
+`sourmash gather`, retaining abundance information. The duplicated trimmed-pair
+sketch and `fastmultigather` branch are no longer scheduled. Each profiling
+rule and the shared report have their own benchmark. Old results are not deleted.
 
 ## Evidence and database scope
 
-Gather searches return reference genomes with at least the configured shared
-base-pair overlap. A returned match is labelled `supported` when both apply:
+Gather returns reference genomes with at least the configured shared-base
+overlap. A returned match is labelled `supported` when both apply:
 
 - `unique_intersect_bp >= sourmash_clean_min_shared_bp`;
 - `f_match_orig >= sourmash_clean_min_reference_fraction`.
 
-Other returned matches are labelled `weak`, not discarded. Matches below the
-gather threshold are not searched/reported. This is a support screen rather
-than a claim of confirmed contamination or species identification.
+Other returned matches are `weak`, not discarded. Matches below the gather
+threshold are not searched/reported. This is supporting evidence, not a
+confirmed contamination or species-identification call.
 
-The report includes accession/name, lineage, family/genus/species, estimated
-shared bases and hashes, reference k-mer fraction/percent, abundance-weighted
-query fraction, and mean/median matching k-mer abundance. Shared base pairs
-are estimated from sampled hashes. Reference k-mer containment is not measured
-read-mapping breadth, and k-mer abundance is not sequencing depth.
+Reference evidence includes accession/name, lineage, family/genus/species,
+estimated shared bases/hashes, reference k-mer fraction/percent,
+abundance-weighted query fraction and mean/median matching k-mer abundance.
+Shared bases are estimated from sampled hashes. Reference k-mer containment
+is not read-mapping breadth, and k-mer abundance is not sequencing depth.
+Weighted query fractions are not exact percentages of sequencing reads.
 
 The configured GTDB database screens bacteria and archaea, not all possible
-contaminants. Unmatched reads may come from phages, eukaryotes, PhiX, or taxa
-absent from the database. In isolate mode these are all fastp-passed reads:
-biological read removal is bypassed. The screen does not remove reads or change
-retained/excluded contig decisions. No six-category biological classification
-is imposed.
+contaminants. Unmatched signal may come from phages, eukaryotes, PhiX or taxa
+absent from the database. In isolates, biological filtering is bypassed, so
+these are all fastp-passed pairs and orphans. In viromes, the report describes
+what remains after the configured eukaryotic/contaminant filtering.
+
+No reads are removed and no contig decision is changed. A specified negative
+control has a red sample label, but is not subtracted or tested for enrichment.
+It remains in both the individual profiles and the pool.
 
 ## Outputs
 
-Under `07_ANNOTATION/SOURMASH_CLEAN/`:
+Raw sketches, gather results and taxonomy outputs stay under
+`07_ANNOTATION/SOURMASH_CLEAN/`:
 
-```
+```text
 SAMPLES/{sample}_sourmash.sig.zip
 SAMPLES/{sample}_gather_sourmash.csv
 SAMPLES/{sample}_gather_sourmash.with-lineages.csv
@@ -87,30 +110,44 @@ POOLED/pooled_sourmash.summarized.csv
 POOLED/pooled_sourmash.kreport.txt
 ```
 
-Final report tables are under `FIGURES_AND_TABLES/`, not the raw Sourmash directory:
+The executed notebook is `NOTEBOOKS/01_sourmash_clean_reads.tot.ipynb`.
+Its HTML, tables and figures are under `FIGURES_AND_TABLES/`:
+
+```text
+01_sourmash_clean_reads.tot.html
+01_sourmash_clean_reads.tot.tsv
+01_sourmash_clean_taxonomy.tot.tsv
+01_sourmash_clean_profile_summary.tot.tsv
+01_sourmash_clean_genus.tot.tsv
+01_sourmash_clean_pooled.tot.png / .svg
+01_sourmash_clean_genus.tot.png / .svg
+```
+
+The summary retains every sample and the pool: returned/supported/weak
+reference counts, distinct assigned species counts and matched weighted
+query fraction. Species counts are database labels, not confirmed species.
+The genus matrix contains full untransformed weighted query percentages.
+All evidence stays in the TSV files; notebook previews show the first 30 rows.
+
+The notebook has explicit parsing and plotting code, a pooled genus barplot
+and per-sample genus heatmap. Plots show up to 30 genera and at most 50 samples
+per row, keeping the same sample-cell width in the final row. A heatmap star
+means at least one reference assigned to that genus passed both support
+filters. Blank stars do not mean absence.
+
+The isolate notebook/HTML reads the shared tables and reuses the figures,
+without repeating profiling, parsing or plotting. It keeps the existing copies:
 
 ```text
 08_phage_isolates_sourmash_clean_reads.tot.tsv
 08_phage_isolates_sourmash_clean_taxonomy.tot.tsv
+08_phage_isolates_sourmash_clean_pooled.tot.png / .svg
+08_phage_isolates_sourmash_clean_genus.tot.png / .svg
 ```
 
-The first table contains reference-level evidence, support status and profile
-scope (`sample` or `pooled`); the second contains the Sourmash taxonomic profiles.
-There is no requirement that a read-profile match is present in the assembled
-contig catalogue.
+Zero-hit samples remain visible. Empty/no-match profiles produce header-only
+evidence tables, zero-match summary rows and explanatory placeholder plots,
+not a claim that the sample is contamination-free.
 
-The existing executed `NOTEBOOKS/08_phage_isolates_summary.tot.ipynb` displays
-profile status, reference matches, taxonomic summaries, a pooled genus
-barplot, and a per-sample genus heatmap. Plotting code is explicit in the
-notebook. Plots show up to 30 genera; all returned references remain in the TSV.
-A heatmap star means at least one reference in that genus passed both support
-filters. Blank stars do not imply absence, and no special NC comparison is made.
-
-Figures are saved as PNG/SVG under `FIGURES_AND_TABLES` using prefixes
-`08_phage_isolates_sourmash_clean_pooled.tot` and
-`08_phage_isolates_sourmash_clean_genus.tot`. They are also included in the
-existing isolate HTML report. Empty/no-match profiles produce header-only
-tables and explanatory placeholder plots.
-
-See the [isolate workflow guide](isolate_purity.md) for inputs, read accounting,
-the output index and the step-by-step workflow diagrams.
+See the [isolate guide](isolate_purity.md) and
+[viral metagenome manual](viral_metagenome.md) for the wider workflows.

@@ -308,29 +308,6 @@ rule trim_adapters_quality_illumina_PE:
 		cat {output.forward_unpaired:q} {output.reverse_unpaired:q} > {output.merged_unpaired:q}
 		"""
 
-rule sourmash_sketch_trim:
-	input:
-		forward_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.gz"),
-		reverse_paired=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.gz"),
-	output:
-		manysketch_csv=temp(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_manysketch.csv"),
-		sketch=(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_sourmash.sig.zip"),
-	params:
-		sample="{sample}"
-	message:
-		"Building sketches with sourmash"
-	conda:
-		dirs_dict["ENVS_DIR"]+ "/sourmash.yaml"
-	benchmark:
-		dirs_dict["BENCHMARKS"] + "/sourmash_sketch_trim/sample={sample}.tsv"
-	threads: 8
-	shell:
-		"""
-		echo name,read1,read2 > {output.manysketch_csv}
-		echo {params.sample},{input.forward_paired},{input.reverse_paired} >> {output.manysketch_csv}
-		sourmash scripts manysketch {output.manysketch_csv} -p k=31,k=51,abund,scaled=1000,DNA -o {output.sketch} -c {threads}
-		"""
-
 rule sourmash_sketch_clean_reads:
 	input:
 		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq.gz",
@@ -400,15 +377,14 @@ rule sourmash_gather:
     output:
         gather="{basedir}/{sample}_gather_sourmash.csv",
     wildcard_constraints:
-        basedir="(?:" + re.escape(dirs_dict["CLEAN_DATA_DIR"]) + "|" + re.escape(SOURMASH_CLEAN_DIR + "/SAMPLES") + "|" + re.escape(SOURMASH_CLEAN_DIR + "/POOLED") + ")",
+        basedir="(?:" + re.escape(SOURMASH_CLEAN_DIR + "/SAMPLES") + "|" + re.escape(SOURMASH_CLEAN_DIR + "/POOLED") + ")",
     params:
-        threshold_bp=lambda wildcards: int(config.get("sourmash_clean_min_shared_bp", 50000)) if wildcards.basedir != dirs_dict["CLEAN_DATA_DIR"] else 50000,
-        abundances=lambda wildcards: wildcards.basedir != dirs_dict["CLEAN_DATA_DIR"],
+        threshold_bp=int(config.get("sourmash_clean_min_shared_bp", 50000)),
     message:
         "Metagenome containment with Sourmash"
     conda:
         dirs_dict["ENVS_DIR"] + "/sourmash.yaml"
-    threads: lambda wildcards: 1 if wildcards.basedir != dirs_dict["CLEAN_DATA_DIR"] else 8
+    threads: 1
     shell:
         """
         printf '' > {output.gather:q}
@@ -419,14 +395,8 @@ rule sourmash_gather:
 		PYTHON
         )
         if [ "$sourmash_hashes" -gt 0 ]; then
-            if [ "{params.abundances}" = "True" ]; then
-                sourmash gather {input.sketch:q} {input.sourmash_rocksdb:q} \
-                    -k 31 --scaled 1000 --threshold-bp {params.threshold_bp} -o {output.gather:q} --create-empty-results
-            else
-                sourmash scripts fastmultigather \
-                    {input.sketch:q} {input.sourmash_rocksdb:q} \
-                    -c {threads} -o {output.gather:q} -t {params.threshold_bp} -s 1000
-            fi
+            sourmash gather {input.sketch:q} {input.sourmash_rocksdb:q} \
+                -k 31 --scaled 1000 --threshold-bp {params.threshold_bp} -o {output.gather:q} --create-empty-results
         fi
         if [ ! -s {output.gather:q} ]; then
             printf 'query_name,name,f_unique_weighted,f_unique_to_query,unique_intersect_bp,remaining_bp,query_md5,query_filename,query_bp,ksize,scaled,query_n_hashes\n' > {output.gather:q}
@@ -442,7 +412,7 @@ rule sourmash_tax:
 		profile="{basedir}/{sample}_sourmash.summarized.csv",
 		annotated_gather="{basedir}/{sample}_gather_sourmash.with-lineages.csv",
 	wildcard_constraints:
-		basedir="(?:" + re.escape(dirs_dict["CLEAN_DATA_DIR"]) + "|" + re.escape(SOURMASH_CLEAN_DIR + "/SAMPLES") + "|" + re.escape(SOURMASH_CLEAN_DIR + "/POOLED") + ")",
+		basedir="(?:" + re.escape(SOURMASH_CLEAN_DIR + "/SAMPLES") + "|" + re.escape(SOURMASH_CLEAN_DIR + "/POOLED") + ")",
 	params:
 		sample="{sample}_sourmash",
 		outdir="{basedir}",

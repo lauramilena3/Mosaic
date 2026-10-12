@@ -101,7 +101,6 @@ ASSEMLY_STATS=config['assembly_stats']
 CROSS_ASSEMBLY=config['cross_assembly']
 SUBASSEMBLY=config['subassembly']
 MICROBIAL=config['microbial']
-SOURMASH=config['sourmash']
 SOURMASH_CONTIG_CATALOGUE=config_bool('sourmash_contig_catalogue', False)
 SOURMASH_CLEAN_READS=config_bool('sourmash_clean_reads', False)
 LONG_INDEX=config['long_index']
@@ -350,11 +349,8 @@ def inputQC(wildcards):
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanostats_postQC.html", sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanostats_preQC.html", sample_nanopore=NANOPORE_SAMPLES))
 
-	if SOURMASH:
-		# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_nt_bracken_S_report_paired_tot.csv", sample=SAMPLES)),
-		# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired.fastq.gz", sample=SAMPLES))
-		# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired.fastq.gz", sample=SAMPLES))
-		inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_sourmash.kreport.txt", sample=SAMPLES)),
+	if SOURMASH_CLEAN_READS and SAMPLES:
+		inputs.append(dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.html")
 	return inputs
 
 def inputAssembly(wildcards):
@@ -614,6 +610,10 @@ rule runWorkflow:
 		inputAnnotation,
 		inputOptionalRNA,
 		dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
+
+rule runSourmashCleanReads:
+	input:
+		dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.html",
 
 rule runAbundanceSummary:
 	input:
@@ -915,7 +915,7 @@ if workflow.mode == Mode.default:
 		("RefSeq mapping", MAP_TO_REFSEQ), ("All-assembled mapping", MAP_TO_ALL_ASSEMBLED),
 		("METAVR BLAST", METAVR_blast), ("Assembly statistics", ASSEMLY_STATS),
 		("Subassembly", SUBASSEMBLY), ("Subsampling", SUBSAMPLING), ("Cross-assembly", CROSS_ASSEMBLY),
-		("Microbial analysis", MICROBIAL), ("Sourmash", SOURMASH),
+		("Microbial analysis", MICROBIAL),
 		("Sourmash contig catalogue", SOURMASH_CONTIG_CATALOGUE), ("Sourmash clean reads", SOURMASH_CLEAN_READS),
 		("Interactive isolate network", ISOLATE_NETWORK),
 		("Within-cluster VIRIDIC", ISOLATE_VIRIDIC),

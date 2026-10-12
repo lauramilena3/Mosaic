@@ -17,7 +17,7 @@ python mosaic.py run viral_metagenome \
   -j 32 -k -p --dry-run
 ```
 
-Remove `--dry-run` to execute. This example enables the mapping-statistics report; omit `--assembly-stats` for the core workflow without that additional comparison. The wrapper enables Conda and rerunning incomplete jobs by default, prints the Snakemake command, and selects `metagenome=True`, `isolates=False`, `microbial=False`, `sourmash=False` and `remove_euk=True`.
+Remove `--dry-run` to execute. This example enables the mapping-statistics report; omit `--assembly-stats` for the core workflow without that additional comparison. The wrapper enables Conda and rerunning incomplete jobs by default, prints the Snakemake command, and selects `metagenome=True`, `isolates=False`, `microbial=False`, `sourmash_clean_reads=False` and `remove_euk=True`.
 
 The equivalent direct command, using the repository's virome defaults, is:
 
@@ -64,6 +64,7 @@ Database paths such as `db/RefSeqViral/RefSeq_viral.fasta` are relative to the w
 | Existing download rule | Used for |
 | --- | --- |
 | `downloadKrakenDB`, `getKrakenTools` | Read classification and optional eukaryotic removal. The configured default is the repository-relative PlusPFP Kraken database. |
+| `downloadSourmashRocksDB`, `downloadSourmashTaxonomy` | Optional shared clean-read GTDB RS226 bacterial/archaeal profiling. |
 | `downloadContaminants` | Configured accession-based contaminant references, only when the list is nonempty. |
 | `downloadGenomadDB` | Initial DNA discovery, individual RNA assembly evidence and representative-level classification. |
 | `downloadCheckvDB` | Candidate quality/completeness and representative selection. |
@@ -114,6 +115,8 @@ The documentation-only generator reuses the isolate manual's compact layout, rea
 fastp uses paired-end overlap analysis plus `--detect_adapter_for_pe`, explicit poly-G trimming and front/right quality trimming. No adapter FASTA is supplied. Defaults include minimum read length 50 bp and poly-G run length 10 nt; the [fastp guide](fastp_trimming.md) lists all named settings. Trimmed pairs and merged orphan reads remain available for reuse.
 
 FastQC/MultiQC, read counts, SuperDeduper and k-mer sampling supply QC evidence. SuperDeduper estimates duplicates from raw pairs for reporting; its deduplicated reads are not assembly or abundance inputs. Duplicate warnings are not deduplicated molecule counts or automatic evidence of contamination.
+
+`sourmash_clean_reads=True` adds a shared report on full final-clean pairs and orphans, using GTDB RS226 for bacterial/archaeal signal. It includes per-sample profiles, a pooled profile, supported/weak reference evidence and plots in `01_sourmash_clean_reads.tot.ipynb`/HTML. It replaces the old trimmed-read `sourmash` option, does not remove reads and is not a viral classifier. See [clean-read Sourmash](sourmash_clean_reads.md).
 
 Virome mode removes Kraken-classified Eukaryota by default (`remove_euk=True`, `contaminants_taxid=2759`). An explicit nonempty `contaminants_list` additionally enables BBDuk reference filtering. An empty list bypasses that reference filter; it does not disable eukaryotic removal. With neither biological filter active, compressed inputs can be passed through as relative symlinks instead of copies. PhiX is not appended implicitly to the contaminant list. Kraken post-cleaning reports remain part of virome QC, unlike the isolate bypass.
 
@@ -270,6 +273,7 @@ Default names below refer to the shared `tot` catalogue. Most executed notebooks
 | Output | What it tells you |
 | --- | --- |
 | `NOTEBOOKS/01_QC.tot.ipynb` | Read counts/losses, duplicate/classification evidence and k-mer sampling. Individual fastp and MultiQC reports are under `01_QC/`. |
+| `NOTEBOOKS/01_sourmash_clean_reads.tot.ipynb`, matching HTML/TSVs | Optional shared final-clean-read GTDB profiles, reference/species-label counts, pooled genus plot and per-sample heatmap. |
 | `NOTEBOOKS/03_assembly_short.tot.ipynb` | DNA scaffold counts, sizes and assembled bases; QUAST report is under `03_CONTIGS/`. |
 | `NOTEBOOKS/03_assembly_short_RNA.tot.ipynb` | When RNA is enabled: individual/combined assemblies, exact-collapse provenance and RNA QUAST. |
 | `NOTEBOOKS/04_viral_ID_tot.ipynb` | Initial candidate counts/lengths across samples. |
@@ -295,6 +299,7 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 | Config / wrapper option | Additional work or input |
 | --- | --- |
 | `RNA_enriched=True` / `--rna-enriched` | Additional RNA assemblies for every sample, individual evidence, reconciliation, RNA screen and RNA acceptance within the one final catalogue. |
+| `sourmash_clean_reads=True` / `--sourmash-clean-reads` | Shared per-sample and pooled final-clean-read bacterial/archaeal report, including paired and orphan reads; uses full libraries, not the 2M subset. |
 | `microdiversity=True` / `--microdiversity` | Separate full-cleaned-pair mapping to the final catalogue and `11_microdiversity_summary.tot.ipynb`/HTML. Independent of RNA enrichment. Defaults include callable depth 100x, base/MAPQ 30, alternate frequency 3%, alternate count 5 and maximum depth 100,000. Low-callability values are not zero biological diversity. |
 | `map_to_RefSeq=True` / `--map-to-refseq` | Independent known-reference abundance/detection report under `06_MAPPING/REFSEQ_VIRAL/`. No assembly is required by the standalone RefSeq target. |
 | `negative_control=SampleID` | RefSeq NC comparison and exclusion from all-assembled ranking. The NC remains in assembly, the main abundance matrices and overall prevalence denominators. This parameter does not decontaminate every branch. |

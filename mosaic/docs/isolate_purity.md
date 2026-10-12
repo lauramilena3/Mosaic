@@ -251,6 +251,7 @@ All paths below are relative to the project results directory. `tot` identifies 
 | `NOTEBOOKS/08_host_enriched_regions.tot.ipynb` | Additional exploratory coverage profiles: geNomad regions in orange, unpredicted enriched host-DNA blocks in red, with 200 kb context on each side. Coordinates and per-sample summaries are in `FIGURES_AND_TABLES/08_host_enriched_regions.tot.tsv` and `08_host_enriched_regions_summary.tot.tsv`. |
 | `HOST/enriched_regions/host_enriched_regions.tot.fasta` and `.tsv` | Unique enriched host loci, merging overlapping calls across samples. The table lists union coordinates, original intervals and supporting samples; plotting flanks are not exported. |
 | `FIGURES_AND_TABLES/08_phage_isolates_sourmash_clean_reads.tot.tsv` and `08_phage_isolates_sourmash_clean_taxonomy.tot.tsv` | Optional per-sample and pooled read-profile evidence and taxonomy. Raw Sourmash outputs are under `07_ANNOTATION/SOURMASH_CLEAN/`. |
+| `NOTEBOOKS/01_sourmash_clean_reads.tot.ipynb` and `FIGURES_AND_TABLES/01_sourmash_clean_reads.tot.html` | Shared clean-read GTDB report also available to virome/QC runs. The isolate summary reuses its tables and figures while keeping the existing isolate output names. |
 | `06_MAPPING/REFSEQ_VIRAL/` | Independent RefSeq count/RPKM/breadth/depth matrices and detection tables, only with `map_to_RefSeq=True`. |
 
 ### Main sample-table columns

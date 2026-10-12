@@ -16,6 +16,40 @@ def benchmark_registry(wildcards):
 			inputs=[str(value) for value in rule.input if not callable(value)]))
 	return registry
 
+rule sourmash_clean_reads_report:
+	input:
+		gather=([SOURMASH_CLEAN_DIR + "/POOLED/pooled_gather_sourmash.with-lineages.csv"] +
+			expand(SOURMASH_CLEAN_DIR + "/SAMPLES/{sample}_gather_sourmash.with-lineages.csv", sample=SAMPLES)),
+		profiles=([SOURMASH_CLEAN_DIR + "/POOLED/pooled_sourmash.summarized.csv"] +
+			expand(SOURMASH_CLEAN_DIR + "/SAMPLES/{sample}_sourmash.summarized.csv", sample=SAMPLES)),
+	output:
+		html=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.html",
+		metadata=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.tsv",
+		taxonomy=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_taxonomy.tot.tsv",
+		status=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_profile_summary.tot.tsv",
+		genus_matrix=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_genus.tot.tsv",
+		pooled_png=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_pooled.tot.png",
+		pooled_svg=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_pooled.tot.svg",
+		genus_png=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_genus.tot.png",
+		genus_svg=dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_genus.tot.svg",
+	params:
+		samples=SAMPLES,
+		negative_control=str(config.get("negative_control", "")),
+		minimum_shared_bp=int(config.get("sourmash_clean_min_shared_bp", 50000)),
+		minimum_reference_fraction=float(config.get("sourmash_clean_min_reference_fraction", 0.10)),
+		database=config["sourmash_rocksdb"],
+	message:
+		"Reporting per-sample and pooled GTDB profiles of all final clean reads"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/sourmash_clean_reads_report/tot.tsv"
+	threads: 1
+	resources:
+		mem_mb=4000,
+	log:
+		notebook=dirs_dict["NOTEBOOKS_DIR"] + "/01_sourmash_clean_reads.tot.ipynb"
+	notebook:
+		dirs_dict["RAW_NOTEBOOKS"] + "/01_sourmash_clean_reads.py.ipynb"
+
 rule abundance_lifestyle_summary:
 	input:
 		fasta=dirs_dict["vOUT_DIR"] + "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta",
@@ -609,8 +643,13 @@ rule phage_isolates_summary:
 		host_blast=input_phage_isolates_host_blast,
 		viral_refseq_blast=dirs_dict["ANNOTATION"] + "/blast_output_ViralRefSeq_phage_isolates_cluster_representatives.tot.csv",
 		metavr_blast=[dirs_dict["ANNOTATION"] + "/blast_output_METAVR_phage_isolates_cluster_representatives.tot.csv"] if METAVR_blast else [],
-		clean_sourmash_gather=([SOURMASH_CLEAN_DIR + "/POOLED/pooled_gather_sourmash.with-lineages.csv"] + expand(SOURMASH_CLEAN_DIR + "/SAMPLES/{sample}_gather_sourmash.with-lineages.csv", sample=SAMPLES)) if SOURMASH_CLEAN_READS else [],
-		clean_sourmash_profiles=([SOURMASH_CLEAN_DIR + "/POOLED/pooled_sourmash.summarized.csv"] + expand(SOURMASH_CLEAN_DIR + "/SAMPLES/{sample}_sourmash.summarized.csv", sample=SAMPLES)) if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_metadata=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.tsv"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_taxonomy=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_taxonomy.tot.tsv"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_status=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_profile_summary.tot.tsv"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_pooled_png=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_pooled.tot.png"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_pooled_svg=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_pooled.tot.svg"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_genus_png=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_genus.tot.png"] if SOURMASH_CLEAN_READS else [],
+		clean_sourmash_report_genus_svg=[dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_genus.tot.svg"] if SOURMASH_CLEAN_READS else [],
 	output:
 		summary_html=dirs_dict["PLOTS_DIR"] + "/08_phage_isolates_summary.{sampling}.html",
 		summary_csv=dirs_dict["PLOTS_DIR"] + "/08_phage_isolates_summary.{sampling}.csv",
@@ -667,7 +706,6 @@ rule phage_isolates_summary:
 		metagenome=METAGENOME,
 		microbial=MICROBIAL,
 		remove_euk=REMOVE_EUK,
-		sourmash=SOURMASH,
 		sourmash_contig_catalogue=SOURMASH_CONTIG_CATALOGUE,
 		sourmash_contig_catalogue_min_length=int(config.get("sourmash_contig_catalogue_min_length", 5000)),
 		sourmash_contig_catalogue_database=config["sourmash_rocksdb"],

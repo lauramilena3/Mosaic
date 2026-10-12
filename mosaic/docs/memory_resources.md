@@ -147,7 +147,7 @@ snakemake --use-conda -p runWorkflow \
 ```
 
 For microbial rather than viral analysis, replace `runWorkflow` with
-`microbial_metagenome` and add `microbial=True sourmash=True` to `--config`.
+`microbial_metagenome` and add `microbial=True sourmash_clean_reads=True` to `--config`.
 The memory profile does not change the biological workflow mode. Add
 `RNA_enriched=True` only when the additional RNA assemblies are wanted.
 
