@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python =3.10
+  - phabox =2.2
+  - numpy =1.26.4 # compatible with the packaged scikit-learn classifier
+  - pytorch =2.4 =cpu* # taxonomy does not need a CUDA installation

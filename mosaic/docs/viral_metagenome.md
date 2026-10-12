@@ -72,7 +72,7 @@ Database paths such as `db/RefSeqViral/RefSeq_viral.fasta` are relative to the w
 | `downloadRefSeqViral` | Core nucleotide similarity searches; optional independent RefSeq mapping reuses the same FASTA. A UTC-dated snapshot, hashes/download manifest and undated symlinks record the active copy. Download date is not the NCBI release date. |
 | `downloadBLASTviralProteins` | Viral protein references for DIAMOND annotation. |
 | `downloadPharokkaDB`, `downloadPhyntenyDB` | Gene annotation and synteny evidence. |
-| `getPhaGCN_newICTV`, `downloadTaxmyphageDB`, `downloadIphopDB` | Phage taxonomy and potential host predictions. |
+| `downloadPhaBOXDB`, `downloadTaxmyphageDB`, `downloadIphopDB` | PhaBOX 2 PhaGCN taxonomy, TaxMyPhage and potential host predictions. |
 | `downloadVcontact2Files`, `getClusterONE` | Optional vConTACT2 reference context and clustering. |
 | `downloadDRAMDB` | Optional DRAM-v annotation. |
 | `downloadMetaVR` | Optional METAVR nucleotide BLAST database and reporting metadata. |
@@ -237,6 +237,12 @@ Optional per-base exports are off by default. `per_base_coverage=True` saves `*_
 [Zoomable annotation diagram (SVG)](figures/viral_metagenome_06_annotation.svg)
 
 Core annotation includes Pharokka/Phynteny, predicted genes and coding/nucleotide composition, PhaGCN and TaxMyPhage taxonomy, RefSeq nucleotide BLAST, viral-protein DIAMOND searches, AAI comparisons, iPHoP host predictions and BACPHLIP lifestyle evidence. Genome-organisation visualisation uses `lovis4u` by default, or `clinker`, only when the final catalogue has fewer than `visualization_max_contigs` sequences (default 50). Larger catalogues still receive the core annotation/reporting outputs.
+
+PhaGCN taxonomy now runs through PhaBOX 2's `--task phagcn`, using a dedicated
+CPU-only environment and automatically downloaded v2.2 database. The existing
+2,000 bp classification cutoff, report filename and family/score labels are
+retained; full PhaBOX lineage/source fields are added. No other PhaBOX task or
+catalogue filtering is introduced. See [PhaBOX taxonomy](phabox_taxonomy.md).
 
 Phage-oriented taxonomy, host and lifestyle tools are not automatically applicable to every RNA, ssDNA or eukaryotic virus. The final abundance/lifestyle report keeps source evidence while marking recognised non-dsDNA-phage groups as not applicable for its phage-lifestyle summary. A missing prediction is not evidence that a sequence is non-viral.
 

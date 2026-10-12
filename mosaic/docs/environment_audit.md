@@ -30,7 +30,7 @@ create new hashed environments when these definitions are used with `--use-conda
 | --- | --- | --- |
 | `env6.yaml` | BLAST 2.17.0 | `vOUTclustering`, `combine_with_taxmyphage`, `clustering_isolates` |
 | `env1_mapping.yaml` | bcftools 1.24 | `call_SNPs_sub` |
-| `env4.yaml` | seqtk 1.4, git 2.38.1 | `merge_microbial`, `getKrakenTools`, `getPhaGCN_newICTV` |
+| `env4.yaml` | seqtk 1.4, git 2.38.1 | `merge_microbial`, `getKrakenTools`; the legacy PhaGCN downloader has since been replaced |
 | `satellite_finder.yaml` | seqtk 1.5 | `satellite_finder_get_fasta` |
 | `viga.yaml` | seqtk 1.3 | `fasta_to_a2m` |
 | `vcontact.yaml` | dos2unix 7.5.2, OpenJDK 11 | `clusterTaxonomy`, including ClusterONE |
@@ -61,6 +61,15 @@ Compatibility choices preserve the existing analysis tools and Python versions:
 - bcftools 1.24 matches the existing samtools 1.24 pin. OpenJDK 11 is used in
   both Java-dependent environments; the existing MinCED and ClusterONE JARs
   were also successfully loaded with an installed Java 11 runtime.
+
+## PhaBOX taxonomy migration (2026-10-12)
+
+`PhaGCNTaxonomy` now uses `phabox.yaml` and the PhaBOX 2.2 taxonomy-only task.
+`downloadPhaBOXDB` reuses `env5.yaml` for wget and Python ZIP extraction;
+`env4.yaml` is unchanged. A minimal Conda dry-run containing PhaBOX 2.2 and
+BACPHLIP 0.9.6 failed: their scikit-learn/Python dependencies cannot coexist.
+The dedicated environment keeps the existing BACPHLIP and MMseqs rules separate.
+See [PhaBOX taxonomy](phabox_taxonomy.md) for versions, paths and report fields.
 
 ## Assembly-depth QUAST
 

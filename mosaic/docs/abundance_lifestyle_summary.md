@@ -45,6 +45,16 @@ and lineage ranks are retained without implicit NCBI downloads, suffix stripping
 or project-specific overrides. MetaVR fields describe reference-hit metadata;
 they are not promoted to confirmed hosts of the query vOTUs.
 
+## PhaBOX 2 taxonomy evidence
+
+The existing `PhaGCN_family` and `PhaGCN_score` labels are preserved when the
+taxonomy rule runs through PhaBOX 2. Full lineage, individual ranks, raw scores,
+genus grouping and classifier/database provenance are added as `PhaBOX_` fields
+immediately after those existing labels. A family confidence is retained only
+when it matches the original scored family; network-propagated taxonomy stays
+visible without an invented score. Older PhaGCN CSVs remain readable. See
+[PhaBOX taxonomy](phabox_taxonomy.md).
+
 ## Optional representative Sourmash evidence
 
 `sourmash_contig_catalogue=True` screens the actual final-catalogue representatives

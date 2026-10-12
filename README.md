@@ -128,6 +128,10 @@ step-by-step format, with a colour-coded overview and seven step diagrams. It
 covers strict viral selection, the shared DNA/RNA catalogue, read subsets,
 abundance and annotation outputs, optional branches, databases, memory and storage.
 
+PhaGCN taxonomy now uses PhaBOX 2's taxonomy-only task, a dedicated Conda
+environment and an automatically downloaded, versioned database. Existing
+family/score report labels are retained; see [PhaBOX taxonomy](mosaic/docs/phabox_taxonomy.md).
+
 ## Long-Read and Hybrid Modes
 
 These modes are also available through the wrapper:

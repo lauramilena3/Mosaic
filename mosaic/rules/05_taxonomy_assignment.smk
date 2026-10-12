@@ -165,29 +165,76 @@ rule parseVcontact:
 
 rule PhaGCNTaxonomy:
 	input:
-		PhaGCN_newICTV_dir=config['PhaGCN_newICTV_dir'],
+		phabox_db=config["phabox_db"],
 		fasta=dirs_dict["vOUT_DIR"] + "/{sequence}.fasta",
 	output:
 		taxonomy_table=dirs_dict["ANNOTATION"] + "/PhaGCN_taxonomy_report_{sequence}.csv",
+		raw_taxonomy=dirs_dict["ANNOTATION"] + "/PhaBOX_{sequence}/phagcn_prediction.tsv",
 	message:
-		"Taxonomy Assignment with PhaGCN"
+		"Taxonomy assignment with PhaBOX 2 PhaGCN (taxonomy only)"
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+		dirs_dict["ENVS_DIR"] + "/phabox.yaml"
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/PhaGCNTaxonomy/sequence={sequence}.tsv"
 	params:
-		taxonomy_table_temp=("final_prediction.csv"),
-	conda:
-		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+		minimum_length=int(config.get("phabox_min_length", 2000)),
+	log:
+		dirs_dict["ANNOTATION"] + "/PhaBOX_{sequence}.log",
 	threads: 32
 	wildcard_constraints:
 		  sequence="[^/]+"  # The 'sequence' wildcard cannot contain a slash
 	shell:
 		"""
-		#analyse
-		cd {input.PhaGCN_newICTV_dir}
-		python run_Speed_up.py --contigs {input.fasta} --len 2000 --threads {threads}
-		mv {params.taxonomy_table_temp} {output.taxonomy_table}
+		mkdir -p "$(dirname {output.raw_taxonomy:q})"
+		phabox_work=$(mktemp -d "$(dirname {output.raw_taxonomy:q})/phabox_work.XXXXXX")
+		trap 'rm -rf -- "$phabox_work"' EXIT
+		if [ -s {input.fasta:q} ]; then
+			phabox2 --task phagcn --contigs {input.fasta:q} --dbdir {input.phabox_db:q} \
+				--outpth "$phabox_work" --len {params.minimum_length} --threads {threads} > {log:q} 2>&1
+		else
+			mkdir -p "$phabox_work/final_prediction"
+			printf 'Accession\\tLength\\tLineage\\tPhaGCNScore\\tGenus\\tGenusCluster\\n' > "$phabox_work/final_prediction/phagcn_prediction.tsv"
+			printf 'Empty catalogue: no PhaBOX taxonomy search needed.\\n' > {log:q}
+		fi
+		python - "$phabox_work" {output.taxonomy_table:q} {input.phabox_db:q} {params.minimum_length} <<-'PYTHON'
+		from pathlib import Path
+		import sys
+		import pandas as pd
+		work, output_path, database, minimum = sys.argv[1:]
+		work = Path(work)
+		frame = pd.read_csv(work / "final_prediction/phagcn_prediction.tsv", sep="\\t", dtype=str).fillna("")
+		classification_path = work / "midfolder/phagcn_classification.tsv"
+		original = pd.read_csv(classification_path, sep="\\t", dtype=str).fillna("").set_index("Accession") if classification_path.is_file() else frame.set_index("Accession")
+		ranks = ["superkingdom", "realm", "subrealm", "kingdom", "subkingdom", "phylum", "subphylum", "class", "subclass", "order", "suborder", "family", "subfamily", "genus", "subgenus", "species"]
+		def rank_values(lineage):
+		    return dict(part.strip().split(":", 1) for part in str(lineage).split(";") if ":" in part)
+		rows = []
+		for _, row in frame.iterrows():
+		    accession = row["Accession"]
+		    lineage = row.get("Lineage", "")
+		    raw_score = row.get("PhaGCNScore", "")
+		    values = rank_values(lineage)
+		    source = original.loc[accession] if accession in original.index else row
+		    original_lineage = source.get("Lineage", "")
+		    original_score = source.get("Score", source.get("PhaGCNScore", ""))
+		    original_values = rank_values(original_lineage)
+		    score_tokens = str(original_score).split(";")
+		    scores = dict(zip(original_values, score_tokens)) if len(original_values) == len(score_tokens) else dict()
+		    family_score = pd.to_numeric(scores.get("family"), errors="coerce") if values.get("family") and values.get("family") == original_values.get("family") else None
+		    status = "below_length_cutoff" if int(row["Length"]) < int(minimum) else ("classified" if values else (lineage if lineage not in ["", "-"] else "not reported"))
+		    evidence = dict(contig_name=accession, prediction=values.get("family"), score=family_score,
+		        PhaBOX_length_bp=row["Length"], PhaBOX_lineage=lineage, PhaBOX_score_raw=raw_score,
+		        PhaBOX_original_lineage=original_lineage, PhaBOX_original_score_raw=original_score,
+		        PhaBOX_genus_cluster=row.get("GenusCluster"), PhaBOX_prokaryotic_virus=row.get("Prokaryotic virus (Bacteriophages and Archaeal virus)"),
+		        PhaBOX_classification_status=status, PhaBOX_software_version="2.2", PhaBOX_database=database,
+		        PhaBOX_database_version="2.2", PhaBOX_min_length_bp=int(minimum))
+		    for rank in ranks:
+		        evidence["PhaBOX_" + rank] = values.get(rank)
+		    rows.append(evidence)
+		columns = ["contig_name", "prediction", "score", "PhaBOX_length_bp", "PhaBOX_lineage", "PhaBOX_score_raw", "PhaBOX_original_lineage", "PhaBOX_original_score_raw", "PhaBOX_genus_cluster", "PhaBOX_prokaryotic_virus", "PhaBOX_classification_status", "PhaBOX_software_version", "PhaBOX_database", "PhaBOX_database_version", "PhaBOX_min_length_bp"] + ["PhaBOX_" + rank for rank in ranks]
+		pd.DataFrame(rows, columns=columns).to_csv(output_path, index=False, na_rep="not reported")
+		PYTHON
+		cp "$phabox_work/final_prediction/phagcn_prediction.tsv" {output.raw_taxonomy:q}
 	 	"""
 
 rule hostID_iphop:

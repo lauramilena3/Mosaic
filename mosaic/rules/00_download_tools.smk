@@ -366,24 +366,61 @@ rule getKrakenTools:
 		chmod 777 KrakenTools/*
 		"""
 
-rule getPhaGCN_newICTV:
+rule downloadPhaBOXDB:
 	output:
-		PhaGCN_newICTV_dir=directory(config['PhaGCN_newICTV_dir']),
+		phabox_db=directory(config["phabox_db"]),
+		archive=temp(os.path.normpath(config["phabox_db"]) + ".zip"),
+	params:
+		url=config["phabox_db_url"],
+		sha256=config.get("phabox_db_sha256", ""),
 	message:
-		"Downloading PhaGCN_newICTV"
-	threads: 4
+		"Downloading and extracting the PhaBOX v2.2 reference database"
+	threads: 1
 	conda:
-		dirs_dict["ENVS_DIR"] + "/env4.yaml"
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	benchmark:
-		dirs_dict["BENCHMARKS"] + "/getPhaGCN_newICTV/tot.tsv"
+		dirs_dict["BENCHMARKS"] + "/downloadPhaBOXDB/tot.tsv"
 	shell:
 		"""
-		mkdir -p tools
-		cd tools
-		git clone https://github.com/KennthShang/PhaGCN_newICTV
-		cd PhaGCN_newICTV
-		git reset --hard "9d7a1c8"
-		chmod 777 *
+		mkdir -p "$(dirname {output.archive:q})"
+		wget --continue --tries=3 --timeout=60 --output-document={output.archive:q} {params.url:q}
+		python - {output.archive:q} {output.phabox_db:q} {params.url:q} {params.sha256:q} <<-'PYTHON'
+		import csv
+		from datetime import datetime, timezone
+		import hashlib
+		from pathlib import Path, PurePosixPath
+		import shutil
+		import sys
+		import tempfile
+		import zipfile
+		archive_path, target, source_url, expected_sha256 = sys.argv[1:]
+		target = Path(target)
+		checksum = hashlib.sha256()
+		with open(archive_path, "rb") as handle:
+		    for block in iter(lambda: handle.read(1024 * 1024), b""):
+		        checksum.update(block)
+		if expected_sha256 and checksum.hexdigest() != expected_sha256:
+		    raise ValueError("PhaBOX database checksum does not match the configured release")
+		with tempfile.TemporaryDirectory(prefix="phabox_download_", dir=target.parent) as temporary:
+		    staging = Path(temporary)
+		    with zipfile.ZipFile(archive_path) as archive:
+		        for member in archive.infolist():
+		            path = PurePosixPath(member.filename)
+		            if path.is_absolute() or ".." in path.parts:
+		                raise ValueError("Unsafe path in the PhaBOX database archive")
+		        archive.extractall(staging)
+		    database = next(staging.rglob("RefVirus.dmnd")).parent
+		    for filename in ["RefVirus.faa", "RefVirus.csv", "database_aai.tsv", "nodes.csv", "names.csv", "taxid.csv", "ProkaryoticGroup.pkl", "RefVirus_anno.pkl"]:
+		        if not (database / filename).is_file():
+		            raise FileNotFoundError("Missing PhaBOX taxonomy database file: " + filename)
+		    target.mkdir(parents=True, exist_ok=True)
+		    for path in database.iterdir():
+		        shutil.move(str(path), target / path.name)
+		with open(target / "download_info.tsv", "w", newline="") as handle:
+		    writer = csv.writer(handle, delimiter="\\t")
+		    writer.writerow(["database_version", "downloaded_utc", "source_url", "sha256"])
+		    writer.writerow(["2.2", datetime.now(timezone.utc).isoformat(), source_url, checksum.hexdigest()])
+		PYTHON
 		"""
 
 rule downloadKrakenDB:

@@ -128,6 +128,10 @@ colour-coded overview and seven step diagrams. It covers strict viral selection,
 the shared DNA/RNA catalogue, read subsets, abundance/annotation reports, optional
 branches, database downloads, memory profiles and storage.
 
+PhaGCN taxonomy now uses PhaBOX 2's taxonomy-only task, a dedicated Conda
+environment and an automatically downloaded, versioned database. Existing
+family/score report labels are retained; see [PhaBOX taxonomy](docs/phabox_taxonomy.md).
+
 An optional [interactive genome network](docs/isolate_purity.md#optional-interactive-genome-network)
 (`isolate_network=True`) connects retained contigs and selected RefSeq/METAVR
 relatives using Mash distances, with browser filters and offline HTML export.

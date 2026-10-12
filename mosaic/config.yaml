@@ -249,7 +249,10 @@ sourmash_rocksdb_url: "https://farm.cse.ucdavis.edu/~ctbrown/sourmash-db.new/gtd
 sourmash_tax_url: "https://farm.cse.ucdavis.edu/~ctbrown/sourmash-db.new/gtdb-rs226/gtdb-rs226.lineages.csv"
 
 canu_dir: "tools/canu-2.0/Linux-amd64/bin" #linux
-PhaGCN_newICTV_dir: "tools/PhaGCN_newICTV"
+phabox_db: "db/PHABOX/phabox_db_v2_2"
+phabox_db_url: "https://github.com/KennthShang/PhaBOX/releases/download/v2/phabox_db_v2_2.zip"
+phabox_db_sha256: "4bdcd1954fff40a84784218828c475f3470cabb831fe65ec74e557d3525f9bc6" # official v2.2 asset
+phabox_min_length: 2000 # preserve the existing PhaGCN taxonomy cutoff; no catalogue filtering
 quast_dir: "tools/quast-5.0.2"
 virSorter_dir: "tools/VirSorter"
 WTP_dir: "tools/WTP"
