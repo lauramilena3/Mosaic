@@ -118,6 +118,7 @@ remove_euk: True # set to False to calculate Kraken euk contamination without re
 subsampling: False
 subassembly: False
 assembly_stats: False
+per_base_coverage: False # optional gzipped per-base mapping exports; CoverM summaries are always saved
 cross_assembly: False
 long_index: False
 run_vcontact: False

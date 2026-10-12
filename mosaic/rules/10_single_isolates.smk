@@ -642,8 +642,8 @@ rule map_to_host:
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_flagstats_filtered_{sample}_vs_{host}.txt",
 		covstats=dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_{sample}_vs_{host}_covstats.txt",
 		covstats_filtered=dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_filtered_{sample}_vs_{host}_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_{sample}_vs_{host}_basecov.txt",
-		basecov_filtered=dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_filtered_{sample}_vs_{host}_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_{sample}_vs_{host}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		basecov_filtered=(dirs_dict["MAPPING_DIR"]+ "/HOST/bowtie2_filtered_{sample}_vs_{host}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		masked_sam=temp(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages.sam"),
 		masked_bam=temp(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages.bam"),
 		masked_sorted_bam=temp(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages_sorted.bam"),
@@ -653,8 +653,8 @@ rule map_to_host:
 		masked_flagstats_filtered=dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_flagstats_filtered_{sample}_vs_{host}_masked_prophages.txt",
 		masked_covstats=dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages_covstats.txt",
 		masked_covstats_filtered=dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_filtered_{sample}_vs_{host}_masked_prophages_covstats.txt",
-		masked_basecov=dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages_basecov.txt",
-		masked_basecov_filtered=dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_filtered_{sample}_vs_{host}_masked_prophages_basecov.txt",
+		masked_basecov=(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		masked_basecov_filtered=(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_filtered_{sample}_vs_{host}_masked_prophages_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["HOST_DIR"]+ "/{host}",
@@ -690,13 +690,21 @@ rule map_to_host:
 		if [ -s {input.host_fasta:q} ]; then
 			coverm contig -b {output.sorted_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.covstats:q}
 			coverm contig -b {output.filtered_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.covstats_filtered:q}
-			bedtools genomecov -dz -ibam {output.sorted_bam:q} > {output.basecov:q}
-			bedtools genomecov -dz -ibam {output.filtered_bam:q} > {output.basecov_filtered:q}
+			for basecov in {output.basecov:q}; do
+				bedtools genomecov -dz -ibam {output.sorted_bam:q} | gzip -c > "$basecov"
+			done
+			for basecov in {output.basecov_filtered:q}; do
+				bedtools genomecov -dz -ibam {output.filtered_bam:q} | gzip -c > "$basecov"
+			done
 		else
 			printf 'Contig\\tMean\\tLength\\tCovered Bases\\tRead Count\\tVariance\\tTrimmed Mean\\tRPKM\\n' > {output.covstats:q}
 			cp {output.covstats:q} {output.covstats_filtered:q}
-			printf '' > {output.basecov:q}
-			printf '' > {output.basecov_filtered:q}
+			for basecov in {output.basecov:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
+			for basecov in {output.basecov_filtered:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
 		fi
 
 		# Prophage-masked host
@@ -719,13 +727,21 @@ rule map_to_host:
 		if [ -s {input.masked_fasta:q} ]; then
 			coverm contig -b {output.masked_sorted_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.masked_covstats:q}
 			coverm contig -b {output.masked_filtered_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.masked_covstats_filtered:q}
-			bedtools genomecov -dz -ibam {output.masked_sorted_bam:q} > {output.masked_basecov:q}
-			bedtools genomecov -dz -ibam {output.masked_filtered_bam:q} > {output.masked_basecov_filtered:q}
+			for basecov in {output.masked_basecov:q}; do
+				bedtools genomecov -dz -ibam {output.masked_sorted_bam:q} | gzip -c > "$basecov"
+			done
+			for basecov in {output.masked_basecov_filtered:q}; do
+				bedtools genomecov -dz -ibam {output.masked_filtered_bam:q} | gzip -c > "$basecov"
+			done
 		else
 			printf 'Contig\\tMean\\tLength\\tCovered Bases\\tRead Count\\tVariance\\tTrimmed Mean\\tRPKM\\n' > {output.masked_covstats:q}
 			cp {output.masked_covstats:q} {output.masked_covstats_filtered:q}
-			printf '' > {output.masked_basecov:q}
-			printf '' > {output.masked_basecov_filtered:q}
+			for basecov in {output.masked_basecov:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
+			for basecov in {output.masked_basecov_filtered:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
 		fi
 		"""
 

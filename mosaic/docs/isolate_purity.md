@@ -367,6 +367,14 @@ Methods: [Mash distances](https://mash.readthedocs.io/en/latest/distances.html);
 
 The activity depth rule excludes unmapped, secondary and supplementary alignment records, then writes compressed per-base coverage under `06_MAPPING/HOST/ACTIVITY/`. All QC-passed paired and orphan reads are used. Host contig identifiers are read as text in both the region and depth tables, including numeric names such as `5` or `001`. The notebook restores uncovered positions to zero, masks scaffold ends and compares each embedded prophage with its own scaffold outside the union of all embedded prophages. Masked positions do not contribute to means or breadth denominators; assessed lengths are included. Display binning does not affect statistics.
 
+`per_base_coverage=False` (default) skips optional own-assembly, masked/unmasked
+host and sequential-stage per-base exports, but keeps every CoverM summary.
+The dedicated `HOST/ACTIVITY/*.basecov.tsv.gz` files remain required when
+`host_prophage_activity=True`, independently of the optional export flag.
+Set `host_prophage_activity=False` as well to skip those files and both the
+activity and enriched-region reports. Enable `per_base_coverage=True` to save
+the optional exports as gzip files; existing BAMs and summary tables are unchanged.
+
 Coverage profiles are grouped by host, then prophage region, with visible host and region headings. Hosts are alphabetical; regions follow parent-contig and genomic-position order; samples within each region follow the full sample-ID order, keeping the same region's profiles together across samples. They show the prophage plus 50,000 bp to the left and right by default (`host_prophage_activity_plot_flank_bp`), clipped at contig boundaries. Titles and `coverage_profiles.tsv` include the full host-contig length, predicted prophage-region length and Cohen's d; titles also show fold change. The displayed dashed baseline and activity statistics still use the whole parent contig background, not just those local flanks and not the entire multi-contig host genome. Profile coordinates are recorded as 1-based inclusive `plot_start`/`plot_end`.
 
 The predicted interval is shaded orange for `active`, pink for `ambiguous`, and grey for `dormant` or `not_assessed_*` profiles. The legend and title retain the exact status; grey does not necessarily mean biological inactivity. This display change does not alter activity statistics or thresholds.

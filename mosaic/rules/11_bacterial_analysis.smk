@@ -75,8 +75,8 @@ rule mapReadsToContigs_microbial:
 		unique_sorted_bam=temp(dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_unique_sorted.bam"),
 		covstats=dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_covstats.txt",
 		covstats_unique=dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_unique_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_basecov.txt",
-		unique_basecov=dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_unique_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		prefix=dirs_dict["ASSEMBLY_DIR"] + "/2K_combined_microbial.tot",
 	message:
@@ -101,8 +101,12 @@ rule mapReadsToContigs_microbial:
 		samtools index {output.unique_sorted_bam}
 		samtools flagstat {output.unique_bam}> {output.flagstats_unique}
 		#genomecov
-		bedtools genomecov -dz -ibam {output.filtered_bam} > {output.basecov}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam}> {output.unique_basecov}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam} | gzip -c > "$basecov"
+		done
 		#covstats
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats}
 		coverm contig -b {output.unique_sorted_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats_unique}

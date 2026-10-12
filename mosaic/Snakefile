@@ -117,6 +117,7 @@ HOST_PROPHAGE_ACTIVITY=config_bool('host_prophage_activity', True) and ISOLATES
 RUN_MICRODIVERSITY=config_bool('microdiversity', False)
 MAP_TO_REFSEQ=config_bool('map_to_RefSeq', False)
 MAP_TO_ALL_ASSEMBLED=config_bool('map_to_all_assembled', False)
+PER_BASE_COVERAGE=config_bool('per_base_coverage', False)
 RUN_CENOTE=config_bool('run_cenote', False)
 VISUALIZATION_TOOL=str(config.get('visualization_tool', 'lovis4u')).strip().lower()
 if VISUALIZATION_TOOL in ["lovis", "lovis4u"]:

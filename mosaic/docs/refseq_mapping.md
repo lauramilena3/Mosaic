@@ -86,7 +86,15 @@ Under `results_dir/06_MAPPING/REFSEQ_VIRAL/`:
 - `RefSeqViral_mean_depth_tot.txt`: CoverM mean depth, not count divided by length.
 - Corresponding `filtered_` count/RPKM and `filtered_75_` RPKM tables.
 - Per-sample BAMs, Bowtie2 logs, flag statistics, full/unique coverage statistics,
-  and nonzero-position base coverage files. Intermediate BAMs are temporary.
+  and optional nonzero-position base coverage files. Intermediate BAMs are temporary.
+
+`per_base_coverage` defaults to `False`. Enable it with
+`--config per_base_coverage=True` to export
+`bowtie2_RefSeqViral_<sample>_tot_basecov.txt.gz` and
+`bowtie2_RefSeqViral_<sample>_tot_unique_basecov.txt.gz`. These are gzipped,
+tab-separated, zero-based positions with positive depth. CoverM summaries,
+normalisation and detection tables are produced with either setting. The same
+flag controls the optional exports for the general `map_to_reference` target.
 
 Merged `.txt` matrices are comma-separated, matching the existing normalization
 outputs. Rows are labeled `RefSeq_accession`, columns are configured samples;
@@ -113,15 +121,18 @@ Network access is required on the first run. Downloads are resumed from
 descriptions and fallback names. Missing NCBI annotations remain blank rather
 than being guessed. Genome-type plots are made only if RNA/DNA data are returned.
 
-`07_RefSeq_detection.py.ipynb` reads the four per-sample CoverM/base-coverage
-files and the existing raw RPKM, count, breadth and mean-depth matrices. It
+`07_RefSeq_detection.py.ipynb` reads the two per-sample CoverM files, optional
+gzipped base-coverage files and the existing raw RPKM, count, breadth and
+mean-depth matrices. Without per-base exports, positional diagnostic columns
+are empty rather than zero; detection calls still use the CoverM summaries. It
 creates one row for every accession/sample, including zero hits. A high-confidence
 call passes the existing >5,000 covered bases for genomes >=6,667 bp or >75%
-breadth for shorter genomes, plus at least one unique mapping. Candidates need
-at least five reads, 100 covered bases, 10% breadth and 25% positional span.
-Mappings with a unique/all ratio <=0.2 are ambiguous. With a negative control,
+breadth for shorter genomes, plus at least five unique mappings. Candidates need
+at least ten unique mappings and 25% breadth. Signals with at least five mapped
+reads and a unique/all ratio <=0.2 are ambiguous. With a negative control,
 signal with >=5 control reads and <=2-fold sample/control RPKM enrichment is
-also ambiguous. The control library itself is never called a positive. All
+also ambiguous. The control library's high-confidence/candidate evidence is
+reported separately as potential contamination. All
 thresholds and the enrichment pseudocount have named `refseq_*` config keys.
 
 The five `RefSeqViral_detection_*` / `RefSeqViral_detected_*` TSV outputs

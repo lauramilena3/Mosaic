@@ -50,6 +50,11 @@ individual allowances when the RNA assemblies require more RAM. Python
 abundance-normalisation notebooks have no new tool limit or reservation, and
 existing behaviour stays intact.
 
+BBNorm-normalised paired and unpaired FASTQs are temporary assembly inputs.
+Snakemake removes them after their scheduled consumers, including read counting,
+finish. Raw and clean reads, read-count tables, histograms and peak reports remain
+available. This does not change abundance normalisation.
+
 ### Trinity workers
 
 Use **8 workers per sample** as the starting point. This is already the supplied
@@ -252,3 +257,25 @@ server RAM is under pressure. A larger `-j` does not grant an individual tool mo
 memory. Changing a tool allowance changes rule parameters/commands and can
 legitimately trigger a rerun; inspect `-n` before changing profiles on existing
 results. This guide does not touch completed outputs or bypass rerun checks.
+
+## Storage after assembly
+
+Trimmed paired FASTQs and the merged orphan FASTQ remain persistent for later
+reuse. The two separate fastp orphan files are temporary because their reads are
+preserved in the merged file. BBNorm-normalised FASTQs are temporary assembly
+inputs. Successful MMseqs clustering keeps representative sequences and membership
+tables, but removes redundant `*_all_seqs.fasta` exports (the DRAM export is
+already declared temporary).
+
+Optional per-base mapping exports default to off (`per_base_coverage: False`).
+Add `--config per_base_coverage=True` to save gzipped nonzero-position coverage
+for assemblies, final vOTUs, all-assembled, RefSeq, user references, contaminants,
+microbial contigs and host mappings. Counts, RPKM, breadth and mean-depth summaries
+are always saved. Isolate activity/discovery reports have a separate
+`host_prophage_activity` flag and retain their required gzipped host-depth input
+while enabled. See [RefSeq mapping](refseq_mapping.md) and
+[isolate activity](isolate_purity.md#host-prophage-activity).
+
+These settings affect future successful jobs. Editing them does not clean
+previously completed project files by itself; old plain-text coverage files
+and redundant exports are not migrated automatically.

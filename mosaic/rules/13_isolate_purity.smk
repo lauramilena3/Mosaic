@@ -186,7 +186,7 @@ rule isolate_read_accounting:
 		summary=ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv",
 		reference_counts=ISOLATE_MAPPING_DIR + "/{sample}/{stage}.reference_reads.tsv",
 		covstats=ISOLATE_MAPPING_DIR + "/{sample}/{stage}.covstats.tsv",
-		basecov=ISOLATE_MAPPING_DIR + "/{sample}/{stage}.basecov.tsv.gz",
+		basecov=(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.basecov.tsv.gz") if PER_BASE_COVERAGE else [],
 	wildcard_constraints:
 		stage="|".join(ISOLATE_STAGES),
 		sample="|".join(re.escape(sample) for sample in SAMPLES) or "(?!)",
@@ -195,6 +195,7 @@ rule isolate_read_accounting:
 		assembly_bam=lambda wc, input: shlex.quote(input.assembly_bam[0] if input.assembly_bam else ""),
 		membership=lambda wc, input: shlex.quote(input.membership[0] if input.membership else ""),
 		previous=lambda wc, input: shlex.quote(input.previous[0] if input.previous else ""),
+		basecov=lambda wc, output: shlex.quote(str(output.basecov) if output.basecov else ""),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1_mapping.yaml"
 	benchmark:
@@ -208,7 +209,7 @@ rule isolate_read_accounting:
 		r"""
 		python - {wildcards.sample:q} {wildcards.stage:q} {params.expected_host:q} {input.fasta:q} {input.forward:q} {input.rev_reads:q} {input.unpaired:q} \
 			{params.assembly_bam} {params.membership} {params.previous} {output.bam:q} {output.reads:q} \
-			{output.summary:q} {output.covstats:q} {output.basecov:q} {log:q} {threads} <<-'PYTHON'
+			{output.summary:q} {output.covstats:q} {params.basecov} {log:q} {threads} <<-'PYTHON'
 		import csv
 		import gzip
 		import os
@@ -353,20 +354,22 @@ rule isolate_read_accounting:
 		            writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
 		            writer.writerow(rows[0])
 		            writer.writerows(row for row in rows[1:] if row[0] in lengths)
-		        with gzip.open(basecov, "wt") as output:
-		            process = subprocess.Popen(["bedtools", "genomecov", "-dz", "-ibam", bam], stdout=subprocess.PIPE, text=True, stderr=log)
-		            for line in process.stdout:
-		                output.write(line)
-		            process.stdout.close()
-		            if process.wait():
-		                sys.exit("bedtools genomecov failed; see " + log_path)
+		        if basecov:
+		            with gzip.open(basecov, "wt") as output:
+		                process = subprocess.Popen(["bedtools", "genomecov", "-dz", "-ibam", bam], stdout=subprocess.PIPE, text=True, stderr=log)
+		                for line in process.stdout:
+		                    output.write(line)
+		                process.stdout.close()
+		                if process.wait():
+		                    sys.exit("bedtools genomecov failed; see " + log_path)
 		    else:
 		        with open(covstats, "w") as output:
 		            writer = csv.writer(output, delimiter="\t", lineterminator="\n")
 		            writer.writerow(["Contig", "Mean", "Length", "Covered Bases", "Read Count", "Variance", "Trimmed Mean", "RPKM"])
 		            writer.writerows([name, 0, length, 0, 0, 0, 0, 0] for name, length in lengths.items())
-		        with gzip.open(basecov, "wt") as output:
-		            pass
+		        if basecov:
+		            with gzip.open(basecov, "wt") as output:
+		                pass
 
 		    totals = Counter()
 		    reference_counts = Counter()

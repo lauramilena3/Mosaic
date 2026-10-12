@@ -164,7 +164,7 @@ rule stat_mapReadsToAssembly:
 		filtered_bam=(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs_{sampling}_filtered.bam") if ISOLATES else temp(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs_{sampling}_filtered.bam"),
 		flagstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_{sample}_assembled_contigs.{sampling}.txt",
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_assembled_contigs.{sampling}.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs.{sampling}_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs.{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		covstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs.{sampling}_covstats.txt",
 	params:
 		unpaired=mapping_orphan_option,
@@ -195,10 +195,14 @@ rule stat_mapReadsToAssembly:
 		fi
 		samtools flagstat {output.filtered_bam} > {output.flagstats_filtered}
 		if [ -s {input.fasta:q} ]; then
-			bedtools genomecov -dz -ibam {output.filtered_bam:q} > {output.basecov:q}
+			for basecov in {output.basecov:q}; do
+				bedtools genomecov -dz -ibam {output.filtered_bam:q} | gzip -c > "$basecov"
+			done
 			coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.covstats}
 		else
-			printf '' > {output.basecov:q}
+			for basecov in {output.basecov:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
 			printf 'Contig\tMean\tLength\tCovered Bases\tRead Count\tVariance\tTrimmed Mean\tRPKM\n' > {output.covstats:q}
 		fi
 		"""
@@ -411,8 +415,8 @@ rule mapReadsToContigsPE:
 		unique_sorted_bam_idx=temp(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_unique_sorted.bam.bai"),
 		covstats=dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_covstats.txt",
 		covstats_unique=dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_unique_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_basecov.txt",
-		unique_basecov=dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_unique_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -439,8 +443,12 @@ rule mapReadsToContigsPE:
 		samtools index {output.unique_sorted_bam}
 		samtools flagstat {output.unique_bam}> {output.flagstats_unique}
 		#genomecov
-		bedtools genomecov -dz -ibam {output.filtered_bam} > {output.basecov}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam}> {output.unique_basecov}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam} | gzip -c > "$basecov"
+		done
 		#covstats
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats}
 		coverm contig -b {output.unique_sorted_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats_unique}
@@ -505,8 +513,8 @@ rule mapReads_contaminants:
 		unique_sorted_bam=temp(dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_unique_sorted.bam"),
 		covstats=dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_covstats.txt",
 		covstats_unique=dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_unique_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_basecov.txt",
-		unique_basecov=dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_unique_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -533,8 +541,12 @@ rule mapReads_contaminants:
 		samtools index {output.unique_sorted_bam}
 		samtools flagstat {output.unique_bam}> {output.flagstats_unique}
 		#genomecov
-		bedtools genomecov -dz -ibam {output.filtered_bam} > {output.basecov}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam}> {output.unique_basecov}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam} | gzip -c > "$basecov"
+		done
 		#covstats
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats}
 		coverm contig -b {output.unique_sorted_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats_unique}
@@ -585,8 +597,8 @@ rule mapReads_RefSeq:
 		unique_sorted_bam_idx=temp(REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_unique_sorted.bam.bai"),
 		covstats=REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_covstats.txt",
 		covstats_unique=REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_unique_covstats.txt",
-		basecov=REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_basecov.txt",
-		unique_basecov=REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_unique_basecov.txt",
+		basecov=(REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -614,8 +626,12 @@ rule mapReads_RefSeq:
 		samtools sort -@ {threads} {output.unique_bam:q} -o {output.unique_sorted_bam:q}
 		samtools index {output.unique_sorted_bam:q}
 		samtools flagstat {output.unique_bam:q} > {output.flagstats_unique:q}
-		bedtools genomecov -dz -ibam {output.filtered_bam:q} > {output.basecov:q}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam:q} > {output.unique_basecov:q}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam:q} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam:q} | gzip -c > "$basecov"
+		done
 		coverm contig -b {output.filtered_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -t {threads} -o {output.covstats:q}
 		coverm contig -b {output.unique_sorted_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -t {threads} -o {output.covstats_unique:q}
 		"""
@@ -671,6 +687,8 @@ rule mapReads_all_assembled:
 		unique_sorted_bam_idx=temp(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_unique_sorted.bam.bai"),
 		covstats=ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_covstats.txt",
 		covstats_unique=ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_unique_covstats.txt",
+		basecov=(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -714,9 +732,18 @@ rule mapReads_all_assembled:
 		if [ -s {input.fasta:q} ]; then
 			coverm contig -b {output.filtered_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -t {threads} -o {output.covstats:q}
 			coverm contig -b {output.unique_sorted_bam:q} -m mean length covered_bases count variance trimmed_mean rpkm -t {threads} -o {output.covstats_unique:q}
+			for basecov in {output.basecov:q}; do
+				bedtools genomecov -dz -ibam {output.filtered_bam:q} | gzip -c > "$basecov"
+			done
+			for basecov in {output.unique_basecov:q}; do
+				bedtools genomecov -dz -ibam {output.unique_sorted_bam:q} | gzip -c > "$basecov"
+			done
 		else
 			printf 'Contig\tMean\tLength\tCovered Bases\tRead Count\tVariance\tTrimmed Mean\tRPKM\n' > {output.covstats:q}
 			cp {output.covstats:q} {output.covstats_unique:q}
+			for basecov in {output.basecov:q} {output.unique_basecov:q}; do
+				printf '' | gzip -c > "$basecov"
+			done
 		fi
 		"""
 
@@ -785,8 +812,8 @@ rule mapReads_reference:
 		unique_sorted_bam_idx=temp(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_unique_sorted.bam.bai"),
 		covstats=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_covstats.txt",
 		covstats_unique=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_unique_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_basecov.txt",
-		unique_basecov=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_unique_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -813,8 +840,12 @@ rule mapReads_reference:
 		samtools index {output.unique_sorted_bam}
 		samtools flagstat {output.unique_bam}> {output.flagstats_unique}
 		#genomecov
-		bedtools genomecov -dz -ibam {output.filtered_bam} > {output.basecov}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam}> {output.unique_basecov}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam} | gzip -c > "$basecov"
+		done
 		#covstats
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats}
 		coverm contig -b {output.unique_sorted_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats_unique}
@@ -834,6 +865,7 @@ rule mapReads_raw_reference:
 		flagstats=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_flagstats_" + REFERENCE + "_{sample}.raw.txt",
 		flagstats_filtered=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_flagstats_filtered_" + REFERENCE + "_{sample}.raw.txt",
 		covstats=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_" + REFERENCE + "_{sample}_raw_covstats.txt",
+		basecov=(dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_" + REFERENCE + "_{sample}_raw_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		prefix=REFERENCE_DIR + "/" + REFERENCE,
 		outdir=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW",
@@ -855,6 +887,9 @@ rule mapReads_raw_reference:
 		coverm filter -b {output.sorted_bam} -o {output.filtered_bam} --min-read-percent-identity 95 --min-read-aligned-percent 85 -t {threads}
 		samtools flagstat {output.filtered_bam} > {output.flagstats_filtered}
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm -o {output.covstats}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam:q} | gzip -c > "$basecov"
+		done
 		"""
 
 rule gene_Abundance:
@@ -916,8 +951,8 @@ rule mapReads_reference_sub:
 		unique_sorted_bam_idx=temp(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_unique_sorted.bam.bai"),
 		covstats=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_covstats.txt",
 		covstats_unique=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_unique_covstats.txt",
-		basecov=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_basecov.txt",
-		unique_basecov=dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_unique_basecov.txt",
+		basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_basecov.txt.gz") if PER_BASE_COVERAGE else [],
+		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
@@ -944,8 +979,12 @@ rule mapReads_reference_sub:
 		samtools index {output.unique_sorted_bam}
 		samtools flagstat {output.unique_bam}> {output.flagstats_unique}
 		#genomecov
-		bedtools genomecov -dz -ibam {output.filtered_bam} > {output.basecov}
-		bedtools genomecov -dz -ibam {output.unique_sorted_bam}> {output.unique_basecov}
+		for basecov in {output.basecov:q}; do
+			bedtools genomecov -dz -ibam {output.filtered_bam} | gzip -c > "$basecov"
+		done
+		for basecov in {output.unique_basecov:q}; do
+			bedtools genomecov -dz -ibam {output.unique_sorted_bam} | gzip -c > "$basecov"
+		done
 		#covstats
 		coverm contig -b {output.filtered_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats}
 		coverm contig -b {output.unique_sorted_bam} -m mean length covered_bases count variance trimmed_mean rpkm  -o {output.covstats_unique}
