@@ -535,6 +535,9 @@ def input_all_assembled_mapping(wildcards):
 		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_counts_normalised_tot.txt",
 		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_breadth_coverage_percent_tot.txt",
 		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_mapping_summary_tot.tsv",
+		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_mapping_summary_tot.tsv",
+		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_RPKM_raw_tot.txt",
+		dirs_dict["PLOTS_DIR"] + "/07_all_assembled_top_RPKM_clustermap_tot.png",
 		ALL_ASSEMBLED_SELECTED_PREFIX + "_95-85.clstr",
 		ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_metadata_tot.tsv",
 		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_contigs_membership_tot.tsv"]

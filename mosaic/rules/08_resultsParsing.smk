@@ -409,6 +409,8 @@ rule mapping_statistics_parsing:
 		accounting=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv", sample=SAMPLES, stage=ISOLATE_STAGES) if ISOLATES else [],
 		all_assembled_flagstats=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_flagstats_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if ISOLATES and MAP_TO_ALL_ASSEMBLED else [],
 		all_assembled_mapped_pairs=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_mapped_pairs_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if MAP_TO_ALL_ASSEMBLED and not ISOLATES else [],
+		all_assembled_top_summary=[ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_mapping_summary_tot.tsv"] if MAP_TO_ALL_ASSEMBLED else [],
+		all_assembled_top_rpkm_png=[dirs_dict["PLOTS_DIR"] + "/07_all_assembled_top_RPKM_clustermap_tot.png"] if MAP_TO_ALL_ASSEMBLED else [],
 	output:
 		mapping_stats_html=(dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_{sampling}.html"),
 		filtered_viral_png=(dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_filtered_viral_{sampling}.png") if not ISOLATES else [],
@@ -922,7 +924,7 @@ rule all_assembled_mapping_summary:
 		samples=SAMPLES,
 		isolates=ISOLATES,
 	wildcard_constraints:
-		assembled_reference="all_assembled",
+		assembled_reference="all_assembled|all_assembled_top",
 	message:
 		"Summarizing reads mapping to {wildcards.assembled_reference}"
 	benchmark:
@@ -953,6 +955,30 @@ rule all_assembled_mapping_summary:
 					subsampled=min(2000000, cleaned)
 					writer.writerow([sample, cleaned, subsampled, mapped, round(100 * mapped / subsampled, 2) if subsampled else 0])
 
+
+rule all_assembled_top_abundance_plot:
+	input:
+		covstats=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_all_assembled_top_{sample}_tot_covstats.txt", sample=SAMPLES),
+	output:
+		rpkm=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_RPKM_raw_tot.txt",
+		counts=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_counts_raw_tot.txt",
+		breadth=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_breadth_coverage_percent_tot.txt",
+		covered_bases=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_breadth_coverage_bases_tot.txt",
+		depth=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_mean_depth_tot.txt",
+		png=dirs_dict["PLOTS_DIR"] + "/07_all_assembled_top_RPKM_clustermap_tot.png",
+		svg=dirs_dict["PLOTS_DIR"] + "/07_all_assembled_top_RPKM_clustermap_tot.svg",
+	params:
+		samples=SAMPLES,
+		isolates=ISOLATES,
+	message:
+		"Plotting remapped raw RPKM for the selected cluster representatives"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/all_assembled_top_abundance_plot/tot.tsv"
+	threads: 1
+	log:
+		notebook=dirs_dict["NOTEBOOKS_DIR"] + "/07_all_assembled_top_abundance.tot.ipynb"
+	notebook:
+		dirs_dict["RAW_NOTEBOOKS"] + "/07_all_assembled_top_abundance.py.ipynb"
 
 rule select_all_assembled_top_contigs:
 	input:

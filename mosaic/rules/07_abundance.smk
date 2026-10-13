@@ -639,15 +639,20 @@ rule mapReads_RefSeq:
 ALL_ASSEMBLED_INDEX_PREFIX=ALL_ASSEMBLED_MAPPING_DIR + "/INDEX/{assembled_reference}"
 ALL_ASSEMBLED_INDEX_FILES=expand(ALL_ASSEMBLED_MAPPING_DIR + "/INDEX/{{assembled_reference}}.{part}.bt2l", part=["1", "2", "3", "4", "rev.1", "rev.2"])
 
+def all_assembled_reference_fasta(wildcards):
+	if wildcards.assembled_reference == "all_assembled_top":
+		return ALL_ASSEMBLED_TOP_PREFIX + ".fasta"
+	return ALL_ASSEMBLED_DIR + "/all_assembled_contigs_derreplicated_rep_seq.tot.fasta"
+
 rule buildBowtieDB_all_assembled:
 	input:
-		fasta=ALL_ASSEMBLED_DIR + "/all_assembled_contigs_derreplicated_rep_seq.tot.fasta",
+		fasta=all_assembled_reference_fasta,
 	output:
 		index=temp(ALL_ASSEMBLED_INDEX_FILES),
 	params:
 		prefix=ALL_ASSEMBLED_INDEX_PREFIX,
 	wildcard_constraints:
-		assembled_reference="all_assembled",
+		assembled_reference="all_assembled|all_assembled_top",
 	message:
 		"Creating the {wildcards.assembled_reference} Bowtie2 index"
 	conda:
@@ -668,7 +673,7 @@ rule buildBowtieDB_all_assembled:
 rule mapReads_all_assembled:
 	input:
 		index=ALL_ASSEMBLED_INDEX_FILES,
-		fasta=ALL_ASSEMBLED_DIR + "/all_assembled_contigs_derreplicated_rep_seq.tot.fasta",
+		fasta=all_assembled_reference_fasta,
 		forward_paired=lambda wc: mapping_read_path(wc, "forward", subset=True),
 		reverse_paired=lambda wc: mapping_read_path(wc, "reverse", subset=True),
 		unpaired=mapping_orphan_reads,
@@ -694,7 +699,7 @@ rule mapReads_all_assembled:
 		unpaired=mapping_orphan_option,
 		prefix=ALL_ASSEMBLED_INDEX_PREFIX,
 	wildcard_constraints:
-		assembled_reference="all_assembled",
+		assembled_reference="all_assembled|all_assembled_top",
 		sample="|".join(re.escape(sample) for sample in SAMPLES) or "(?!)",
 	message:
 		"Mapping cleaned reads to {wildcards.assembled_reference} (all paired and orphan reads in isolate mode)"
