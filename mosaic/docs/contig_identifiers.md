@@ -21,7 +21,7 @@ in the workflow environment; no new environment is needed.
 ```
 
 Identifiers follow `{sample}_{assembler}_{number:0{width}d}_len_{length}`, for
-example `NT193_MSV_OY_01_metaspades_00001_len_1000`. The counter width is
+example `sample01_metaspades_00001_len_1000`. The counter width is
 `max(5, len(str(total_contigs)))`, calculated separately for each assembly.
 An assembly of 200,000 contigs therefore starts at `000001` and ends at
 `200000`; an assembly of 2,000,000 starts at `0000001`. An initial counting

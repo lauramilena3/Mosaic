@@ -8,7 +8,7 @@ rule satellite_finder:
 	params:
 		faa=dirs_dict["VIRAL_DIR"] + "/{sample}_geNomad_{sampling}/{sample}_spades_filtered_scaffolds.{sampling}_annotate/{sample}_spades_filtered_scaffolds.{sampling}_proteins.faa",
 		model="{model}",
-		satellite_finder_dir="/home/lmf/apps/MOSAIC/mosaic/tools",
+		satellite_finder_dir=os.path.join(workflow.basedir, "tools"),
 		satellite_finder_outdir=(dirs_dict["VIRAL_DIR"] + "/{sample}_{sampling}_satellite_finder_{model}/"),
 	message:
 		"Identifying viral satellites with satellite_finder"
@@ -32,7 +32,7 @@ rule satellite_finder_get_fasta:
 		fasta_positive=(dirs_dict["VIRAL_DIR"] + "/{sample}_{sampling}_satellite_finder_{model}/positive_satellites.fasta"),
 	params:
 		model="{model}",
-		satellite_finder_dir="/home/lmf/apps/MOSAIC/mosaic/tools",
+		satellite_finder_dir=os.path.join(workflow.basedir, "tools"),
 	message:
 		"Identifying viral satellites with satellite_finder"
 	conda:

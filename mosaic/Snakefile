@@ -1017,14 +1017,6 @@ rule map_raw_to_reference:
 		expand(dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_flagstats_filtered_" + REFERENCE + "_{sample}.raw.txt", sample=SAMPLES),
 		expand(dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_" + REFERENCE + "_{sample}_raw_covstats.txt", sample=SAMPLES),
 
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/hybrid_assembly.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/long_read.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/short_read.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_spades_filtered_scaffolds.tot.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_contigs_canu.tot.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/flye_combined_assembly_WEC.tot.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/racon_WEC_contigs_1_canu.tot.fasta
-# /home/lmf/04_MOSAIC/WARWICK/WEC/03_CONTIGS/WEC_canu_corrected_scaffolds.tot.fasta
 
 
 

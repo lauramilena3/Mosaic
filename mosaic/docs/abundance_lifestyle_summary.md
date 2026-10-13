@@ -12,7 +12,7 @@ Snakemake writes the executed notebook to `NOTEBOOKS/` and the HTML report to
 
 ## Metadata and interpretation
 
-`vOTU_metadata_polished.csv` uses the DANIEL notebook's capitalization and topic
+`vOTU_metadata_polished.csv` uses consistent capitalization and topic
 ordering: viral identification, CheckV, seqtk composition, BACPHLIP, viral taxonomy,
 ViralRefSeq/METAVR similarity, resolved hosts, iPHoP and CRISPR evidence, then
 abundance. Additional workflow fields (including RNA acceptance routes and
@@ -34,13 +34,13 @@ sample orders with seed 42 and percentile bands, not read-depth rarefaction or
 confidence intervals. No automatic significance tests are performed.
 
 BACPHLIP scores and VIBRANT lifecycle evidence remain separate. Valid BACPHLIP
-scores use the DANIEL 0.5 virulent-score cutoff; missing/invalid scores are Unknown,
+scores use a 0.5 virulent-score cutoff; missing/invalid scores are Unknown,
 not automatically Temperate. Recognized RNA/NCLDV/ssDNA/lavidaviridae evidence is
 marked Not applicable for the dsDNA-phage lifestyle summary. Source predictions
 remain in the metadata for inspection.
 
 iPHoP candidates require confidence >=90, preferring BLAST-supported candidates
-before the highest confidence within that pool, as in DANIEL. Original GTDB names
+before the highest confidence within that pool. Original GTDB names
 and lineage ranks are retained without implicit NCBI downloads, suffix stripping,
 or project-specific overrides. MetaVR fields describe reference-hit metadata;
 they are not promoted to confirmed hosts of the query vOTUs.
@@ -93,7 +93,7 @@ accessions before `_CRISPR_`. Informative matches on microbial contigs >5,000 bp
 are ranked by alignment length, adjusted p-value, contig length and accession.
 CRISPR takes precedence over iPHoP; genus conflicts are recorded, and missing
 CRISPR ranks are not filled from a conflicting iPHoP lineage. No host files from
-DANIEL or PhylloVir are implicitly loaded.
+other projects are implicitly loaded.
 
 ## Separate microdiversity report
 

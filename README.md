@@ -76,8 +76,8 @@ python mosaic.py unlock
 
 ```bash
 python mosaic.py run phage_isolates \
-  --raw /home/lmf/LEISE/ERWINIA_PHAGES_INSHERA/00_RAW_DATA/ \
-  --kraken-db /home/lmf/db/KRAKEN/kraken/ \
+  --raw /path/to/project/00_RAW_DATA/ \
+  --kraken-db /path/to/kraken_db/ \
   --ecc-memory 16000 \
   -j 144 \
   --dry-run

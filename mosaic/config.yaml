@@ -41,7 +41,7 @@ cenote_threads: 8
 cenote_mem_mb: 16000 # scheduling reservation, not a tool-enforced memory limit
 cenote_prune_prophage: False # optionally report viral regions after removing flanking cellular sequence
 annotation_fastas: {} # optional dataset-to-FASTA paths, e.g. custom.tot: /path/to/contigs.fasta
-negative_control: "" # optional sample ID in input_dir, e.g. NT202_MSV_NC_10
+negative_control: "" # optional sample ID in input_dir, e.g. control01
 refseq_metadata_refresh: False # re-download cached NCBI accession metadata on the next report run
 refseq_high_min_length_bp: 6667
 refseq_high_min_covered_bases: 5000 # strictly greater for genomes >= refseq_high_min_length_bp
@@ -222,15 +222,12 @@ cenote_db: "db/cenote-taker3" # downloaded automatically when the Cenote top-con
 phynteny_db: "db/phynteny"
 visualization_tool: "lovis4u"
 visualization_max_contigs: 50
-# RefSeqViral_protein_db: "/home/lmf/db/RefSeqViral/2022_03_10_ORFs/RefSeq_viral_2022_03_10_ORFs.faa"
-# GenBankViral_db: "/home/lmf/db/GenBankViral/GenBankViral_2022_03_10.fasta"
-# GenBankViral_protein_db: "/home/lmf/db/GenBankViral/ORFs/GenBankViral_2022_03_10_ORFs.faa"
 blast_db: "db/ncbi/NCBI_viral_proteins.faa"
 
 virSorter_db: "db/VirSorter/virsorter-data"
 #raken_db: "db/NCBI-bacteria-01.04.2019"
 kraken_db: "db/KRAKEN/k2_pluspfp_08_GB_20260626"
-kraken_db_nt: "/home/lmf/db/KRAKEN/nt/"
+kraken_db_nt: "db/KRAKEN/nt/"
 #kraken_db_mini: "db/KRAKEN/minikraken_8GB_202003"
 kraken_db_human: "db/kraken2_human_db"
 kraken_tools: "tools/KrakenTools"
