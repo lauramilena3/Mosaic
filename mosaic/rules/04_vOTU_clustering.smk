@@ -439,6 +439,7 @@ rule get_list_filtered_vOTUs:
 
 	output:
 		summary=dirs_dict["vOUT_DIR"] + "/vOTU_clustering_summary.{sampling}.csv",
+		audit=dirs_dict["vOUT_DIR"] + "/vOTU_filtering_audit.{sampling}.tsv",
 		filtered_list=dirs_dict["vOUT_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + "_list.{sampling}.txt",
 	params:
 		samples=SAMPLES,

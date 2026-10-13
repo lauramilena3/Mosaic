@@ -549,6 +549,13 @@ def input_all_assembled_mapping(wildcards):
 def input_optional_all_assembled(wildcards):
 	return input_all_assembled_mapping(wildcards) if MAP_TO_ALL_ASSEMBLED else []
 
+def input_all_assembled_review(wildcards):
+	# The review compares against the virome filter; do not introduce that branch into isolates.
+	if MAP_TO_ALL_ASSEMBLED and not ISOLATES:
+		return [ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.tsv",
+			ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.csv"]
+	return []
+
 def inputOptionalRNA(wildcards):
 	if RNA_MODE:
 		return inputRNA(wildcards)
@@ -564,6 +571,7 @@ rule all:
 		inputAnnotation,
 		inputOptionalRefSeq,
 		input_optional_all_assembled,
+		input_all_assembled_review,
 		inputOptionalRNA,
 
 rule runQC:
@@ -618,6 +626,7 @@ rule runWorkflow:
 		inputAbundance,
 		inputAnnotation,
 		inputOptionalRNA,
+		input_all_assembled_review,
 		dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
 
 rule runSourmashCleanReads:

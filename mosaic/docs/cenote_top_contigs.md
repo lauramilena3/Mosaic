@@ -36,7 +36,7 @@ and 85% aligned coverage of the shorter sequence. Results are in
 `all_assembled_selected_contigs.tot_95-85.clstr` and its BLAST/ANI tables.
 
 Every longest-first cluster representative is kept for annotation. There is
-no final top-100 selection, no additional mapping, and no summing of member
+no final top-100 selection and no summing of member
 RPKMs. Existing `all_assembled_top_contigs` output names are retained, but now
 contain all representatives. Their abundance columns remain the representative
 contig's measurements from the original full-catalogue mapping, as recorded in
@@ -93,18 +93,80 @@ study outputs are not migrated or deleted automatically by this code change.
 
 Full-catalogue files use the `all_assembled` prefix, including
 `all_assembled_RPKM_raw_tot.txt` and `all_assembled_mapping_summary_tot.tsv`.
-Full-catalogue normalization outputs are unchanged. This branch no longer
-creates an `all_assembled_top` mapping index, BAMs, coverage tables or mapping
-summary. Old remapping outputs from earlier runs are not used or automatically
-deleted.
+Full-catalogue normalization outputs are unchanged. The same mapping rules now
+also map the existing up-to-2-million cleaned read pairs to the selected-cluster
+FASTA, with the same 95% read identity / 85% aligned read length filters. Isolate
+mode continues to use every cleaned paired and orphan read for both reference
+sets, never the 2M subset. Both Bowtie2 indices are temporary.
+
+The existing 2M creation rule uses `reformat.sh reads=2000000`: it processes the
+first 2 million input pairs, not a random sample. This behaviour is unchanged;
+both mapping comparisons deliberately reuse exactly the same files.
+
+The independent new measurements use `all_assembled_top` filenames under
+`06_MAPPING/ALL_ASSEMBLED/`: mapping summary, raw RPKM/count matrices, breadth
+(percent and covered bases), and CoverM mean depth. They do not replace the
+original full-catalogue abundance in ranking/annotation metadata and are not
+summed cluster-member estimates. CoverM RPKM depends on the mapped reference
+pool, so values can differ between full-catalogue and selected-set searches.
 
 The flag also requests `NOTEBOOKS/07_mapping_statistics_tot.ipynb`, even without
-`assembly_stats=True`. Its HTML table includes the full-catalogue mapping
-percentage, and a per-sample barplot is displayed in the notebook and saved as
+`assembly_stats=True`. Its HTML table includes both mapping percentages, and
+a comparison barplot is displayed in the notebook and saved as
 PNG/SVG in `FIGURES_AND_TABLES/07_mapping_statistics_all_assembled_tot.*`.
-There is no selected-set mapping percentage because the selection is not
-remapped. The report retains its existing mapping comparisons, so their mapping
+The virome comparison counts properly mapped pairs, not individual mapped mates.
+The report retains its existing mapping comparisons, so their mapping
 inputs are also requested if not already available.
+
+`NOTEBOOKS/07_all_assembled_top_abundance.tot.ipynb` contains the explicit
+raw-matrix and plotting code. Its clustermap is shown again in mapping statistics
+and saved as `FIGURES_AND_TABLES/07_all_assembled_top_RPKM_clustermap_tot.png`
+and `.svg`. Rows are selected cluster representatives and columns are samples;
+both axes use average-linkage Euclidean clustering on `log10(1 + raw RPKM)`.
+There is no row scaling, the NC stays visible, and only non-zero representatives
+are plotted. All representatives remain in the numerical exports. Empty sets
+produce header-only matrices and a short no-abundance figure.
+
+### Terminal-repeat fields
+
+`dtr_bp` and `itr_bp` retain the raw exact end-match length, including incidental
+1–29 bp matches. `terminal_repeat_type` is the actual call, using
+`circularity_min_repeat_bp` (30 bp by default). A 1 bp match with type `none` is
+not evidence of circularity. Sequence/coordinate fields describe those raw
+matches; reported terminal repeats, topology and circularity are not synonymous.
+
+### Compact manual-review table
+
+The virome `runWorkflow`/`all` targets request `all_assembled_contig_review` when
+`map_to_all_assembled=True`. It writes CSV and TSV copies of
+`03_CONTIGS/ALL_ASSEMBLED/all_assembled_top_contigs_review_tot`.
+Every selected representative
+remains, with review priorities, CheckV ORF/quality assessments, qualifying end
+repeats, three-tool calls, original full-catalogue abundance/mapping support and
+METAVR reference context. `METAVR_genome_type` and `METAVR_ictv_taxonomy` are kept.
+`VirSorter2_group` and `VirSorter2_score` retain the highest-scoring group and score
+from the detailed metadata; missing values are reported as `not reported`.
+SeqHub annotations, Cenote calls and conservative geNomad votes are omitted.
+The full metadata and biological acceptance criteria are unchanged.
+
+The new `05_vOTUs/vOTU_filtering_audit.tot.tsv` records every final-filter candidate,
+pass/fail flags and actual exclusion reasons. `vOTU_clustering_summary.tot.csv`
+remains accepted-only. Existing `new_references_clusters.tot.csv` and RNA
+exact-duplicate provenance trace whole-contig/region links without rerunning
+classification. Another selected member being retained does not silently turn
+the representative's exclusion into whole-sequence retention.
+
+VIBRANT eligibility uses its saved `*.prodigal.faa` predictions when available;
+an unavailable gene file is labelled assessment unknown rather than inferred
+from another caller. Its existing positive-quality output remains a dependency.
+Repeats below `circularity_min_repeat_bp` are not shown as our end-repeat evidence.
+
+The standalone `map_to_all_assembled` target remains independent and does not
+automatically request this strict-virome comparison. To request it explicitly,
+target `all_assembled_contig_review` with the same run configuration. In isolate
+mode its virome-audit inputs are empty and filtering is not applicable; the
+strict viral branch is not introduced into isolates. Save completed manual work
+under a new filename: regenerated reports initialise the four manual columns again.
 
 An empty abundance selection produces empty clustered FASTAs and header-only
 selection/metadata tables without running BLAST. This branch does not require

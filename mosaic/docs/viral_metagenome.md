@@ -193,7 +193,7 @@ There is only one final catalogue:
 05_vOTUs/filtered_95-85_positive_viral_contigs.tot.fasta
 ```
 
-RNA enrichment does not create a second RNA final vOTU FASTA or use CD-HIT for catalogue clustering. `vOTU_clustering_summary.tot.csv` records retained-representative evidence and `acceptance_route` (`standard`, `RNA` or `standard+RNA`); the filtering notebook also shows removed candidates. Custom catalogue names change the prefix, not this shared-catalogue design.
+RNA enrichment does not create a second RNA final vOTU FASTA or use CD-HIT for catalogue clustering. `vOTU_clustering_summary.tot.csv` records retained-representative evidence and `acceptance_route` (`standard`, `RNA` or `standard+RNA`). `vOTU_filtering_audit.tot.tsv` also saves every assessed representative, actual pass/fail flags and exclusion reasons; the accepted-only summary and filtering criteria are unchanged. Custom catalogue names change the prefix, not this shared-catalogue design.
 
 ## 5. Mapping and abundance normalisation
 
@@ -269,7 +269,17 @@ The named RefSeq thresholds define high-confidence, candidate, ambiguous and not
 
 Selection uses the union of the top `all_assembled_top_per_sample` nonzero contigs per non-NC sample (default 100) and the top `all_assembled_cluster_top_n` by mean raw RPKM across non-NC samples (default 1,000). There is no 1,000-contig cap. The selected FASTA undergoes the shared independent 95/85 clustering; every resulting representative is kept, with no final top-100 cap.
 
-Existing `all_assembled_top_contigs` filenames refer to that full selected-cluster representative set. Its abundance columns are the representative's measurements from the first full-catalogue mapping, **not summed cluster-member abundance**. The selection is not remapped. A separate membership table preserves original/dereplicated/selected-cluster relationships; metadata records cluster size rather than listing every member in one cell.
+Existing `all_assembled_top_contigs` filenames refer to that full selected-cluster representative set. Its annotation metadata's abundance columns remain the representative's measurements from the first full-catalogue mapping, **not summed cluster-member abundance**. The same up-to-2-million cleaned read pairs are now also mapped independently to this selected set. New measurements use the `all_assembled_top` mapping prefix and are reported alongside the full-catalogue proper-pair percentage in `07_mapping_statistics_tot.ipynb`. `07_all_assembled_top_abundance.tot.ipynb` exports remapped raw RPKM/counts/breadth/depth and displays a raw-RPKM clustermap, also displayed in mapping statistics. A separate membership table preserves original/dereplicated/selected-cluster relationships; metadata records cluster size rather than listing every member in one cell.
+
+This virome mode also generates `all_assembled_top_contigs_review_tot.csv`/`.tsv`
+in `03_CONTIGS/ALL_ASSEMBLED`.
+The compact table keeps all representatives, three-tool calls, CheckV/terminal-repeat
+evidence, original abundance and METAVR genome type/taxonomy. It traces actual
+catalogue exclusions and cluster/region associations using the filtering audit.
+It does not import SeqHub annotations, add Cenote/conservative votes, change
+acceptance criteria or delete sequences. Four blank columns are provided for
+manual assessment of complete viral genomes/segments, fragments and artefacts.
+Completed manual assessments must be saved under a separate filename.
 
 geNomad evidence is reused from individual assembly results. Selected whole representatives receive CheckV, VIBRANT, VirSorter2, RefSeq/METAVR BLAST and Pharokka annotation; `run_cenote=True` additionally enables Cenote-Taker3. This exploratory branch can include non-viral sequences and does not replace the strict viral catalogue. See [abundance-selected representatives and Cenote](cenote_top_contigs.md).
 

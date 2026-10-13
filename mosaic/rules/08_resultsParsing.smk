@@ -1316,6 +1316,215 @@ rule all_assembled_top_metadata:
 		metadata.reset_index().to_csv(output.metadata, sep="\t", index=False)
 
 
+rule all_assembled_contig_review:
+	input:
+		metadata=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_metadata_tot.tsv",
+		members=ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_contigs_membership_tot.tsv",
+		vibrant_quality=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + ALL_ASSEMBLED_TOP_NAME + "_positive_quality.tot.csv",
+		virsorter_positive=dirs_dict["vOUT_DIR"] + "/VirSorter2_" + ALL_ASSEMBLED_TOP_NAME + "_tot/positive_VS_list_tot.txt",
+		audit=[dirs_dict["vOUT_DIR"] + "/vOTU_filtering_audit.tot.tsv"] if not ISOLATES else [],
+		votu_members=[dirs_dict["vOUT_DIR"] + "/new_references_clusters.tot.csv"] if not ISOLATES else [],
+		initial_dna=expand(dirs_dict["VIRAL_DIR"] + "/{sample}_" + VIRAL_CONTIGS_BASE + ".tot.fasta", sample=SAMPLES) if not ISOLATES else [],
+		initial_rna=expand(RNA_DIR + "/{sample}_virsorter2_RNA_viral_positive.fasta", sample=SAMPLES) if RNA_MODE and not ISOLATES else [],
+		rna_provenance=expand(RNA_DIR + "/{sample}_assembly_provenance.tsv", sample=SAMPLES) if RNA_MODE and not ISOLATES else [],
+	output:
+		tsv=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.tsv",
+		csv=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.csv",
+	params:
+		samples=SAMPLES,
+		negative_control=str(config.get("negative_control", "")).strip(),
+		min_repeat=int(config.get("circularity_min_repeat_bp", 30)),
+		rna_groups=config.get("rna_viral_groups", "RNA"),
+		isolates=ISOLATES,
+		vibrant_proteins=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + ALL_ASSEMBLED_TOP_NAME + ".tot/VIBRANT_*/" + ALL_ASSEMBLED_TOP_NAME + "_tot.prodigal.faa",
+	message:
+		"Preparing the compact manual-review table and tracing actual viral catalogue decisions"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/all_assembled_contig_review/tot.tsv"
+	threads: 1
+	resources:
+		mem_mb=4000,
+	run:
+		import csv
+		import glob
+		from collections import defaultdict
+		from pathlib import Path
+		import pandas as pd
+		from Bio import SeqIO
+
+		metadata=pd.read_csv(input.metadata, sep="\t").set_index("contig_id")
+		members=pd.read_csv(input.members, sep="\t")
+		cluster_members=members.groupby("representative_id")["member_id"].agg(set).to_dict()
+		with open(input.virsorter_positive) as handle:
+			virsorter={line.strip() for line in handle if line.strip()}
+		# VIBRANT's own ORF predictions determine eligibility, not another gene caller's counts.
+		protein_files=glob.glob(params.vibrant_proteins)
+		vibrant_orfs=defaultdict(int)
+		for path in protein_files:
+			with open(path) as handle:
+				for record in SeqIO.parse(handle, "fasta"):
+					vibrant_orfs[record.id.rsplit("_", 1)[0]]+=1
+
+		def text(value):
+			return "not reported" if pd.isna(value) or str(value) in ["", "NA", "nan"] else str(value)
+
+		def yes(value):
+			return str(value).lower() in ["true", "yes", "y", "1"]
+
+		def numeric(value):
+			return pd.to_numeric(value, errors="coerce")
+
+		def original_id(name):
+			return name.split("|provirus_", 1)[0].split("_provirus_", 1)[0]
+
+		aliases={}
+		for path in input.rna_provenance:
+			with open(path) as handle:
+				for row in csv.DictReader(handle, delimiter="\t"):
+					if row.get("representative"):
+						aliases[row["contig_id"]]=row["representative"]
+		initial=set()
+		for path in list(input.initial_dna) + list(input.initial_rna):
+			with open(path) as handle:
+				initial.update(original_id(record.id) for record in SeqIO.parse(handle, "fasta"))
+		audit=pd.read_csv(input.audit[0], sep="\t", low_memory=False).set_index("vOTU_name") if input.audit else pd.DataFrame()
+		votu_links=defaultdict(set)
+		if input.votu_members:
+			# This existing table already expands MMseqs membership and the quality-selected ANI representatives.
+			with open(input.votu_members[0]) as handle:
+				for row in csv.DictReader(handle, delimiter="\t"):
+					name=row["mem_d"]
+					scope="provirus region" if original_id(name) != name else "whole contig"
+					votu_links[original_id(name)].add((row["rep"], scope))
+
+		def links(name):
+			result=set(votu_links.get(name, set()))
+			alias=aliases.get(name)
+			if alias and alias != name:
+				result.update((rep, scope + " (RNA exact duplicate)") for rep, scope in votu_links.get(alias, set()))
+			return result
+
+		def catalogue(name, assembler):
+			if params.isolates:
+				return "not applicable (isolate mode)", "not reported", "not reported", "virome filtering not requested"
+			own=links(name)
+			assessed={(rep, scope) for rep, scope in own if rep in audit.index}
+			retained={(rep, scope) for rep, scope in assessed if audit.loc[rep, "filter_decision"] == "retained"}
+			if retained:
+				status="retained_representative" if any(rep == name for rep, _ in retained) else "represented_by_retained_vOTU"
+				return status, " | ".join(sorted({rep for rep, _ in retained})), " | ".join(sorted({scope for _, scope in retained})), "not excluded; cluster representation is not proof of whole-genome completeness"
+			if assessed:
+				reasons=sorted({str(audit.loc[rep, "filter_reason"]) for rep, _ in assessed})
+				return "excluded_final_filter", " | ".join(sorted({rep for rep, _ in assessed})), " | ".join(sorted({scope for _, scope in assessed})), " | ".join(reasons)
+			if own or name in initial or aliases.get(name) in initial:
+				return "not_resolved", " | ".join(sorted({rep for rep, _ in own})) or "not reported", "not reported", "candidate entered the viral branch, but a filtering-audit link is unavailable"
+			related=set()
+			for member in cluster_members.get(name, set()):
+				related.update((rep, scope) for rep, scope in links(member) if rep in audit.index and audit.loc[rep, "filter_decision"] == "retained")
+			reason=("not admitted by the initial DNA geNomad screen" if assembler in ["spades", "metaspades"] else
+				"not admitted by the initial RNA VirSorter2 screen (groups: " + str(params.rna_groups) + ")")
+			if related:
+				reason+="; another selected-cluster member is retained, not this representative"
+			return "excluded_initial_screen", " | ".join(sorted({rep for rep, _ in related})) or "not reported", "other selected-cluster member" if related else "not reported", reason
+
+		samples=[sample for sample in params.samples if sample != params.negative_control]
+		rows=[]
+		for name, row in metadata.iterrows():
+			warnings=[]
+			for field in ["CheckV_warnings", "repeat_warning"]:
+				value=text(row.get(field))
+				if value != "not reported":
+					warnings.append(value)
+			repeats=[]
+			for biology in ["dtr", "itr"]:
+				length=numeric(row.get(biology + "_bp"))
+				if pd.notna(length) and length >= params.min_repeat:
+					repeats.append(biology.upper() + f" ({int(length)} bp)")
+			ends=repeats.copy()
+			topology=text(row.get("genomad_topology"))
+			if topology not in ["not reported", "No terminal repeats"]:
+				ends.append("geNomad: " + topology + " (reported)")
+			vibrant_call=text(row.get("VIBRANT_type")) != "not reported"
+			vibrant_circular="complete circular" in text(row.get("VIBRANT_Quality"))
+			if vibrant_circular:
+				ends.append("VIBRANT: complete circular (reported)")
+				if text(row.get("VIBRANT_evidence_scope")) == "region":
+					warnings.append("VIBRANT circular evidence concerns a region, not necessarily the whole contig")
+			if vibrant_call:
+				vibrant="viral"
+			elif row["length_bp"] < 1000:
+				vibrant="not assessed (<1000 bp)"
+			elif not protein_files:
+				vibrant="assessment unknown (VIBRANT gene file unavailable)"
+			elif vibrant_orfs[name] < 4:
+				vibrant="not assessed (<4 VIBRANT ORFs)"
+			else:
+				vibrant="no viral call"
+			genomad_assessed=text(row.get("genomad_assessed")) == "yes"
+			genomad_viral=yes(row.get("genomad_virus_call"))
+			classification="viral" if genomad_viral else "plasmid" if yes(row.get("genomad_plasmid_call")) else "no viral call"
+			genomad=classification if genomad_assessed else "not assessed"
+			score=text(row.get("genomad_contig_virus_score"))
+			if genomad_assessed and score != "not reported":
+				genomad+=" (whole-contig virus score: " + score + ")"
+			if text(row.get("genomad_evidence_scope")) == "provirus region":
+				warnings.append("geNomad viral evidence concerns a provirus region")
+			positive=int(name in virsorter) + int(vibrant_call) + int(genomad_viral)
+			assessed=1 + int(vibrant in ["viral", "no viral call"]) + int(genomad_assessed)
+			quality=text(row.get("CheckV_checkv_quality"))
+			checkv_warning=text(row.get("CheckV_warnings")) != "not reported"
+			if quality in ["Complete", "High-quality"]:
+				priority="2_flagged_complete_or_high_quality" if checkv_warning or text(row.get("repeat_warning")) != "not reported" else "1_complete_or_high_quality"
+			elif positive and (repeats or "DTR" in topology or "ITR" in topology or vibrant_circular):
+				priority="3_supported_ends_uncertain_completeness"
+			else:
+				priority="4_remaining_candidates"
+			peak=text(row.get("highest_abundance_sample"))
+			breadth=numeric(row.get("breadth_percent_" + peak))
+			unique=numeric(row.get("unique_mapping_ratio_" + peak))
+			if unique == 0:
+				warnings.append("no unique mappings in the peak sample (full-catalogue mapping)")
+			if quality == "Not-determined":
+				warnings.append("CheckV completeness unknown, not zero")
+			votu_status, representative, scope, reason=catalogue(name, row.get("assembler", ""))
+			if "provirus region" in scope or scope == "other selected-cluster member":
+				warnings.append("catalogue association does not establish retention of this whole sequence")
+			ref_length=numeric(row.get("METAVR_slen"))
+			ref_summary="not reported"
+			if pd.notna(ref_length) and ref_length > 0:
+				ref_summary=(text(row.get("METAVR_sseqid")).split("|")[0] + "; " + text(row.get("METAVR_quality")) +
+					f"; {int(ref_length)} bp; length ratio {row['length_bp'] / ref_length:.2f}; query coverage " +
+					text(row.get("METAVR_qcovs")) + "%; alignment identity " + text(row.get("METAVR_pident")) + "%")
+			result=dict(review_priority=priority, contig_id=name, length_bp=row["length_bp"],
+				CheckV_ORF_count=numeric(row.get("CheckV_gene_count")), cluster_size=row.get("cluster_size"),
+				CheckV_quality=quality, CheckV_completeness=numeric(row.get("CheckV_completeness")),
+				CheckV_completeness_method=text(row.get("CheckV_completeness_method")),
+				genome_ends="; ".join(ends) or "no qualifying terminal repeat",
+				VirSorter2="viral" if name in virsorter else "no viral call",
+				VirSorter2_group=text(row.get("VirSorter2_max_score_group")), VirSorter2_score=numeric(row.get("VirSorter2_max_score")),
+				VIBRANT=vibrant, geNomad_relaxed=genomad,
+				viral_tools_positive=positive, viral_tools_assessed=assessed,
+				genomad_taxonomy=text(row.get("genomad_taxonomy")), METAVR_genome_type=text(row.get("METAVR_genome_type")),
+				METAVR_ictv_taxonomy=text(row.get("METAVR_ictv_taxonomy")), METAVR_reference_summary=ref_summary,
+				mean_RPKM_raw=row.get("mean_RPKM_raw"), max_RPKM_raw=row.get("max_RPKM_raw"), highest_abundance_sample=peak,
+				n_non_NC_samples_with_reads=sum(numeric(row.get("mapped_reads_" + sample)) > 0 for sample in samples),
+				breadth_percent_peak_sample=breadth, unique_mapping_ratio_peak_sample=unique,
+				NC_RPKM=numeric(row.get("RPKM_raw_" + params.negative_control)) if params.negative_control else "not specified",
+				catalogue_status=votu_status, vOTU_representative=representative, catalogue_match_scope=scope,
+				filter_reason=reason, warnings="; ".join(dict.fromkeys(warnings)) or "none",
+				manual_biological_type="", manual_completeness="", manual_confidence="", manual_notes="")
+			rows.append(result)
+		columns=["review_priority", "contig_id", "length_bp", "CheckV_ORF_count", "cluster_size", "CheckV_quality",
+			"CheckV_completeness", "CheckV_completeness_method", "genome_ends", "VirSorter2", "VirSorter2_group", "VirSorter2_score", "VIBRANT", "geNomad_relaxed",
+			"viral_tools_positive", "viral_tools_assessed", "genomad_taxonomy", "METAVR_genome_type", "METAVR_ictv_taxonomy",
+			"METAVR_reference_summary", "mean_RPKM_raw", "max_RPKM_raw", "highest_abundance_sample", "n_non_NC_samples_with_reads",
+			"breadth_percent_peak_sample", "unique_mapping_ratio_peak_sample", "NC_RPKM", "catalogue_status", "vOTU_representative",
+			"catalogue_match_scope", "filter_reason", "warnings", "manual_biological_type", "manual_completeness", "manual_confidence", "manual_notes"]
+		review=pd.DataFrame(rows, columns=columns).sort_values(["review_priority", "mean_RPKM_raw", "contig_id"], ascending=[True, False, True], kind="stable")
+		review.to_csv(output.tsv, sep="\t", index=False, na_rep="not reported")
+		review.to_csv(output.csv, index=False, na_rep="not reported")
+
+
 if MAP_TO_REFSEQ:
 	rule refseq_detection:
 		input:
