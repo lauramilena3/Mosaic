@@ -661,7 +661,7 @@ rule downloadVcontact2Files:
 		dirs_dict["BENCHMARKS"] + "/downloadVcontact2Files/tot.tsv"
 	threads: 1
 	shell:
-		"""
+		r"""
 		set -euo pipefail
 		mkdir -p db/vcontact2
 		wget --continue --tries=3 --output-document={output.archive:q} {params.url:q}
