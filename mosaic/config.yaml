@@ -165,11 +165,21 @@ host_enriched_regions_bin_bp: 1000
 host_enriched_regions_min_length_bp: 5000
 host_enriched_regions_local_flank_bp: 10000
 host_enriched_regions_plot_flank_bp: 200000 # context on each side; does not change enrichment statistics
+host_enriched_regions_prophage_adjacency_bp: 1000 # report-only distance on the same host contig
+phold_db: "db/phold" # downloaded by phold install; includes the prediction model
+phold_threads: 8
+phold_mem_mb: 32768 # CPU-mode reservation; does not alter other tool environments
 isolate_min_depth: 5
+isolate_min_fastp_pairs: 20000 # report-only warning; does not change contig retention or purity decisions
 isolate_min_length_bp: 4000
 isolate_short_min_depth: 10 # depth >=5 AND (length >=4000 OR depth >=10)
 isolate_host_min_identity: 90
 isolate_host_min_query_coverage: 90
+# Report-only assigned-host plasmid flag; never an additional exclusion route.
+# Both sequences must have a saved geNomad plasmid call.
+isolate_host_plasmid_min_identity: 95
+isolate_host_plasmid_min_query_coverage: 75
+isolate_host_plasmid_min_subject_coverage: 90
 # Report-only containment screen; does not change retention or 95/85 clustering.
 isolate_fragment_min_identity: 95
 isolate_fragment_min_short_coverage: 95

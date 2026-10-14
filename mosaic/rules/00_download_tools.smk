@@ -646,6 +646,23 @@ rule downloadKrakenDB_human:
 		kraken2-build --clean --db {output.kraken_db_human}
 		"""
 
+rule downloadPholdDB:
+	output:
+		database=directory(config["phold_db"]),
+	message:
+		"Downloading the Phold database and protein-structure prediction model"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/phold.yaml"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/downloadPholdDB/tot.tsv"
+	threads: 8
+	resources:
+		mem_mb=int(config.get("phold_mem_mb", 32768)),
+	shell:
+		"""
+		phold install -d {output.database:q} -t {threads}
+		"""
+
 rule downloadVcontact2Files:
 	output:
 		archive="db/vcontact2/GenomesDB_Aug_2026.tar.gz",

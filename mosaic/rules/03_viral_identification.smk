@@ -271,6 +271,37 @@ rule virSorter2:
 		grep ">" {output.positive_fasta:q} | cut -f1 -d\| | sed "s/>//g" > {output.positive_list:q} || true
 		"""
 
+rule genomad_annotations:
+	input:
+		fasta=lambda wc: annotation_fasta_path(wc.sequence),
+		database=config["genomad_db"],
+	output:
+		results=directory(dirs_dict["ANNOTATION"] + "/geNomad_{sequence}"),
+	params:
+		prefix="{sequence}",
+	message:
+		"Collecting geNomad virus/plasmid evidence for {wildcards.sequence}"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env6.yaml"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/genomad_annotations/sequence={sequence}.tsv"
+	threads: 16
+	resources:
+		mem_mb=16000,
+	wildcard_constraints:
+		sequence="[^/]+",
+	shell:
+		r"""
+		if [ -s {input.fasta:q} ]; then
+			genomad end-to-end --relaxed --cleanup --splits 8 -t {threads} \
+				{input.fasta:q} {output.results:q} {input.database:q}
+		else
+			mkdir -p {output.results:q}/{params.prefix:q}_summary
+			printf 'seq_name\tvirus_score\ttaxonomy\ttopology\n' > {output.results:q}/{params.prefix:q}_summary/{params.prefix:q}_virus_summary.tsv
+			printf 'seq_name\tplasmid_score\ttopology\n' > {output.results:q}/{params.prefix:q}_summary/{params.prefix:q}_plasmid_summary.tsv
+		fi
+		"""
+
 rule genomad_vOTUs:
 	input:
 		representatives=dirs_dict["vOUT_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}.fasta",

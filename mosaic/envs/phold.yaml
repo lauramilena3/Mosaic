@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python =3.11
+  - phold =1.2.0
+  - pytorch =2.8 =cpu*
+  - transformers >=4.46,<5 # Phold 1.2 uses the Transformers 4 API
+  - pandas >=2.1,<3

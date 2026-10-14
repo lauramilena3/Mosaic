@@ -407,6 +407,7 @@ rule mapping_statistics_parsing:
 		assembled_sequences=inputAssemblyContigs,
 		assembly_flagstats=input_assembly_flagstats,
 		accounting=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv", sample=SAMPLES, stage=ISOLATE_STAGES) if ISOLATES else [],
+		reference_counts=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.reference_reads.tsv", sample=SAMPLES, stage=ISOLATE_STAGES) if ISOLATES else [],
 		all_assembled_flagstats=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_flagstats_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if ISOLATES and MAP_TO_ALL_ASSEMBLED else [],
 		all_assembled_mapped_pairs=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_mapped_pairs_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if MAP_TO_ALL_ASSEMBLED and not ISOLATES else [],
 		all_assembled_top_summary=[ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_mapping_summary_tot.tsv"] if MAP_TO_ALL_ASSEMBLED else [],
@@ -422,6 +423,7 @@ rule mapping_statistics_parsing:
 		isolate_png=[dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_{sampling}.png"] if ISOLATES else [],
 		isolate_svg=[dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_{sampling}.svg"] if ISOLATES else [],
 		isolate_table=[dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_{sampling}.tsv"] if ISOLATES else [],
+		isolate_aggregates=[dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_aggregates_{sampling}.tsv"] if ISOLATES else [],
 	params:
 		isolates=ISOLATES,
 		stages=ISOLATE_STAGES,
@@ -492,7 +494,7 @@ def input_isolate_host_assignments(wildcards):
 rule phage_isolates_catalogue:
 	input:
 		host_assignments=input_isolate_host_assignments,
-		selection=expand(ISOLATE_CONTIG_DIR + "/SELECTION/{sample}.tot.tsv", sample=SAMPLES),
+		selection=expand(ISOLATE_CONTIG_DIR + "/SELECTION/{sample}.tot.exclusion_groups.tsv", sample=SAMPLES),
 		catalogue_provenance=ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_provenance.tot.tsv",
 		catalogue_exact_clusters=ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_cluster.tot.tsv",
 		catalogue_mosaic_clusters=ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_rep_seq.tot_95-85.clstr",
@@ -520,6 +522,9 @@ rule phage_isolates_catalogue:
 		host_min_identity=float(config.get("isolate_host_min_identity", 90)),
 		host_min_query_coverage=float(config.get("isolate_host_min_query_coverage", 90)),
 		sourmash_contig_catalogue_database=config["sourmash_rocksdb"],
+		host_plasmid_min_identity=float(config.get("isolate_host_plasmid_min_identity", 95)),
+		host_plasmid_min_query_coverage=float(config.get("isolate_host_plasmid_min_query_coverage", 75)),
+		host_plasmid_min_subject_coverage=float(config.get("isolate_host_plasmid_min_subject_coverage", 90)),
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/phage_isolates_catalogue/sampling={sampling}.tsv"
 	log:
@@ -633,7 +638,7 @@ rule isolate_fragment_candidates:
 
 		(metadata_path, cluster_path, ani_path, fasta_path, output_metadata, output_clusters,
 		 output_matches, min_identity, min_short_coverage, max_length_ratio)=sys.argv[1:]
-		metadata=pd.read_csv(metadata_path, sep="\t")
+		metadata=pd.read_csv(metadata_path, sep="\t", dtype={{"best_host_blast_contig": str, "host_plasmid_contig": str}})
 		clusters=pd.read_csv(cluster_path, sep="\t")
 		ani=pd.read_csv(ani_path, sep="\t")
 		with open(fasta_path) as handle:
@@ -666,6 +671,7 @@ rule phage_isolates_summary:
 		fragment_matches=ALL_ASSEMBLED_DIR + "/phage_isolates.{sampling}/fragment_candidate_matches.tsv",
 		catalogue_blast=ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_rep_seq.tot-blastout.csv",
 		accounting=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv", sample=SAMPLES, stage=ISOLATE_STAGES),
+		mapping_aggregates=dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_aggregates_{sampling}.tsv",
 		reference_counts=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.reference_reads.tsv", sample=SAMPLES, stage=ISOLATE_STAGES),
 		unexplained=expand(ISOLATE_MAPPING_DIR + "/{sample}/unexplained_{mate}.fastq.gz", sample=SAMPLES, mate=["R1", "R2", "unpaired"]),
 		host_activity=[dirs_dict["PLOTS_DIR"] + "/08_host_prophage_activity.tot.tsv"] if HOST_PROPHAGE_ACTIVITY and HOSTS else [],
@@ -718,6 +724,7 @@ rule phage_isolates_summary:
 		clean_sourmash_genus_svg=[dirs_dict["PLOTS_DIR"] + "/08_phage_isolates_sourmash_clean_genus.{sampling}.svg"] if SOURMASH_CLEAN_READS else [],
 	params:
 		phase="summary",
+		min_fastp_pairs=int(config.get("isolate_min_fastp_pairs", 20000)),
 		ani_script=workflow.basedir + "/scripts/anicalc_checkv.py",
 		hosts=HOSTS,
 		host_min_identity=float(config.get("isolate_host_min_identity", 90)),

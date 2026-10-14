@@ -251,9 +251,12 @@ ISOLATE_NETWORK_SOURCES=config.get("isolate_network_references", "RefSeq")
 if isinstance(ISOLATE_NETWORK_SOURCES, str):
 	ISOLATE_NETWORK_SOURCES=ISOLATE_NETWORK_SOURCES.split()
 ISOLATE_NETWORK_SOURCES=list(dict.fromkeys(ISOLATE_NETWORK_SOURCES))
-ISOLATE_STAGES=["01_own_retained", "02_host_chromosomes", "03_host_viral", "04_own_excluded", "05_other_retained", "06_other_excluded"]
+ISOLATE_STAGES=["01_own_retained", "02_host_chromosomes", "03_host_viral", "04_own_host_excluded",
+	"05_own_threshold_excluded", "06_other_retained", "07_other_host_excluded", "08_other_threshold_excluded"]
 
 def annotation_fasta_path(sequence):
+	if sequence == "host_enriched_regions.tot":
+		return dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.fasta"
 	if sequence == "phage_isolates_cluster_representatives.tot":
 		return PHAGE_ISOLATES_CLUSTER_PREFIX + ".tot.fasta"
 	if sequence.startswith("host_viral_"):
@@ -954,11 +957,12 @@ rule phage_isolates:
 		dirs_dict["PLOTS_DIR"] + "/08_hosts_summary.tot.html",
 		lambda wc: [dirs_dict["PLOTS_DIR"] + "/08_host_prophage_activity.tot.tsv",
 			dirs_dict["PLOTS_DIR"] + "/08_host_enriched_regions.tot.tsv",
-			dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.fasta"] if HOST_PROPHAGE_ACTIVITY and HOSTS else [],
+			dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.fasta",
+			dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions_metadata.tot.tsv"] if HOST_PROPHAGE_ACTIVITY and HOSTS else [],
 		ALL_ASSEMBLED_DIR + "/phage_isolates.tot/all_contig_metadata.tsv",
 		ALL_ASSEMBLED_DIR + "/phage_isolates.tot/cluster_metadata.tsv",
 		PHAGE_ISOLATES_CLUSTER_PREFIX + ".tot.fasta",
-		expand(ISOLATE_CONTIG_DIR + "/{sample}_{contig_set}.tot.fasta", sample=SAMPLES, contig_set=["retained", "excluded"]),
+		expand(ISOLATE_CONTIG_DIR + "/{sample}_{contig_set}.tot.fasta", sample=SAMPLES, contig_set=["retained", "excluded", "excluded_host", "excluded_threshold"]),
 		lambda wc: [dirs_dict["PLOTS_DIR"] + "/08_isolate_network.tot.html"] if ISOLATE_NETWORK else [],
 		lambda wc: [ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_RPKM_normalised_tot.txt",
 			ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_counts_normalised_tot.txt",

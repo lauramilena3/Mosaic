@@ -1,9 +1,11 @@
 # Full-read isolate purity: selection, shared reference pools and one reusable mapping stage.
 def isolate_stage_reference(wildcards):
 	stage=wildcards.stage
-	if stage in ["01_own_retained", "04_own_excluded"]:
-		return ISOLATE_CONTIG_DIR + "/" + wildcards.sample + "_" + ("retained" if stage == "01_own_retained" else "excluded") + ".tot.fasta"
-	pool={"02_host_chromosomes": "host_chromosomes", "03_host_viral": "host_viral", "05_other_retained": "retained", "06_other_excluded": "excluded"}[stage]
+	own={"01_own_retained": "retained", "04_own_host_excluded": "excluded_host", "05_own_threshold_excluded": "excluded_threshold"}
+	if stage in own:
+		return ISOLATE_CONTIG_DIR + "/" + wildcards.sample + "_" + own[stage] + ".tot.fasta"
+	pool={"02_host_chromosomes": "host_chromosomes", "03_host_viral": "host_viral", "06_other_retained": "retained",
+		"07_other_host_excluded": "excluded_host", "08_other_threshold_excluded": "excluded_threshold"}[stage]
 	scope=("HOST/" + ISOLATE_HOST_ASSIGNMENTS[wildcards.sample] + "/" if wildcards.sample in ISOLATE_HOST_ASSIGNMENTS else "UNASSIGNED/") if stage in ["02_host_chromosomes", "03_host_viral"] else ""
 	return ISOLATE_CONTIG_DIR + "/REFERENCES/" + scope + pool + ".fasta"
 
@@ -20,7 +22,7 @@ def isolate_stage_index(wildcards):
 	return [isolate_stage_reference(wildcards) + "." + part + ".bt2l" for part in ["1", "2", "3", "4", "rev.1", "rev.2"]]
 
 def isolate_reference_hosts(wildcards):
-	if wildcards.reference_set in ["retained", "excluded"] or wildcards.reference_scope == "UNASSIGNED/":
+	if wildcards.reference_set in ["retained", "excluded", "excluded_host", "excluded_threshold"] or wildcards.reference_scope == "UNASSIGNED/":
 		return []
 	if wildcards.reference_scope:
 		return [wildcards.reference_scope.split("/")[1]]
@@ -32,6 +34,8 @@ rule select_isolate_contigs:
 		assembled_covstats=dirs_dict["MAPPING_DIR"] + "/STATS_FILES/bowtie2_{sample}_assembled_contigs.tot_covstats.txt",
 		host_blast=lambda wc: [dirs_dict["vOUT_DIR"] + "/ISOLATES/" + wc.sample + "/blastn_out_assembly_" + ISOLATE_HOST_ASSIGNMENTS[wc.sample] + ".tot.csv"] if wc.sample in ISOLATE_HOST_ASSIGNMENTS else [],
 		host_viral_blast=lambda wc: [dirs_dict["vOUT_DIR"] + "/ISOLATES/" + wc.sample + "/blastn_out_assembly_" + ISOLATE_HOST_ASSIGNMENTS[wc.sample] + "_viral_regions.tot.csv"] if wc.sample in ISOLATE_HOST_ASSIGNMENTS else [],
+		genomad=dirs_dict["VIRAL_DIR"] + "/{sample}_geNomad_tot/",
+		host_genomad=lambda wc: [dirs_dict["HOST_DIR"] + "/" + ISOLATE_HOST_ASSIGNMENTS[wc.sample] + "_geNomad"] if wc.sample in ISOLATE_HOST_ASSIGNMENTS else [],
 	output:
 		selection=ISOLATE_CONTIG_DIR + "/SELECTION/{sample}.tot.tsv",
 	params:
@@ -46,6 +50,9 @@ rule select_isolate_contigs:
 		short_depth=float(config.get("isolate_short_min_depth", 10)),
 		host_min_identity=float(config.get("isolate_host_min_identity", 90)),
 		host_min_query_coverage=float(config.get("isolate_host_min_query_coverage", 90)),
+		host_plasmid_min_identity=float(config.get("isolate_host_plasmid_min_identity", 95)),
+		host_plasmid_min_query_coverage=float(config.get("isolate_host_plasmid_min_query_coverage", 75)),
+		host_plasmid_min_subject_coverage=float(config.get("isolate_host_plasmid_min_subject_coverage", 90)),
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/select_isolate_contigs/sample={sample}.tsv"
 	# Reuse selection code without saving a per-sample report notebook.
@@ -59,6 +66,9 @@ rule extract_isolate_contig_sets:
 	output:
 		retained=ISOLATE_CONTIG_DIR + "/{sample}_retained.tot.fasta",
 		excluded=ISOLATE_CONTIG_DIR + "/{sample}_excluded.tot.fasta",
+		excluded_host=ISOLATE_CONTIG_DIR + "/{sample}_excluded_host.tot.fasta",
+		excluded_threshold=ISOLATE_CONTIG_DIR + "/{sample}_excluded_threshold.tot.fasta",
+		groups=ISOLATE_CONTIG_DIR + "/SELECTION/{sample}.tot.exclusion_groups.tsv",
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	benchmark:
@@ -66,37 +76,56 @@ rule extract_isolate_contig_sets:
 	threads: 1
 	shell:
 		r"""
-		python - {input.metadata:q} {input.fasta:q} {output.retained:q} {output.excluded:q} <<-'PYTHON'
+		python - {input.metadata:q} {input.fasta:q} {output.retained:q} {output.excluded:q} {output.excluded_host:q} {output.excluded_threshold:q} {output.groups:q} <<-'PYTHON'
 		import sys
+		import numpy as np
 		import pandas as pd
 		from Bio import SeqIO
 
-		metadata_path, fasta_path, retained_path, excluded_path=sys.argv[1:]
-		metadata=pd.read_csv(metadata_path, sep="\t")
+		metadata_path, fasta_path, retained_path, excluded_path, host_path, threshold_path, groups_path=sys.argv[1:]
+		metadata=pd.read_csv(metadata_path, sep="\t", dtype={{"best_host_blast_contig": str, "host_plasmid_contig": str}})
 		retained=set(metadata.loc[metadata["contig_set"].eq("retained"), "original_id"])
-		with open(retained_path, "w") as kept, open(excluded_path, "w") as removed:
+		prophage=metadata.get("host_prophage_match", pd.Series(False, index=metadata.index)).isin([True, "True"])
+		host=metadata.get("host_match", pd.Series(False, index=metadata.index)).isin([True, "True"]) | prophage
+		excluded=metadata["contig_set"].eq("excluded")
+		metadata["exclusion_group"]=np.select([excluded & host, excluded], ["excluded_host", "excluded_threshold"], default="retained")
+		reasons=metadata.get("exclusion_reason", pd.Series("not reported", index=metadata.index))
+		metadata["primary_exclusion_reason"]=np.select([excluded & prophage, excluded & host,
+		    excluded & reasons.str.contains("below_minimum_depth", regex=False, na=False),
+		    excluded & reasons.str.contains("short_contig_below_required_depth", regex=False, na=False)],
+		    ["host_prophage_associated", "host_chromosome_match", "below_minimum_depth", "short_contig_below_required_depth"],
+		    default="not excluded")
+		metadata.loc[metadata["exclusion_group"].eq("excluded_threshold") & metadata["primary_exclusion_reason"].eq("not excluded"),
+		    "primary_exclusion_reason"]="length_depth_threshold"
+		host_ids=set(metadata.loc[metadata["exclusion_group"].eq("excluded_host"), "original_id"])
+		metadata.to_csv(groups_path, sep="\t", index=False, na_rep="not reported")
+		with open(retained_path, "w") as kept, open(excluded_path, "w") as removed, open(host_path, "w") as host_removed, open(threshold_path, "w") as threshold_removed:
 		    for record in SeqIO.parse(fasta_path, "fasta"):
-		        SeqIO.write(record, kept if record.id in retained else removed, "fasta")
+		        if record.id in retained:
+		            SeqIO.write(record, kept, "fasta")
+		        else:
+		            SeqIO.write(record, removed, "fasta")
+		            SeqIO.write(record, host_removed if record.id in host_ids else threshold_removed, "fasta")
 		PYTHON
 		"""
 
 rule pool_isolate_references:
 	input:
-		contigs=lambda wc: expand(ISOLATE_CONTIG_DIR + "/{sample}_" + wc.reference_set + ".tot.fasta", sample=SAMPLES) if wc.reference_set in ["retained", "excluded"] else [],
-		fasta=lambda wc: [ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_rep_seq.tot.fasta"] if wc.reference_set in ["retained", "excluded"] else [],
-		exact=lambda wc: [ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_cluster.tot.tsv"] if wc.reference_set in ["retained", "excluded"] else [],
+		contigs=lambda wc: expand(ISOLATE_CONTIG_DIR + "/{sample}_" + wc.reference_set + ".tot.fasta", sample=SAMPLES) if wc.reference_set in ["retained", "excluded", "excluded_host", "excluded_threshold"] else [],
+		fasta=lambda wc: [ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_rep_seq.tot.fasta"] if wc.reference_set in ["retained", "excluded", "excluded_host", "excluded_threshold"] else [],
+		exact=lambda wc: [ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_cluster.tot.tsv"] if wc.reference_set in ["retained", "excluded", "excluded_host", "excluded_threshold"] else [],
 		hosts=lambda wc: expand(dirs_dict["HOST_DIR"] + "/host_masked_prophages/{host}_masked_prophages.fasta", host=isolate_reference_hosts(wc)) if wc.reference_set == "host_chromosomes" else [],
 		viral=lambda wc: expand(dirs_dict["HOST_DIR"] + "/prophages/{host}_prophages.fasta", host=isolate_reference_hosts(wc)) if wc.reference_set == "host_viral" else [],
 	output:
 		fasta=ISOLATE_CONTIG_DIR + "/REFERENCES/{reference_scope}{reference_set}.fasta",
 		membership=ISOLATE_CONTIG_DIR + "/REFERENCES/{reference_scope}{reference_set}.membership.tsv",
 	wildcard_constraints:
-		reference_set="host_chromosomes|host_viral|retained|excluded",
+		reference_set="host_chromosomes|host_viral|retained|excluded|excluded_host|excluded_threshold",
 		reference_scope="|HOST/[^/]+/|UNASSIGNED/",
 	params:
 		context=lambda wc, input: json.dumps(dict(samples=SAMPLES, hosts=isolate_reference_hosts(wc),
 			contigs=list(input.contigs), fasta=list(input.fasta), exact=list(input.exact),
-			host_fastas=list(input.hosts), viral_fastas=list(input.viral))),
+			host_fastas=list(input.hosts), viral_fastas=list(input.viral), sample_hosts=ISOLATE_HOST_ASSIGNMENTS)),
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env5.yaml"
 	benchmark:
@@ -113,11 +142,11 @@ rule pool_isolate_references:
 
 		reference_set, fasta_path, membership_path, context=sys.argv[1:]
 		context=json.loads(context)
-		fields=["reference_id", "sample", "original_id", "host", "evidence_scope"]
+		fields=["reference_id", "sample", "original_id", "host", "evidence_scope", "source_expected_host"]
 		with open(fasta_path, "w") as fasta, open(membership_path, "w") as table:
 		    writer=csv.DictWriter(table, fieldnames=fields, delimiter="\t", lineterminator="\n")
 		    writer.writeheader()
-		    if reference_set in ["retained", "excluded"]:
+		    if reference_set in ["retained", "excluded", "excluded_host", "excluded_threshold"]:
 		        members=[]
 		        for sample, path in zip(context["samples"], context["contigs"]):
 		            with open(path) as handle:
@@ -133,7 +162,8 @@ rule pool_isolate_references:
 		                SeqIO.write(record, fasta, "fasta")
 		                for row in groups[record.id].itertuples():
 		                    writer.writerow(dict(reference_id=record.id, sample=row.sample,
-		                        original_id=row.original_id, evidence_scope=reference_set))
+		                        original_id=row.original_id, evidence_scope=reference_set,
+		                        source_expected_host=context.get("sample_hosts", {{}}).get(row.sample, "not reported")))
 		    else:
 		        for host, path in zip(context["hosts"], context["host_fastas"] or context["viral_fastas"]):
 		            with open(path) as handle:
@@ -154,7 +184,7 @@ rule buildBowtieDB_isolate_stage:
 	output:
 		index=temp(expand("{{reference}}.fasta.{part}.bt2l", part=["1", "2", "3", "4", "rev.1", "rev.2"])),
 	wildcard_constraints:
-		reference=re.escape(ISOLATE_CONTIG_DIR) + "/(?:(?:REFERENCES/(?:HOST/[^/]+/|UNASSIGNED/)?(?:host_chromosomes|host_viral|retained|excluded))|(?:[^/]+_excluded.tot))",
+		reference=re.escape(ISOLATE_CONTIG_DIR) + "/(?:(?:REFERENCES/(?:HOST/[^/]+/|UNASSIGNED/)?(?:host_chromosomes|host_viral|retained|excluded|excluded_host|excluded_threshold))|(?:[^/]+_excluded(?:_host|_threshold)?.tot))",
 	conda:
 		dirs_dict["ENVS_DIR"] + "/env1_mapping.yaml"
 	benchmark:
@@ -177,7 +207,7 @@ rule isolate_read_accounting:
 		rev_reads=lambda wc: isolate_stage_reads(wc, "R2"),
 		unpaired=lambda wc: isolate_stage_reads(wc, "U"),
 		assembly_bam=lambda wc: [dirs_dict["MAPPING_DIR"] + "/STATS_FILES/bowtie2_" + wc.sample + "_assembled_contigs_tot_filtered.bam"] if wc.stage == "01_own_retained" else [],
-		membership=lambda wc: [isolate_stage_reference(wc).removesuffix(".fasta") + ".membership.tsv"] if wc.stage in ["02_host_chromosomes", "03_host_viral", "05_other_retained", "06_other_excluded"] else [],
+		membership=lambda wc: [isolate_stage_reference(wc).removesuffix(".fasta") + ".membership.tsv"] if wc.stage in ["02_host_chromosomes", "03_host_viral", "06_other_retained", "07_other_host_excluded", "08_other_threshold_excluded"] else [],
 		previous=lambda wc: [ISOLATE_MAPPING_DIR + "/" + wc.sample + "/" + ISOLATE_STAGES[ISOLATE_STAGES.index(wc.stage)-1] + ".summary.tsv"] if wc.stage != "01_own_retained" else [],
 	output:
 		bam=ISOLATE_MAPPING_DIR + "/{sample}/{stage}.bam",
@@ -256,7 +286,7 @@ rule isolate_read_accounting:
 		if stage in ["02_host_chromosomes", "03_host_viral"]:
 		    host_scope = "expected_host" if expected_host != "not reported" else "not_assessed"
 		    allowed = {{name for name in allowed if any(row["host"] == expected_host for row in owners.get(name, []))}}
-		if stage in ["05_other_retained", "06_other_excluded"]:
+		if stage in ["06_other_retained", "07_other_host_excluded", "08_other_threshold_excluded"]:
 		    # A shared exact representative can belong to this sample AND another sample.
 		    allowed = {{name for name in allowed if any(row["sample"] != sample for row in owners.get(name, []))}}
 
@@ -505,9 +535,9 @@ rule extract_isolate_remaining_reads:
 
 rule isolate_unexplained_reads:
 	input:
-		forward=ISOLATE_MAPPING_DIR + "/{sample}/06_other_excluded.remaining_R1.fastq.gz",
-		rev_reads=ISOLATE_MAPPING_DIR + "/{sample}/06_other_excluded.remaining_R2.fastq.gz",
-		unpaired=ISOLATE_MAPPING_DIR + "/{sample}/06_other_excluded.remaining_U.fastq.gz",
+		forward=ISOLATE_MAPPING_DIR + "/{sample}/" + ISOLATE_STAGES[-1] + ".remaining_R1.fastq.gz",
+		rev_reads=ISOLATE_MAPPING_DIR + "/{sample}/" + ISOLATE_STAGES[-1] + ".remaining_R2.fastq.gz",
+		unpaired=ISOLATE_MAPPING_DIR + "/{sample}/" + ISOLATE_STAGES[-1] + ".remaining_U.fastq.gz",
 	output:
 		forward=ISOLATE_MAPPING_DIR + "/{sample}/unexplained_R1.fastq.gz",
 		rev_reads=ISOLATE_MAPPING_DIR + "/{sample}/unexplained_R2.fastq.gz",
@@ -683,12 +713,14 @@ rule host_enriched_regions:
 rule extract_host_enriched_regions:
 	input:
 		regions=dirs_dict["PLOTS_DIR"] + "/08_host_enriched_regions.tot.tsv",
+		viral_regions=dirs_dict["PLOTS_DIR"] + "/08_host_viral_regions.tot.tsv",
 		host_fastas=expand(dirs_dict["HOST_DIR"] + "/{host}.fasta", host=HOSTS),
 	output:
 		fasta=dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.fasta",
 		table=dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.tsv",
 	params:
 		hosts=HOSTS,
+		adjacency_bp=int(config.get("host_enriched_regions_prophage_adjacency_bp", 1000)),
 	message:
 		"Exporting unique enriched host loci and their supporting samples"
 	benchmark:
@@ -701,6 +733,7 @@ rule extract_host_enriched_regions:
 		from Bio.SeqRecord import SeqRecord
 
 		calls=pd.read_csv(input.regions, sep="\t", dtype={"host": str, "parent_contig": str, "sample": str})
+		viral_regions=pd.read_csv(input.viral_regions, sep="\t", dtype={"host": str, "parent_contig": str})
 		loci=[]
 		# Merge overlapping calls across samples, not their much larger plotting windows.
 		for (host, parent), group in calls.groupby(["host", "parent_contig"], sort=False):
@@ -711,7 +744,8 @@ rule extract_host_enriched_regions:
 					loci.append(current)
 				current["end"]=max(current["end"], int(row.end))
 				current["calls"].append(row)
-		columns=["region_id", "host", "parent_contig", "start", "end", "length_bp", "n_samples", "samples", "n_sample_calls", "source_intervals"]
+		columns=["region_id", "host", "parent_contig", "start", "end", "length_bp", "n_samples", "samples", "n_sample_calls", "source_intervals",
+			"next_to_prophage", "nearest_prophage_id", "nearest_prophage_distance_bp", "prophage_adjacency_threshold_bp"]
 		rows=[]
 		Path(output.fasta).parent.mkdir(parents=True, exist_ok=True)
 		with open(output.fasta, "w") as handle:
@@ -729,10 +763,135 @@ rule extract_host_enriched_regions:
 						samples=sorted({call.sample for call in locus["calls"]})
 						# Reported coordinates are 1-based inclusive; no context flanks are exported.
 						sequence=record.seq[start-1:end]
+						neighbours=[]
+						for viral in viral_regions[viral_regions["host"].eq(host) & viral_regions["parent_contig"].eq(record.id) &
+							viral_regions["evidence_scope"].eq("embedded_prophage")].itertuples():
+							left, right=sorted([int(viral.start), int(viral.end)])
+							neighbours.append((max(left - end - 1, start - right - 1, 0), viral.viral_id))
+						nearest=min(neighbours) if neighbours else None
+						distance=nearest[0] if nearest else "not reported"
+						nearest_id=nearest[1] if nearest else "not reported"
+						adjacent=nearest is not None and nearest[0] <= params.adjacency_bp
 						SeqIO.write(SeqRecord(sequence, id=region_id,
-							description="host=" + host + " contig=" + record.id + " length=" + str(len(sequence)) + " samples=" + ";".join(samples)), handle, "fasta")
+							description="host=" + host + " contig=" + record.id + " length=" + str(len(sequence)) + " samples=" + ";".join(samples) +
+							" next_to_prophage=" + str(adjacent) + " nearest_prophage=" + nearest_id.replace(" ", "_") +
+							" prophage_gap_bp=" + str(distance).replace(" ", "_") + " adjacency_threshold_bp=" + str(params.adjacency_bp)), handle, "fasta")
 						rows.append(dict(region_id=region_id, host=host, parent_contig=record.id,
 							start=start, end=end, length_bp=len(sequence), n_samples=len(samples), samples=";".join(samples),
 							n_sample_calls=len(locus["calls"]), source_intervals=";".join(str(a) + "-" + str(b)
-								for a, b in sorted({(call.start, call.end) for call in locus["calls"]}))))
+								for a, b in sorted({(call.start, call.end) for call in locus["calls"]})),
+							next_to_prophage=adjacent, nearest_prophage_id=nearest_id, nearest_prophage_distance_bp=distance,
+							prophage_adjacency_threshold_bp=params.adjacency_bp))
 		pd.DataFrame(rows, columns=columns).to_csv(output.table, sep="\t", index=False)
+
+
+rule host_enriched_region_metadata:
+	input:
+		regions=dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.tsv",
+		genomad=dirs_dict["ANNOTATION"] + "/geNomad_host_enriched_regions.tot",
+		checkv=dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot_checkV/quality_summary.tsv",
+		phold=dirs_dict["ANNOTATION"] + "/phold_host_enriched_regions.tot",
+		taxmyphage=dirs_dict["ANNOTATION"] + "/taxmyphage_host_enriched_regions.tot",
+		refseq=dirs_dict["ANNOTATION"] + "/blast_output_ViralRefSeq_host_enriched_regions.tot.csv",
+		metavr=[dirs_dict["ANNOTATION"] + "/blast_output_METAVR_host_enriched_regions.tot.csv"] if METAVR_blast else [],
+		metavr_metadata=[os.path.join(config["METAVR_db"], "METAVR_main_table.parquet")] if METAVR_blast else [],
+	output:
+		metadata=dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions_metadata.tot.tsv",
+	message:
+		"Combining enriched-locus provenance with Phold, geNomad, CheckV and reference taxonomy"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env7.yaml"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/host_enriched_region_metadata/tot.tsv"
+	threads: 1
+	resources:
+		mem_mb=8000,
+	shell:
+		r"""
+		python - {input.regions:q} {input.genomad:q} {input.checkv:q} {input.phold:q} {input.taxmyphage:q} {input.refseq:q} {output.metadata:q} {input.metavr:q} {input.metavr_metadata:q} <<-'PYTHON'
+		import sys
+		from types import SimpleNamespace
+		input=SimpleNamespace(regions=sys.argv[1], genomad=sys.argv[2], checkv=sys.argv[3], phold=sys.argv[4],
+		    taxmyphage=sys.argv[5], refseq=sys.argv[6], metavr=sys.argv[8:9], metavr_metadata=sys.argv[9:10])
+		output=SimpleNamespace(metadata=sys.argv[7])
+		from pathlib import Path
+		import pandas as pd
+
+		def table(path):
+		    path=Path(path)
+		    return pd.read_csv(path, sep="\t") if path.is_file() and path.stat().st_size else pd.DataFrame()
+
+		metadata=table(input.regions).set_index("region_id")
+		prefix="host_enriched_regions.tot"
+		folder=Path(input.genomad)
+		virus=table(folder / (prefix + "_summary") / (prefix + "_virus_summary.tsv"))
+		plasmid=table(folder / (prefix + "_summary") / (prefix + "_plasmid_summary.tsv"))
+		scores=table(folder / (prefix + "_aggregated_classification") / (prefix + "_aggregated_classification.tsv"))
+		if "seq_name" in scores:
+		    scores=scores.drop_duplicates("seq_name").set_index("seq_name")
+		    metadata=metadata.join(scores.reindex(metadata.index).add_prefix("geNomad_contig_"))
+		metadata["geNomad_classification"]="no viral/plasmid call"
+		metadata["geNomad_evidence_scope"]="not reported"
+		for biology, frame in [("plasmid", plasmid), ("virus", virus)]:
+		    if "seq_name" not in frame:
+		        continue
+		    frame=frame.copy()
+		    frame["region_id"]=frame["seq_name"].str.split("|provirus_", regex=False).str[0]
+		    for identifier, hits in frame.groupby("region_id", sort=False):
+		        if identifier not in metadata.index:
+		            continue
+		        whole=hits["seq_name"].eq(identifier).any()
+		        metadata.loc[identifier, "geNomad_classification"]=biology if whole else "viral region"
+		        metadata.loc[identifier, "geNomad_evidence_scope"]="whole contig" if whole else "provirus region"
+		        for column in frame.columns.drop("region_id"):
+		            values=hits[column].dropna().astype(str).drop_duplicates()
+		            field="geNomad_" + column if column in ["virus_score", "plasmid_score", "taxonomy"] else "geNomad_" + biology + "_" + column
+		            metadata.loc[identifier, field]=" | ".join(values) or "not reported"
+		for biology in ["virus", "plasmid"]:
+		    field="geNomad_" + biology + "_score"
+		    contig_field="geNomad_contig_" + biology + "_score"
+		    if field not in metadata:
+		        metadata[field]=pd.NA
+		    if contig_field in metadata:
+		        metadata[field]=metadata[field].where(metadata[field].notna(), metadata[contig_field])
+
+		for path, key, name in [(input.checkv, "contig_id", "CheckV"),
+		    (Path(input.taxmyphage) / "Summary_taxonomy.tsv", "Genome", "TaxMyPhage")]:
+		    frame=table(path)
+		    if key in frame:
+		        metadata=metadata.join(frame.drop_duplicates(key).set_index(key).reindex(metadata.index).add_prefix(name + "_"))
+		functions=table(Path(input.phold) / (prefix + "_all_cds_functions.tsv"))
+		if all(field in functions for field in ["Contig", "Description", "Count"]):
+		    functions=functions.pivot(index="Contig", columns="Description", values="Count")
+		    functions.columns=["Phold_" + str(name).replace(" ", "_") for name in functions.columns]
+		    metadata=metadata.join(functions.reindex(metadata.index))
+		cds=table(Path(input.phold) / (prefix + "_per_cds_predictions.tsv"))
+		if "contig_id" in cds:
+		    metadata["Phold_CDS_count"]=cds.groupby("contig_id").size().reindex(metadata.index, fill_value=0)
+		    for field in ["function", "product", "annotation_confidence"]:
+		        if field in cds:
+		            metadata["Phold_" + field + "s"]=cds.groupby("contig_id")[field].agg(
+		                lambda values: " | ".join(sorted(set(values.dropna().astype(str)))))
+
+		blast_columns=["qseqid", "sseqid", "description", "qstart", "qend", "qlen", "slen", "qcovs", "evalue", "alignment_length", "pident"]
+		for paths, name in [([input.refseq], "RefSeq"), (input.metavr, "METAVR")]:
+		    metadata[name + "_assessment"]="run" if paths else "not requested"
+		    for path in paths:
+		        frame=pd.read_csv(path, sep="\t", header=None, names=blast_columns) if Path(path).stat().st_size else pd.DataFrame(columns=blast_columns)
+		        frame=frame[frame["qseqid"].ne("qseqid")].copy()
+		        for field in blast_columns[3:]:
+		            frame[field]=pd.to_numeric(frame[field], errors="coerce")
+		        # Use the same best-hit ordering as the existing all-assembled metadata.
+		        frame=frame.sort_values(["evalue", "qcovs", "pident", "alignment_length", "sseqid"],
+		            ascending=[True, False, False, False, True], kind="stable")
+		        metadata=metadata.join(frame.drop_duplicates("qseqid").set_index("qseqid").reindex(metadata.index).add_prefix(name + "_"))
+		if input.metavr_metadata:
+		    accessions=metadata["METAVR_sseqid"].dropna().str.split("|").str[0].unique().tolist()
+		    metavr=pd.read_parquet(input.metavr_metadata[0], columns=["uvig", "quality", "genome_type", "ictv_taxonomy"],
+		        filters=[("uvig", "in", accessions)]).drop_duplicates("uvig").set_index("uvig") if accessions else pd.DataFrame()
+		    for field in ["quality", "genome_type", "ictv_taxonomy"]:
+		        if field in metavr:
+		            metadata["METAVR_" + field]=metadata["METAVR_sseqid"].fillna("").str.split("|").str[0].map(metavr[field])
+		metadata.reset_index().to_csv(output.metadata, sep="\t", index=False, na_rep="not reported")
+		PYTHON
+		"""

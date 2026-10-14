@@ -340,12 +340,12 @@ rule match_spacers_dion:
 
 rule taxmyphage:
 	input:
-		fasta=dirs_dict["vOUT_DIR"] + "/{sequence}.fasta",
+		fasta=lambda wc: annotation_fasta_path(wc.sequence),
 		taxmyphage_db=(config['taxmyphage_db']),
 	output:
 		results_dir=directory(dirs_dict["ANNOTATION"] + "/taxmyphage_{sequence}"),
 	params:
-		results_dir=directory(dirs_dict["ANNOTATION"] + "/taxmyphage_results"),
+		results_dir=dirs_dict["ANNOTATION"] + "/taxmyphage_{sequence}",
 		annotation_dir=directory(dirs_dict["ANNOTATION"]),
 	message:
 		"Assigning taxonomy with taxmyphage"
@@ -355,7 +355,11 @@ rule taxmyphage:
 		dirs_dict["BENCHMARKS"] + "/taxmyphage/sequence={sequence}.tsv"
 	threads: 32
 	shell:
-		"""
-		taxmyphage run -i {input.fasta} -t {threads} -db {input.taxmyphage_db} -o {params.results_dir}
-		mv {params.results_dir} {output.results_dir}
+		r"""
+		if [ -s {input.fasta:q} ]; then
+			taxmyphage run -i {input.fasta:q} -t {threads} -db {input.taxmyphage_db:q} -o {params.results_dir:q} --force
+		else
+			mkdir -p {output.results_dir:q}
+			printf 'Genome\n' > {output.results_dir:q}/Summary_taxonomy.tsv
+		fi
 		"""

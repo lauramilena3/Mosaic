@@ -1,3 +1,37 @@
+rule annotate_phold:
+	input:
+		fasta=lambda wc: annotation_fasta_path(wc.sequence),
+		database=config["phold_db"],
+	output:
+		results=directory(dirs_dict["ANNOTATION"] + "/phold_{sequence}"),
+	params:
+		prefix="{sequence}",
+	message:
+		"Annotating {wildcards.sequence} with Phold in CPU mode"
+	conda:
+		dirs_dict["ENVS_DIR"] + "/phold.yaml"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/annotate_phold/sequence={sequence}.tsv"
+	log:
+		dirs_dict["ANNOTATION"] + "/phold_{sequence}.log"
+	threads: int(config.get("phold_threads", 8))
+	resources:
+		mem_mb=int(config.get("phold_mem_mb", 32768)),
+	wildcard_constraints:
+		sequence="[^/]+",
+	shell:
+		r"""
+		if [ -s {input.fasta:q} ]; then
+			phold run -i {input.fasta:q} -o {output.results:q} -p {params.prefix:q} \
+				-d {input.database:q} -t {threads} --cpu --force > {log:q} 2>&1
+		else
+			mkdir -p {output.results:q}
+			printf 'Description\tCount\tContig\n' > {output.results:q}/{params.prefix:q}_all_cds_functions.tsv
+			printf 'contig_id\tcds_id\tfunction\tproduct\n' > {output.results:q}/{params.prefix:q}_per_cds_predictions.tsv
+			printf 'No enriched regions to annotate.\n' > {log:q}
+		fi
+		"""
+
 rule annotate_cenote:
 	input:
 		fasta=lambda wc: annotation_fasta_path(wc.sequence + "." + wc.sampling),
