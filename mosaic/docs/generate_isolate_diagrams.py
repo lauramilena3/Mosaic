@@ -31,10 +31,12 @@ READ_ASSIGNMENT_COLORS = {
     "01_own_retained": BLUE,
     "02_host_chromosomes": PURPLE,
     "03_host_viral": "#b69aef",
-    "04_own_excluded": AMBER,
-    "05_other_retained": "#93b4f7",
-    "06_other_excluded": "#e6b07c",
-    "07_unexplained": "#8a8a8a",
+    "04_own_host_excluded": "#4C1D95",
+    "05_own_threshold_excluded": AMBER,
+    "06_other_retained": "#93b4f7",
+    "07_other_host_excluded": "#DDD1F3",
+    "08_other_threshold_excluded": "#e6b07c",
+    "09_unexplained": "#8a8a8a",
 }
 plt.rcParams.update({"font.family": "DejaVu Sans", "svg.fonttype": "none",
                      "svg.hashsalt": "mosaic-isolate-methods"})
@@ -143,7 +145,7 @@ def overview(directory, cfg):
         d.text(x + 20, 173, title, size=24, color=color, weight="bold")
     qc = d.card(80, 220, 460, "01 / Read QC", ["fastp + contamination reporting", "Keep all QC-passed reads"], BLUE, size=22)
     reads = d.card(80, 432, 460, "Full-read mapping", ["Paired reads + orphans; never 2M", "Depth for per-sample selection"], BLUE, size=22)
-    account = d.card(80, 638, 460, "06 / Read accounting", ["Six priority stages + unexplained"], BLUE, size=22)
+    account = d.card(80, 638, 460, "06 / Read accounting", ["Eight priority stages + unexplained"], BLUE, size=22)
     d.down(qc, reads, BLUE)
     d.down(reads, account, BLUE)
     assembly = d.card(670, 220, 460, "02 / Assembly + evidence", ["BBnorm → SPAdes → saved contigs", "geNomad / CheckV / terminal repeats"], TEAL, size=21)
@@ -241,22 +243,23 @@ def hosts(directory, cfg):
 
 
 def selection(directory, cfg):
-    d = Diagram("04 / RETAINED AND EXCLUDED CONTIGS", "A length/depth and assigned-host decision — not a geNomad-positive filter", 790)
+    d = Diagram("04 / RETAINED AND EXCLUDED CONTIGS", "A length/depth and assigned-host decision — not a viral-positive filter", 870)
     d.card(60, 160, 780, "Own assembly + full-read mapping", [
         f"Saved contigs ≥{int(cfg['min_len']):,} bp; use own-assembly mean depth",
         f"Depth ≥{number(cfg['isolate_min_depth'])}× AND (length ≥{int(cfg['isolate_min_length_bp']):,} bp OR depth ≥{number(cfg['isolate_short_min_depth'])}×)"], TEAL)
     d.card(960, 160, 780, "Assigned-host BLAST screen", [
-        f"Identity ≥{number(cfg['isolate_host_min_identity'])}% AND query coverage ≥{number(cfg['isolate_host_min_query_coverage'])}%",
-        "Query coverage is the fraction of the isolate contig",
-        "Match assigned chromosome OR predicted host viral regions"], PURPLE, size=22)
-    d.arrow([(450, 307), (450, 355), (900, 355), (900, 395)], TEAL)
-    d.arrow([(1350, 338), (1350, 355), (900, 355)], PURPLE)
-    d.band(395, "RETAIN ONLY WHEN", "Coverage rule passes AND there is no qualifying assigned-host chromosome / viral-region match.", TEAL)
-    d.card(60, 555, 780, "Retained FASTA", ["Coverage-supported; no qualifying assigned-host match", "geNomad-negative / unclassified contigs can be retained"], TEAL, size=23)
-    d.card(960, 555, 780, "Excluded FASTA + reason", ["Length/depth fails OR qualifying assigned-host match", "Supported host-prophage matches are excluded + flagged"], AMBER, size=23)
-    d.arrow([(500, 495), (450, 555)], TEAL)
-    d.arrow([(1300, 495), (1350, 555)], AMBER)
-    d.note(717, "Both sets are saved and enter the global catalogue. Other-host matches do not drive exclusion.")
+        f"Standard: Identity ≥{number(cfg['isolate_host_min_identity'])}% AND query coverage ≥{number(cfg['isolate_host_min_query_coverage'])}%",
+        "Chromosome OR predicted viral-region reference",
+        "Plasmid similarity: report-only flag; no extra exclusion",
+        f"Identity ≥{number(cfg['isolate_host_plasmid_min_identity'])}%; query ≥{number(cfg['isolate_host_plasmid_min_query_coverage'])}%; host-contig coverage ≥{number(cfg['isolate_host_plasmid_min_subject_coverage'])}%"], PURPLE, size=22)
+    d.arrow([(450, 307), (450, 390), (900, 390), (900, 420)], TEAL)
+    d.arrow([(1350, 370), (1350, 390), (900, 390)], PURPLE)
+    d.band(420, "RETAIN ONLY WHEN", "Coverage rule passes AND no qualifying standard assigned-host or predicted viral-region match.", TEAL)
+    d.card(60, 580, 780, "Retained FASTA", ["Coverage-supported; no qualifying assigned-host match", "geNomad-negative / unclassified contigs can be retained"], TEAL, size=23)
+    d.card(960, 580, 780, "Excluded FASTAs + reasons", ["Host-excluded first; threshold-only excluded separately", "Keep combined FASTA + every length/depth/host flag", "Supported host-prophage matches are excluded + flagged"], AMBER, size=22)
+    d.arrow([(500, 520), (450, 580)], TEAL)
+    d.arrow([(1300, 520), (1350, 580)], AMBER)
+    d.note(790, "All sets are saved and enter the global catalogue. Other-host matches do not drive exclusion.")
     d.save(directory, "phage_isolates_04_selection")
 
 
@@ -278,11 +281,12 @@ def clustering(directory, cfg):
 
 
 def accounting(directory, cfg):
-    d = Diagram("06 / WHERE DO THE READS GO?", "All QC-passed paired and orphan reads · ≥95% identity AND ≥85% of read length aligned", 660, width=2240)
+    d = Diagram("06 / WHERE DO THE READS GO?", "All QC-passed paired and orphan reads · ≥95% identity AND ≥85% of read length aligned", 660, width=2860)
     d.band(145, "PRIORITY ASSIGNMENT", "Only reads without a passing alignment advance. Each read is counted once; the first stage reuses the own-assembly BAM.", BLUE)
     groups = [("01", "Own", "retained", BLUE), ("02", "Masked host", "chromosome", PURPLE),
-              ("03", "Host viral", "regions", PURPLE), ("04", "Own", "excluded", AMBER),
-              ("05", "Other samples’", "retained", BLUE), ("06", "Other samples’", "excluded", AMBER),
+              ("03", "Host viral", "regions", PURPLE), ("04", "Own host-", "excluded", PURPLE),
+              ("05", "Own threshold-", "excluded", AMBER), ("06", "Other samples’", "retained", BLUE),
+              ("07", "Other host-", "excluded", PURPLE), ("08", "Other threshold-", "excluded", AMBER),
               ("REST", "Unexplained", "reads", MUTED)]
     for index, ((stage, first, second, family), color) in enumerate(zip(groups, READ_ASSIGNMENT_COLORS.values())):
         x = 60 + 310 * index
@@ -293,7 +297,7 @@ def accounting(directory, cfg):
         d.text(x + 130, 389, second, size=23, color=family, weight="bold", ha="center")
         if index:
             d.arrow([(x - 50, 369), (x, 369)])
-        if index < 6:
+        if index < 8:
             d.arrow([(x + 130, 439), (x + 130, 483)], color)
             d.text(x + 130, 495, "Assigned here", size=22, color=family, ha="center")
     d.note(553, "Host stages use the assigned host only. Other-sample matches indicate sequence sharing, not proof of origin.")
