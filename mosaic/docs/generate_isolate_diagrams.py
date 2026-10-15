@@ -281,7 +281,7 @@ def clustering(directory, cfg):
 
 
 def accounting(directory, cfg):
-    d = Diagram("06 / WHERE DO THE READS GO?", "All QC-passed paired and orphan reads · ≥95% identity AND ≥85% of read length aligned", 660, width=2860)
+    d = Diagram("06 / WHERE DO THE READS GO?", "All QC-passed paired and orphan reads · ≥95% identity AND ≥85% of read length aligned", 710, width=2860)
     d.band(145, "PRIORITY ASSIGNMENT", "Only reads without a passing alignment advance. Each read is counted once; the first stage reuses the own-assembly BAM.", BLUE)
     groups = [("01", "Own", "retained", BLUE), ("02", "Masked host", "chromosome", PURPLE),
               ("03", "Host viral", "regions", PURPLE), ("04", "Own host-", "excluded", PURPLE),
@@ -302,6 +302,7 @@ def accounting(directory, cfg):
             d.text(x + 130, 495, "Assigned here", size=22, color=family, ha="center")
     d.note(553, "Host stages use the assigned host only. Other-sample matches indicate sequence sharing, not proof of origin.")
     d.note(595, "Preserve alternative / discordant / non-unique evidence and single mates; final unexplained reads remain available.")
+    d.note(637, "Stage 06 reports same / mixed / different MOSAIC clusters separately, using all accepted references; no extra mapping passes.")
     d.save(directory, "phage_isolates_06_read_accounting")
 
 

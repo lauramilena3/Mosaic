@@ -473,6 +473,103 @@ rule isolate_read_accounting:
 		PYTHON
 		"""
 
+# Report-only split: reuse accepted alignments, without another mapping pass.
+rule isolate_other_retained_clusters:
+	input:
+		metadata=ALL_ASSEMBLED_DIR + "/phage_isolates.tot/all_contig_metadata.tsv",
+		reads=expand(ISOLATE_MAPPING_DIR + "/{sample}/06_other_retained.reads.tsv.gz", sample=SAMPLES),
+		summaries=expand(ISOLATE_MAPPING_DIR + "/{sample}/06_other_retained.summary.tsv", sample=SAMPLES),
+	output:
+		reads=ISOLATE_MAPPING_DIR + "/other_retained_cluster_reads.tot.tsv.gz",
+		summary=ISOLATE_MAPPING_DIR + "/other_retained_cluster_summary.tot.tsv",
+		references=ISOLATE_MAPPING_DIR + "/other_retained_cluster_reference_reads.tot.tsv",
+	params:
+		groups=json.dumps(ISOLATE_OTHER_RETAINED_GROUPS),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/env5.yaml"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/isolate_other_retained_clusters/tot.tsv"
+	threads: 1
+	shell:
+		r"""
+		python - {input.metadata:q} {output.reads:q} {output.summary:q} {output.references:q} \
+			--groups {params.groups:q} --reads {input.reads:q} --summaries {input.summaries:q} <<-'PYTHON'
+		import argparse
+		import csv
+		import gzip
+		import json
+		from collections import Counter
+		import pandas as pd
+
+		parser=argparse.ArgumentParser()
+		parser.add_argument("metadata")
+		parser.add_argument("output_reads")
+		parser.add_argument("output_summary")
+		parser.add_argument("output_references")
+		parser.add_argument("--reads", nargs="+")
+		parser.add_argument("--summaries", nargs="+")
+		parser.add_argument("--groups")
+		args=parser.parse_args()
+		metadata=pd.read_csv(args.metadata, sep="\t")
+		cluster_lookup=metadata.set_index("original_id")["cluster_rep"].to_dict()
+		lengths=metadata.set_index("original_id")["length_bp"].to_dict()
+		retained=metadata[metadata["retained"].astype(str).str.lower().eq("true")]
+		own_clusters=retained.groupby("sample")["cluster_rep"].agg(set).to_dict()
+		groups=json.loads(args.groups)
+		pairing_fields=["proper_pair_reads", "discordant_reads", "single_mate_reads",
+		                "residual_mate_reads", "unpaired_reads"]
+		counts=Counter()
+		reference_counts=Counter()
+		with gzip.open(args.output_reads, "wt") as output:
+		    writer=None
+		    for path in args.reads:
+		        with gzip.open(path, "rt") as handle:
+		            table=csv.DictReader(handle, delimiter="\t")
+		            if writer is None:
+		                fields=table.fieldnames + ["mapping_stage", "accepted_clusters", "number_accepted_clusters"]
+		                writer=csv.DictWriter(output, fieldnames=fields, delimiter="\t", lineterminator="\n")
+		                writer.writeheader()
+		            for row in table:
+		                sample=row["sample"]
+		                clusters={{cluster_lookup[reference] for reference in row["accepted_references"].split(";")}}
+		                same=bool(clusters & own_clusters.get(sample, set()))
+		                different=bool(clusters - own_clusters.get(sample, set()))
+		                group=groups[1] if same and different else groups[0] if same else groups[2]
+		                row["mapping_stage"]=row["stage"]
+		                row["stage"]=group
+		                row["accepted_clusters"]=";".join(sorted(clusters))
+		                row["number_accepted_clusters"]=len(clusters)
+		                writer.writerow(row)
+		                counts[sample, group, "assigned_reads"] += 1
+		                counts[sample, group, "non_unique_reads"] += row["non_unique"].lower() == "true"
+		                counts[sample, group, row["pairing_scope"] + "_reads"] += 1
+		                reference_counts[sample, group, row["selected_reference"]] += 1
+		rows=[]
+		for path in args.summaries:
+		    with open(path) as handle:
+		        original=next(csv.DictReader(handle, delimiter="\t"))
+		    sample=original["sample"]
+		    total=int(original["original_reads"])
+		    entering=int(original["entering_reads"])
+		    for group in groups:
+		        row=dict(original, stage=group, mapping_stage="06_other_retained")
+		        for field in ["assigned_reads", "non_unique_reads"] + pairing_fields:
+		            row[field]=counts[sample, group, field]
+		        row["remaining_reads"]=entering - row["assigned_reads"]
+		        row["percent_original"]=100 * row["assigned_reads"] / total if total else 0
+		        row["percent_entering"]=100 * row["assigned_reads"] / entering if entering else 0
+		        row["remaining_percent_original"]=100 * row["remaining_reads"] / total if total else 0
+		        rows.append(row)
+		pd.DataFrame(rows).to_csv(args.output_summary, sep="\t", index=False)
+		with open(args.output_references, "w") as output:
+		    writer=csv.writer(output, delimiter="\t", lineterminator="\n")
+		    writer.writerow(["sample", "stage", "reference", "assigned_reads", "genome_length"])
+		    for (sample, group, reference), count in sorted(reference_counts.items()):
+		        writer.writerow([sample, group, reference, count, lengths[reference]])
+		PYTHON
+		"""
+
+
 rule extract_isolate_remaining_reads:
 	input:
 		forward=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq.gz",

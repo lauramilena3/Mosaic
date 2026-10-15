@@ -254,6 +254,10 @@ if isinstance(ISOLATE_NETWORK_SOURCES, str):
 ISOLATE_NETWORK_SOURCES=list(dict.fromkeys(ISOLATE_NETWORK_SOURCES))
 ISOLATE_STAGES=["01_own_retained", "02_host_chromosomes", "03_host_viral", "04_own_host_excluded",
 	"05_own_threshold_excluded", "06_other_retained", "07_other_host_excluded", "08_other_threshold_excluded"]
+ISOLATE_OTHER_RETAINED_GROUPS=["06_other_retained_same_cluster", "06_other_retained_mixed_clusters",
+	"06_other_retained_different_cluster"]
+ISOLATE_REPORT_STAGES=[group for stage in ISOLATE_STAGES
+	for group in (ISOLATE_OTHER_RETAINED_GROUPS if stage == "06_other_retained" else [stage])]
 
 def annotation_fasta_path(sequence):
 	if sequence == "host_enriched_regions.tot":

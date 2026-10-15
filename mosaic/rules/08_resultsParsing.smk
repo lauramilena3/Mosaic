@@ -427,6 +427,8 @@ rule mapping_statistics_parsing:
 		assembled_sequences=inputAssemblyContigs,
 		assembly_flagstats=input_assembly_flagstats,
 		accounting=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv", sample=SAMPLES, stage=ISOLATE_STAGES) if ISOLATES else [],
+		other_retained_clusters=[ISOLATE_MAPPING_DIR + "/other_retained_cluster_summary.tot.tsv"] if ISOLATES else [],
+		other_retained_reference_counts=[ISOLATE_MAPPING_DIR + "/other_retained_cluster_reference_reads.tot.tsv"] if ISOLATES else [],
 		reference_counts=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.reference_reads.tsv", sample=SAMPLES, stage=ISOLATE_STAGES) if ISOLATES else [],
 		all_assembled_flagstats=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_flagstats_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if ISOLATES and MAP_TO_ALL_ASSEMBLED else [],
 		all_assembled_mapped_pairs=expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_mapped_pairs_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES) if MAP_TO_ALL_ASSEMBLED and not ISOLATES else [],
@@ -447,6 +449,7 @@ rule mapping_statistics_parsing:
 	params:
 		isolates=ISOLATES,
 		stages=ISOLATE_STAGES,
+		report_stages=ISOLATE_REPORT_STAGES,
 		samples=SAMPLES,
 		mapping_dir=dirs_dict["MAPPING_DIR"],
 		sampling="{sampling}",
@@ -663,10 +666,23 @@ rule isolate_fragment_candidates:
 		ani=pd.read_csv(ani_path, sep="\t")
 		with open(fasta_path) as handle:
 		    sequences={{record.id: str(record.seq).upper() for record in SeqIO.parse(handle, "fasta")}}
+		# Unknown bases are report-only: never change selection or sample decisions.
+		import re
+		gaps=[]
+		for name, sequence in sequences.items():
+		    runs=list(re.finditer("N+", sequence))
+		    gaps.append(dict(original_id=name, assembly_gapped=bool(runs),
+		        assembly_n_bases=sum(len(run.group()) for run in runs), assembly_gap_count=len(runs),
+		        assembly_longest_gap_bp=max((len(run.group()) for run in runs), default=0),
+		        assembly_gap_coordinates=";".join(f"{{run.start() + 1}}-{{run.end()}}" for run in runs) or "none"))
+		metadata=metadata.merge(pd.DataFrame(gaps, columns=["original_id", "assembly_gapped", "assembly_n_bases",
+		    "assembly_gap_count", "assembly_longest_gap_bp", "assembly_gap_coordinates"]), on="original_id", how="left")
 		metadata, matches=flag_fragment_candidates(metadata, ani, sequences, float(min_identity),
 		    float(min_short_coverage), float(max_length_ratio))
 		counts=metadata.groupby("cluster_rep")["fragment_candidate"].sum()
 		clusters["number_fragment_candidates"]=clusters["cluster_rep"].map(counts).fillna(0).astype(int)
+		gap_counts=metadata.groupby("cluster_rep")["assembly_gapped"].sum()
+		clusters["number_gapped_contigs"]=clusters["cluster_rep"].map(gap_counts).fillna(0).astype(int)
 		for table, path in [(metadata, output_metadata), (clusters, output_clusters), (matches, output_matches)]:
 		    table.to_csv(path, sep="\t", index=False, na_rep="not reported")
 
@@ -691,6 +707,8 @@ rule phage_isolates_summary:
 		fragment_matches=ALL_ASSEMBLED_DIR + "/phage_isolates.{sampling}/fragment_candidate_matches.tsv",
 		catalogue_blast=ALL_ASSEMBLED_DIR + "/phage_isolates_contigs_derreplicated_rep_seq.tot-blastout.csv",
 		accounting=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.summary.tsv", sample=SAMPLES, stage=ISOLATE_STAGES),
+		other_retained_clusters=ISOLATE_MAPPING_DIR + "/other_retained_cluster_summary.tot.tsv",
+		other_retained_reference_counts=ISOLATE_MAPPING_DIR + "/other_retained_cluster_reference_reads.tot.tsv",
 		mapping_aggregates=dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_isolates_aggregates_{sampling}.tsv",
 		reference_counts=expand(ISOLATE_MAPPING_DIR + "/{sample}/{stage}.reference_reads.tsv", sample=SAMPLES, stage=ISOLATE_STAGES),
 		unexplained=expand(ISOLATE_MAPPING_DIR + "/{sample}/unexplained_{mate}.fastq.gz", sample=SAMPLES, mate=["R1", "R2", "unpaired"]),
@@ -757,6 +775,8 @@ rule phage_isolates_summary:
 		host_test_min_breadth=float(config.get("isolate_host_test_min_breadth_percent", 1)),
 		plot_max_host_contigs=int(config.get("isolate_plot_max_host_contigs", 100)),
 		stages=ISOLATE_STAGES,
+		report_stages=ISOLATE_REPORT_STAGES,
+		other_retained_groups=ISOLATE_OTHER_RETAINED_GROUPS,
 		samples=SAMPLES,
 		sampling="{sampling}",
 		results_dir=RESULTS_DIR,
