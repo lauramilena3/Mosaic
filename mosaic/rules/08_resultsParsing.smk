@@ -1,3 +1,23 @@
+rule notebook_to_html:
+	input:
+		notebook=dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.ipynb",
+	output:
+		html=dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.html",
+	wildcard_constraints:
+		notebook="[^/]+",
+	params:
+		folder=dirs_dict["NOTEBOOKS_DIR"],
+	message:
+		"Exporting executed notebook {wildcards.notebook} to HTML"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/notebook_to_html/{notebook}.tsv"
+	threads: 1
+	shell:
+		"""
+		jupyter-nbconvert --log-level ERROR --to html --embed-images \
+			--output-dir {params.folder:q} --output {wildcards.notebook:q} {input.notebook:q}
+		"""
+
 def benchmark_snapshot(wildcards):
 	from pathlib import Path
 	root=Path(dirs_dict["BENCHMARKS"])

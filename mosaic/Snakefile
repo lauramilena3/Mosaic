@@ -337,6 +337,24 @@ def inputReadsCount(wildcards):
 		inputs.append(dirs_dict["CLEAN_DATA_DIR"] + "/ALL_forward_paired_norm.tot_read_count.txt"),
 	return inputs
 
+def inputNotebookHTML(wildcards):
+	# Backfill only existing public report notebooks, not templates or internal parsers.
+	from snakemake.io import strip_wildcard_constraints
+	inputs=[]
+	for report in workflow.rules:
+		if report.name == "phage_isolates_catalogue":
+			continue
+		pattern=strip_wildcard_constraints(str(report.log.get("notebook", "")))
+		if not str(pattern).startswith(dirs_dict["NOTEBOOKS_DIR"] + "/"):
+			continue
+		if "{" in pattern:
+			matches=glob_wildcards(pattern)
+			paths=expand(pattern, zip, **matches._asdict())
+		else:
+			paths=[pattern]
+		inputs.extend(str(path)[:-6] + ".html" for path in paths if os.path.isfile(path))
+	return sorted(set(inputs), key=natural_sort_key)
+
 def inputQC(wildcards):
 	inputs=[]
 	if not NANOPORE_ONLY:
@@ -347,6 +365,7 @@ def inputQC(wildcards):
 			inputs.append(dirs_dict["QC_DIR"]+ "/post_decontamination_kraken_multiqc_report.html")
 		inputs.extend(expand(dirs_dict["QC_DIR"] + "/{sample}_stats_pcr_duplicates.log", sample=SAMPLES)),
 		inputs.append(dirs_dict["PLOTS_DIR"] + "/01_kmer_rarefraction_plot.tot.png")
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/01_QC.tot.html")
 	# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_brackenuniq_{level}_report_paired_tot.csv", sample=SAMPLES, level=LEVELS_BRACKEN)),
 	# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_bracken_S_report_paired_tot.csv", sample=SAMPLES))
 	# inputs.extend(expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_bracken_{level}_report_paired_pre_tot.csv", sample=SAMPLES, level=LEVELS_BRACKEN)),
@@ -360,6 +379,7 @@ def inputQC(wildcards):
 
 	if SOURMASH_CLEAN_READS and SAMPLES:
 		inputs.append(dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.html")
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/01_sourmash_clean_reads.tot.html")
 	return inputs
 
 def inputAssembly(wildcards):
@@ -367,6 +387,7 @@ def inputAssembly(wildcards):
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.tot.fasta", sample=SAMPLES))
 	inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/assembly_quast_report.{sampling}.txt", sampling=SAMPLING_TYPE_TOT))
 	inputs.append(dirs_dict["PLOTS_DIR"] + "/03_log_number_contigs_plot.tot.png")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/03_assembly_short.tot.html")
 	if SUBASSEMBLY and not ISOLATES:
 		inputs.extend(expand(dirs_dict["ASSEMBLY_TEST"] + "/{sample}_{subsample}_metaspades_filtered_scaffolds.tot.fasta", sample=SAMPLES, subsample=subsample_test)),
 		inputs.append(dirs_dict["ASSEMBLY_TEST"] + "/assembly_quast_report.tot.txt"),
@@ -374,10 +395,12 @@ def inputAssembly(wildcards):
 	if NANOPORE:
 		inputs.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds_pilon.tot.fasta", sample_nanopore=NANOPORE_SAMPLES))
 		inputs.extend(expand(dirs_dict["PLOTS_DIR"] + "/03_ORF_length_{sample_nanopore}.svg", sample_nanopore=NANOPORE_SAMPLES))
+		inputs.extend(expand(dirs_dict["NOTEBOOKS_DIR"] + "/03_assembly_long_{sample_nanopore}.html", sample_nanopore=NANOPORE_SAMPLES))
 	if CROSS_ASSEMBLY:
 		inputs.append(dirs_dict["ASSEMBLY_DIR"] + "/ALL_spades_filtered_scaffolds.tot.fasta")
 	if RNA_MODE:
 		inputs.append(dirs_dict["PLOTS_DIR"] + "/03_assembly_short_RNA_contig_counts.tot.png")
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/03_assembly_short_RNA.tot.html")
 	return inputs
 
 def inputViralID(wildcards):
@@ -386,6 +409,7 @@ def inputViralID(wildcards):
 	assemblers=["spades"] + (RNA_ASSEMBLERS if RNA_MODE else [])
 	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/{sample}_{assembler}_circularity.tot.tsv", sample=SAMPLES, assembler=assemblers))
 	inputs.append(dirs_dict["PLOTS_DIR"] + "/04_viral_sequences_count_tot.png")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/04_viral_ID_tot.html")
 	# inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/{sample}_{sampling}_satellite_finder_{model}/" ,sample=SAMPLES, sampling=SAMPLING_TYPE_TOT, model=["P4", "PLE","PICI"])),
 	# inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/satellite_finder_{sampling}_{model}_positive_95-85.clstr", sampling=SAMPLING_TYPE_TOT, model=["cfPICI", "PICI", "P4", "PLE"])),
 	if SUBASSEMBLY:
@@ -406,6 +430,8 @@ def inputvOTUClustering(wildcards):
 	inputs.append(dirs_dict["vOUT_DIR"] + "/VIBRANT_" + REPRESENTATIVE_CONTIGS_BASE  + "_positive_list.tot.csv"),
 	inputs.append(dirs_dict["vOUT_DIR"] + "/VirSorter2_" + REPRESENTATIVE_CONTIGS_BASE + "_tot/positive_VS_list_tot.txt"),
 	inputs.append(dirs_dict["vOUT_DIR"] + "/vOTU_clustering_summary.tot.csv"),
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html")
 	if len(config['additional_reference_contigs'])>0:
 		inputs.append(dirs_dict["vOUT_DIR"] + "/user_reference_contigs_checkV/quality_summary.tsv"),
 	return inputs
@@ -420,8 +446,14 @@ def inputAbundance(wildcards):
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}.bam", sample=SAMPLES, sampling=SAMPLING_TYPE)),
 	# # inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/{sample}_sub_SNP_calls.tsv", sample=SAMPLES, sampling=SAMPLING_TYPE)),
 	inputs.extend(expand(dirs_dict["MAPPING_DIR"] + "/RPKM_normalised_{sampling}.txt",sampling=SAMPLING_TYPE)),
+	inputs.extend(expand(dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise.{sampling}.html", sampling=SAMPLING_TYPE))
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html")
+	if SUBSAMPLING:
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_subsampling.html")
 	if ASSEMLY_STATS:
 		inputs.extend(expand(dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_{sampling}.html", sampling=SAMPLING_TYPE_TOT)),
+		inputs.extend(expand(dirs_dict["NOTEBOOKS_DIR"] + "/07_mapping_statistics_{sampling}.html", sampling=SAMPLING_TYPE_TOT))
 		inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_covstats.txt", sample=SAMPLES, sampling=SAMPLING_TYPE_TOT)),
 		inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_assembled_contigs.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE_TOT)),
 		inputs.extend(expand(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_viral_contigs.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE_TOT)),
@@ -451,6 +483,7 @@ def inputAnnotation(wildcards):
 	if METAVR_blast:
 		inputs.append(dirs_dict["ANNOTATION"] + "/blast_output_METAVR_filtered_"+ REPRESENTATIVE_CONTIGS_BASE + ".tot.csv")
 		inputs.append(dirs_dict["PLOTS_DIR"] + "/08_METAVR_analysis.tot.html")
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/08_METAVR_analysis.tot.html")
 	if DRAM:
 		inputs.append(dirs_dict["ANNOTATION"]+ "/vDRAM_distill_results_tot"),
 		inputs.append(dirs_dict["ANNOTATION"]+ "/predicted_genes_NR_95_85_tot.fna")
@@ -507,6 +540,7 @@ def inputRNAAssembly(wildcards):
 	inputs=expand(RNA_DIR + "/{sample}_combined_derreplicated.fasta", sample=SAMPLES)
 	inputs.append(RNA_DIR + "/assembly_quast_report.tot.txt")
 	inputs.append(dirs_dict["PLOTS_DIR"] + "/03_assembly_short_RNA_contig_counts.tot.png")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/03_assembly_short_RNA.tot.html")
 	return inputs
 
 def inputMicrodiversity(wildcards):
@@ -514,12 +548,17 @@ def inputMicrodiversity(wildcards):
 		raise ValueError("Microdiversity requires paired-end samples in input_dir")
 	inputs=expand(MICRO_DIR + "/{sample}/summary.tsv", sample=SAMPLES)
 	inputs.append(dirs_dict["PLOTS_DIR"] + "/11_microdiversity_summary.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/11_microdiversity_summary.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html")
 	return inputs
 
 def inputRNA(wildcards):
 	inputs=inputRNAAssembly(wildcards)
 	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/{sample}_{assembler}_circularity.tot.tsv", sample=SAMPLES, assembler=RNA_ASSEMBLERS))
 	inputs.append(dirs_dict["vOUT_DIR"] + "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html")
 	if RUN_MICRODIVERSITY:
 		inputs.extend(inputMicrodiversity(wildcards))
 	return inputs
@@ -545,8 +584,11 @@ def input_all_assembled_mapping(wildcards):
 		ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_metadata_tot.tsv",
 		ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_top_contigs_membership_tot.tsv"]
 	inputs.extend(expand(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_flagstats_filtered_all_assembled_{sample}.tot.txt", sample=SAMPLES))
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise_all_assembled.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_all_assembled_top_abundance.tot.html")
 	if MAP_TO_ALL_ASSEMBLED:
 		inputs.append(dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_tot.html")
+		inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_mapping_statistics_tot.html")
 	return inputs
 
 def input_optional_all_assembled(wildcards):
@@ -568,6 +610,8 @@ def inputOptionalRNA(wildcards):
 
 rule all:
 	input:
+		dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html",
 		inputReadsCount,
 		inputQC,
 		inputAssembly,
@@ -631,14 +675,20 @@ rule runWorkflow:
 		inputOptionalRNA,
 		input_all_assembled_review,
 		dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
 
 rule runSourmashCleanReads:
 	input:
 		dirs_dict["PLOTS_DIR"] + "/01_sourmash_clean_reads.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/01_sourmash_clean_reads.tot.html",
 
 rule runAbundanceSummary:
 	input:
+		dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise.tot.html",
 		dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/10_abundance_lifestyle_summary.tot.html",
 
 rule runMicrodiversitySummary:
 	input:
@@ -659,6 +709,11 @@ rule runMicrodiversity:
 rule runBenchmarkSummary:
 	input:
 		dirs_dict["PLOTS_DIR"] + "/09_benchmark_summary.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/09_benchmark_summary.html",
+
+rule runNotebookHTML:
+	input:
+		inputNotebookHTML,
 
 rule microbial_metagenome:
 	input:
@@ -707,6 +762,7 @@ rule fix:
 
 rule assembly_short_bacteria:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC", "03_assembly_short", "06_bacterial_results"], sampling=SAMPLING_TYPE),
 		inputReadsCount,
 		inputQC,
 		contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta", sample=SAMPLES, sampling=SAMPLING_TYPE),
@@ -721,6 +777,7 @@ rule assembly_short_bacteria:
 
 rule assembly_short_fungi:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC", "03_assembly_short"], sampling=SAMPLING_TYPE),
 		inputReadsCount,
 		inputQC,
 		contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}.fasta", sample=SAMPLES, sampling=SAMPLING_TYPE),
@@ -744,6 +801,7 @@ rule assembly_nanopore:
 
 rule assembly_nanopore_only_bacteria:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC_long_only", "03_assembly_long_only", "06_bacterial_results"], sampling=SAMPLING_TYPE),
 		#expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample_nanopore=NANOPORE_SAMPLES)
 		expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES),
 		expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES),
@@ -763,6 +821,7 @@ rule assembly_nanopore_only_bacteria:
 		
 rule assembly_nanopore_hybrid_bacteria:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC_long_only", "06_bacterial_results"], sampling=SAMPLING_TYPE),
 		inputReadsCount,
 		inputQC,
 		expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanostats_postQC.html", sample_nanopore=NANOPORE_SAMPLES),
@@ -781,6 +840,7 @@ rule assembly_nanopore_hybrid_bacteria:
 
 rule assembly_long_only_phage:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC_long_only", "03_assembly_long_only"], sampling=SAMPLING_TYPE),
 		#expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_nanopore}_"+ LONG_ASSEMBLER + "_corrected_scaffolds.tot.fasta", sample_nanopore=NANOPORE_SAMPLES)
 		expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_preQC.html",sample_nanopore=NANOPORE_SAMPLES),
 		expand(dirs_dict["QC_DIR"] + "/{sample_nanopore}_nanopore_report_postQC.html", sample_nanopore=NANOPORE_SAMPLES),
@@ -811,6 +871,7 @@ rule assembly_long_only_phage:
 
 rule assembly_pacbio_only_bacteria:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC_long_only", "03_assembly_long_only", "06_bacterial_results"], sampling=SAMPLING_TYPE),
 		pacbio_preqc=expand(dirs_dict["QC_DIR"] + "/{sample_pacbio}_pacbio_report_preQC.html", sample_pacbio=PACBIO_SAMPLES),
 		pacbio_postqc=expand(dirs_dict["QC_DIR"] + "/{sample_pacbio}_pacbio_report_postQC_{sampling}.html", sample_pacbio=PACBIO_SAMPLES, sampling=SAMPLING_TYPE),
 		contigs=expand(dirs_dict["ASSEMBLY_DIR"] + "/{sample_pacbio}_contigs_"+ LONG_ASSEMBLER_PACBIO + ".{sampling}.fasta", sample_pacbio=PACBIO_SAMPLES, sampling=SAMPLING_TYPE),
@@ -826,6 +887,7 @@ rule assembly_pacbio_only_bacteria:
 
 rule assembly_pacbio_hybrid_bacteria:
 	input:
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/{notebook}.{sampling}.html", notebook=["01_QC_long_only", "06_bacterial_results"], sampling=SAMPLING_TYPE),
 		inputReadsCount,
 		inputQC,
 		pacbio_preqc=expand(dirs_dict["QC_DIR"] + "/{sample_pacbio}_pacbio_report_preQC.html", sample_pacbio=PACBIO_SAMPLES),
@@ -955,8 +1017,13 @@ rule phage_isolates:
 		dirs_dict["PLOTS_DIR"] + "/07_mapping_statistics_tot.html",
 		dirs_dict["PLOTS_DIR"] + "/08_phage_isolates_summary.tot.html",
 		dirs_dict["PLOTS_DIR"] + "/08_hosts_summary.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/07_mapping_statistics_tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/08_phage_isolates_summary.tot.html",
+		dirs_dict["NOTEBOOKS_DIR"] + "/08_hosts_summary.tot.html",
 		lambda wc: [dirs_dict["PLOTS_DIR"] + "/08_host_prophage_activity.tot.tsv",
 			dirs_dict["PLOTS_DIR"] + "/08_host_enriched_regions.tot.tsv",
+			dirs_dict["NOTEBOOKS_DIR"] + "/08_host_prophage_activity.tot.html",
+			dirs_dict["NOTEBOOKS_DIR"] + "/08_host_enriched_regions.tot.html",
 			dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions.tot.fasta",
 			dirs_dict["HOST_DIR"] + "/enriched_regions/host_enriched_regions_metadata.tot.tsv"] if HOST_PROPHAGE_ACTIVITY and HOSTS else [],
 		ALL_ASSEMBLED_DIR + "/phage_isolates.tot/all_contig_metadata.tsv",
@@ -966,11 +1033,13 @@ rule phage_isolates:
 		lambda wc: [dirs_dict["PLOTS_DIR"] + "/08_isolate_network.tot.html"] if ISOLATE_NETWORK else [],
 		lambda wc: [ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_RPKM_normalised_tot.txt",
 			ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_counts_normalised_tot.txt",
-			ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_mapping_summary_tot.tsv"] if MAP_TO_ALL_ASSEMBLED else [],
+			ALL_ASSEMBLED_MAPPING_DIR + "/all_assembled_mapping_summary_tot.tsv",
+			dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise_all_assembled.tot.html"] if MAP_TO_ALL_ASSEMBLED else [],
 
 
 rule subsampling_file:
 	input:
+		dirs_dict["NOTEBOOKS_DIR"] + "/07_subsampling.html",
 		viral_subsampling=expand(dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_sub_sampling_reads.txt", sample=SAMPLES),
 
 rule annotate_VIBRANT_contigs:
@@ -1006,6 +1075,7 @@ rule map_to_reference:
 		inputQC,
 		expand(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_flagstats_filtered_" + REFERENCE + "_{sample}.{sampling}.txt", sample=SAMPLES, sampling=SAMPLING_TYPE),
 		expand(dirs_dict["MAPPING_DIR"] + "/REFERENCES/" + REFERENCE + "_RPKM_normalised_{sampling}.txt",sampling=SAMPLING_TYPE),
+		expand(dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise_" + REFERENCE + ".{sampling}.html", sampling=SAMPLING_TYPE),
 
 def inputRefSeqMapping(wildcards):
 	if not SAMPLES:
@@ -1018,6 +1088,8 @@ def inputRefSeqMapping(wildcards):
 	inputs=expand(dirs_dict["MAPPING_DIR"] + "/REFSEQ_VIRAL/bowtie2_flagstats_filtered_RefSeqViral_{sample}.tot.txt", sample=SAMPLES)
 	inputs.append(dirs_dict["MAPPING_DIR"] + "/REFSEQ_VIRAL/RefSeqViral_RPKM_normalised_tot.txt")
 	inputs.append(dirs_dict["MAPPING_DIR"] + "/REFSEQ_VIRAL/RefSeqViral_detection_long_tot.tsv")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_Normalise_RefSeqViral.tot.html")
+	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/07_RefSeq_detection.py.html")
 	return inputs
 
 rule map_to_RefSeq:
