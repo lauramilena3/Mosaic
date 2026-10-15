@@ -6,6 +6,7 @@ channels:
 dependencies:
   - seqtk =1.5
   - vcontact2 =0.11.3
+  - mcl =14.137
   - dos2unix =7.5.2
   - openjdk =11
   # - checkv =1.0.1
@@ -45,7 +46,6 @@ dependencies:
 #     - click
 #     - mamba
 
-  # - mcl =14.137
   # - muscle =3.8.1551
   # - blast =2.9.0
   # - perl-bioperl =1.7.2

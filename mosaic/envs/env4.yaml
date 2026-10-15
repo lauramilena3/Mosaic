@@ -28,6 +28,7 @@ dependencies:
   - taxonkit =0.6.0
   - mmseqs2 =14.7e284
   - bacphlip =0.9.6
+  - hmmer =3.3.2
   # - nanoplot =1.28.2
   # - pauvre =0.1.86
 
