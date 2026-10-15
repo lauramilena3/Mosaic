@@ -84,7 +84,7 @@ rule genomad_viral_id:
 		"""
 		if [ -s {input.scaffolds_spades:q} ]; then
 			genomad end-to-end --restart --cleanup --splits 8 -t {threads} {input.scaffolds_spades:q} {output.genomad_outdir:q} {input.genomad_db:q} --relaxed
-			cat {params.viral_fasta:q} | sed "s/|/_/g" > {output.positive_contigs:q}
+			seqtk seq -l 0 {params.viral_fasta:q} | sed "s/|/_/g" > {output.positive_contigs:q}
 		else
 			mkdir -p "$(dirname {params.viral_fasta:q})"
 			printf 'seq_name\\tlength\\ttopology\\tvirus_score\\ttaxonomy\\n' > "$(dirname {params.viral_fasta:q})/$(basename {input.scaffolds_spades:q} .fasta)_virus_summary.tsv"
@@ -231,7 +231,7 @@ rule genomad_viral_id_long:
 	shell:
 		"""
 		genomad end-to-end --cleanup --splits 8 -t {threads} {input.scaffolds} {output.genomad_outdir} {input.genomad_db} {params.genomad_filter}
-		cat {params.viral_fasta} 2>/dev/null | sed "s/|/_/g" > {output.positive_contigs}
+		cat {params.viral_fasta} 2>/dev/null | seqtk seq -l 0 - | sed "s/|/_/g" > {output.positive_contigs}
 		"""
 
 # VIRAL FILTERING vOTUS
@@ -325,9 +325,9 @@ rule genomad_vOTUs:
 		"""
 		rm -rf {params.genomad_outdir}
 		genomad end-to-end --cleanup --splits 8 -t {threads} {input.representatives} {params.genomad_outdir} {input.genomad_db} --conservative  
-		cat {output.viral_fasta} | sed "s/|/_/g" > {output.positive_contigs_conservative}
+		seqtk seq -l 0 {output.viral_fasta} | sed "s/|/_/g" > {output.positive_contigs_conservative}
 		genomad end-to-end --cleanup --splits 8 -t {threads} {input.representatives} {params.genomad_outdir} {input.genomad_db}  
-		cat {output.viral_fasta} | sed "s/|/_/g" > {output.positive_contigs}
+		seqtk seq -l 0 {output.viral_fasta} | sed "s/|/_/g" > {output.positive_contigs}
 		# leave genomad folder as --relaxed to have all contigs in the summary file
 		genomad end-to-end --cleanup --splits 8 -t {threads} {input.representatives} {params.genomad_outdir} {input.genomad_db}  --relaxed
 		"""

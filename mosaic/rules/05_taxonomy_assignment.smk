@@ -274,7 +274,7 @@ rule single_fasta_filtered:
 	threads: 1
 	shell:
 		"""
-		seqkit split --quiet -i {input.filtered_representatives} --out-dir {params.filtered_representatives_dir}
+		seqkit split --quiet -w 0 -i {input.filtered_representatives} --out-dir {params.filtered_representatives_dir}
 		touch {output.filtered_representatives_checkpoint}
 	 	"""
 

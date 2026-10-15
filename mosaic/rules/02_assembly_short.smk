@@ -72,7 +72,7 @@ rule rename_assembled_contigs:
 				writer.writerow([contig_id, sample, assembler, original_id, len(record.seq), description])
 				record.id=record.name=contig_id
 				record.description=""
-				SeqIO.write(record, fasta, "fasta")
+				SeqIO.write(record, fasta, "fasta-2line")
 
 def input_error_correction(wildcards):
 	params_ecc=""

@@ -102,10 +102,10 @@ rule extract_isolate_contig_sets:
 		with open(retained_path, "w") as kept, open(excluded_path, "w") as removed, open(host_path, "w") as host_removed, open(threshold_path, "w") as threshold_removed:
 		    for record in SeqIO.parse(fasta_path, "fasta"):
 		        if record.id in retained:
-		            SeqIO.write(record, kept, "fasta")
+		            SeqIO.write(record, kept, "fasta-2line")
 		        else:
-		            SeqIO.write(record, removed, "fasta")
-		            SeqIO.write(record, host_removed if record.id in host_ids else threshold_removed, "fasta")
+		            SeqIO.write(record, removed, "fasta-2line")
+		            SeqIO.write(record, host_removed if record.id in host_ids else threshold_removed, "fasta-2line")
 		PYTHON
 		"""
 
@@ -159,7 +159,7 @@ rule pool_isolate_references:
 		            for record in SeqIO.parse(handle, "fasta"):
 		                if record.id not in groups:
 		                    continue
-		                SeqIO.write(record, fasta, "fasta")
+		                SeqIO.write(record, fasta, "fasta-2line")
 		                for row in groups[record.id].itertuples():
 		                    writer.writerow(dict(reference_id=record.id, sample=row.sample,
 		                        original_id=row.original_id, evidence_scope=reference_set,
@@ -172,7 +172,7 @@ rule pool_isolate_references:
 		                    if reference_set == "host_chromosomes":
 		                        record.id=host + "_" + original
 		                    record.description=""
-		                    SeqIO.write(record, fasta, "fasta")
+		                    SeqIO.write(record, fasta, "fasta-2line")
 		                    writer.writerow(dict(reference_id=record.id, original_id=original, host=host,
 		                        evidence_scope=reference_set))
 		PYTHON
@@ -586,7 +586,7 @@ rule select_host_bacphlip_genomes:
 		with open(output_fasta, "w") as handle:
 		    for record in SeqIO.parse(fasta_path, "fasta"):
 		        if record.id in eligible:
-		            SeqIO.write(record, handle, "fasta")
+		            SeqIO.write(record, handle, "fasta-2line")
 		evidence[["viral_id", "bacphlip_assessment"]].to_csv(eligibility_path, sep="\t", index=False)
 		PYTHON
 		"""
@@ -777,7 +777,7 @@ rule extract_host_enriched_regions:
 						SeqIO.write(SeqRecord(sequence, id=region_id,
 							description="host=" + host + " contig=" + record.id + " length=" + str(len(sequence)) + " samples=" + ";".join(samples) +
 							" next_to_prophage=" + str(adjacent) + " nearest_prophage=" + nearest_id.replace(" ", "_") +
-							" prophage_gap_bp=" + str(distance).replace(" ", "_") + " adjacency_threshold_bp=" + str(params.adjacency_bp)), handle, "fasta")
+							" prophage_gap_bp=" + str(distance).replace(" ", "_") + " adjacency_threshold_bp=" + str(params.adjacency_bp)), handle, "fasta-2line")
 						rows.append(dict(region_id=region_id, host=host, parent_contig=record.id,
 							start=start, end=end, length_bp=len(sequence), n_samples=len(samples), samples=";".join(samples),
 							n_sample_calls=len(locus["calls"]), source_intervals=";".join(str(a) + "-" + str(b)

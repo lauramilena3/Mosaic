@@ -9,6 +9,13 @@ FASTA and a neighboring `*.ids.tsv` table. Snakemake removes the temporary
 input after successful processing. The helper uses Biopython already available
 in the workflow environment; no new environment is needed.
 
+MOSAIC writes saved assemblies and its own extracted/reference FASTAs with one
+header line and one complete sequence line per record (`fasta-2line`). FASTA
+splits use `seqkit -w 0`, and geNomad candidate exports are unwrapped before
+use. This changes only line wrapping, not sequence content, IDs or descriptions.
+Downloaded databases and third-party tools' internal working files can retain
+their native formatting.
+
 ```text
 03_CONTIGS/{sample}_spades_filtered_scaffolds.tot.fasta
 03_CONTIGS/{sample}_spades_filtered_scaffolds.tot.ids.tsv

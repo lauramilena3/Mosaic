@@ -45,7 +45,7 @@ rule select_isolate_network_contigs:
 				sequences[comparison_id]=SeqRecord(sequence, id=comparison_id, description="")
 		nodes["comparison_id"]=nodes["original_id"].map(comparison_ids)
 		# Exact sequence hashing avoids treating shorter MMseqs-contained members as identical.
-		SeqIO.write([sequences[key] for key in sorted(sequences)], output.fasta, "fasta")
+		SeqIO.write([sequences[key] for key in sorted(sequences)], output.fasta, "fasta-2line")
 		nodes.sort_values(["sample", "original_id"]).to_csv(output.nodes, sep="\t", index=False)
 
 
@@ -178,7 +178,7 @@ rule prepare_isolate_network_genomes:
 		        source=row.source, accession=row.accession, description=row.subject_title, length_bp=len(record),
 		        retained=False, genomad_classification="not reported", CheckV_checkv_quality="not reported",
 		        genomad_evidence_scope="not reported", selection_queries=";".join(sorted(set(hits.loc[hits.source.eq(row.source) & hits.accession.eq(row.accession), "query"])))))
-		SeqIO.write(sequences, out_fasta, "fasta")
+		SeqIO.write(sequences, out_fasta, "fasta-2line")
 		pd.concat([nodes, pd.DataFrame(extra)], ignore_index=True).to_csv(out_nodes, sep="\t", index=False)
 		pd.DataFrame(missing, columns=["source", "accession", "subject", "reason"]).to_csv(missing_path, sep="\t", index=False)
 		PYTHON

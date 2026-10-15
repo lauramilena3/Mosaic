@@ -470,7 +470,7 @@ rule genomad_host:
 		        coordinates = row.get("coordinates", "").split("-") if embedded else ["1", str(len(record.seq))]
 		        record.id = host + "_" + original.replace("|", "_")
 		        record.description = ""
-		        SeqIO.write(record, output, "fasta")
+		        SeqIO.write(record, output, "fasta-2line")
 		        writer.writerow(dict(host=host, viral_id=record.id, genomad_sequence=original,
 		            parent_contig=original.split("|provirus_")[0],
 		            evidence_scope="embedded_prophage" if embedded else "whole_contig_viral_candidate",

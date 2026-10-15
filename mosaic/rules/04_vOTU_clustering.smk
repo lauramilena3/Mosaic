@@ -45,7 +45,7 @@ rule derreplicate_assembly:
 	threads: 16
 	shell:
 		"""
-		cat {input.positive_contigs} > {output.combined_positive_contigs}
+		cat {input.positive_contigs} | seqtk seq -l 0 - > {output.combined_positive_contigs}
 		cd {params.dir_votu}
 		mmseqs easy-cluster --threads {threads} --createdb-mode 1 --min-seq-id 1 -c 1 --cov-mode 1 {output.combined_positive_contigs} {params.rep_name} {params.rep_temp} 
 		mv {params.rep_name_full} {output.derreplicated_positive_contigs}
@@ -254,7 +254,7 @@ rule collect_all_assembled_cluster_representatives:
 		with open(input.fasta) as handle:
 			sequences={record.id: record for record in SeqIO.parse(handle, "fasta") if record.id in top.index}
 		with open(output.fasta, "w") as handle:
-			SeqIO.write((sequences[name] for name in top.index), handle, "fasta")
+			SeqIO.write((sequences[name] for name in top.index), handle, "fasta-2line")
 
 def input_getHighQuality(wildcards):
 	input_list=[]
@@ -362,7 +362,7 @@ rule combine_with_taxmyphage:
 		else
 			touch {output.blastout} {output.aniout} {output.clusters} {output.cluster_rep} {output.tax_fasta_rep}> {output.combined}
 		fi
-		cat {input.ref_fasta} {output.tax_fasta_rep}> {output.combined}
+		cat {input.ref_fasta} {output.tax_fasta_rep} | seqtk seq -l 0 - > {output.combined}
 		"""
 
 

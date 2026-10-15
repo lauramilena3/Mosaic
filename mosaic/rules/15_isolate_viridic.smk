@@ -75,7 +75,7 @@ checkpoint select_isolate_viridic_clusters:
 		fasta_dir=Path(fasta_dir)
 		fasta_dir.mkdir(parents=True, exist_ok=True)
 		for cluster, group in selected.loc[selected.is_comparison_record].groupby("cluster_rep", sort=True):
-		    SeqIO.write([records[contig] for contig in group.original_id], fasta_dir / (cluster + ".fasta"), "fasta")
+		    SeqIO.write([records[contig] for contig in group.original_id], fasta_dir / (cluster + ".fasta"), "fasta-2line")
 		clusters.to_csv(clusters_path, sep="\t", index=False, na_rep="not reported")
 		selected.to_csv(members_path, sep="\t", index=False, na_rep="not reported")
 

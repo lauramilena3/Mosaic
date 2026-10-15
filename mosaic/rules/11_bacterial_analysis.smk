@@ -28,7 +28,7 @@ rule merge_microbial:
 	threads: 16
 	shell:
 		"""
-		cat {input.assembled_contigs} > {output.combined_positive_contigs}
+		cat {input.assembled_contigs} | seqtk seq -l 0 - > {output.combined_positive_contigs}
 		seqtk seq -L 2000 {output.combined_positive_contigs} > {output.combined_positive_contigs_2k}
 		cd {params.dir_assembly}
 		mmseqs easy-cluster --createdb-mode 1 --min-seq-id 1 -c 1 --cov-mode 1 {output.combined_positive_contigs} {params.rep_name} {params.rep_temp} --threads {threads}
@@ -313,7 +313,7 @@ rule single_fasta_microbial:
 		"""
 		mkdir -p {output.derreplicated_microbial_contigs_dir:q}
 		if [ -s {input.derreplicated_microbial_contigs:q} ]; then
-			seqkit split --quiet -i {input.derreplicated_microbial_contigs:q} --out-dir {output.derreplicated_microbial_contigs_dir:q}
+			seqkit split --quiet -w 0 -i {input.derreplicated_microbial_contigs:q} --out-dir {output.derreplicated_microbial_contigs_dir:q}
 		fi
 	 	"""
 
@@ -576,7 +576,7 @@ rule single_fasta_microbial_isolate:
 	threads: 1
 	shell:
 		"""
-		seqkit split --quiet -i {input.fasta} --out-dir {output.single_contigs_dir}
+		seqkit split --quiet -w 0 -i {input.fasta} --out-dir {output.single_contigs_dir}
 	 	"""
 
 rule sourmash_sketch_microbial_isolate:
@@ -660,7 +660,7 @@ rule single_fasta_pacbio:
 	threads: 1
 	shell:
 		"""
-		seqkit split --quiet -i {input.fasta} --out-dir {output.single_contigs_dir}
+		seqkit split --quiet -w 0 -i {input.fasta} --out-dir {output.single_contigs_dir}
 	 	"""
 
 rule sourmash_sketch_pacbio:
@@ -742,7 +742,7 @@ rule single_fasta_pacbio_hybrid:
 	threads: 1
 	shell:
 		"""
-		seqkit split --quiet -i {input.fasta} --out-dir {output.single_contigs_dir}
+		seqkit split --quiet -w 0 -i {input.fasta} --out-dir {output.single_contigs_dir}
 	 	"""
 
 rule sourmash_sketch_pacbio_hybrid:

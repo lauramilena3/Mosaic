@@ -62,7 +62,7 @@ rule annotate_cenote:
 		mkdir -p {params.workdir:q}
 		cenote_tmp=$(mktemp -d {params.workdir:q}/.cenote.XXXXXX)
 		trap 'rm -rf "$cenote_tmp"' EXIT
-		seqkit seq --quiet -m {params.min_length} {input.fasta:q} > "$cenote_tmp/input.fasta"
+		seqkit seq --quiet -w 0 -m {params.min_length} {input.fasta:q} > "$cenote_tmp/input.fasta"
 		cenote_empty=0
 		if [ -s "$cenote_tmp/input.fasta" ]; then
 			# A short run title is required; the outer output directory identifies the dataset.
