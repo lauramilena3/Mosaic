@@ -249,6 +249,7 @@ rule errorCorrectPilonPE:
 		#final
 		scaffolds=temp(dirs_dict["ASSEMBLY_DIR"] + "/{sample}_"+ LONG_ASSEMBLER + "_corrected_scaffolds_pilon.{sampling}.unrenamed.fasta"),
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		#round1
 		pilon_dir1=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_pilon_1_{sampling}",
 		db_name1=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_1_{sampling}",
@@ -276,7 +277,7 @@ rule errorCorrectPilonPE:
 		# Index 1
 		bowtie2-build -f {input.corrected2_racon} {params.db_name1} --threads {threads}
 		# paired 1
-		bowtie2 -x {params.db_name1} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired1} --threads {threads}
+		bowtie2 -X {params.max_insert_bp} -x {params.db_name1} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired1} --threads {threads}
 		samtools view -b -S {output.sam_paired1} > {output.bam_paired1}
 		samtools sort {output.bam_paired1} -o {output.sorted_bam_paired1} -@ {threads}
 		samtools index {output.sorted_bam_paired1}
@@ -293,7 +294,7 @@ rule errorCorrectPilonPE:
 		# Index 2
 		bowtie2-build -f {output.scaffolds_pilon1} {params.db_name2} --threads {threads}
 		# paired 2
-		bowtie2 -x {params.db_name2} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired2} --threads {threads}
+		bowtie2 -X {params.max_insert_bp} -x {params.db_name2} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired2} --threads {threads}
 		samtools view -b -S {output.sam_paired2} > {output.bam_paired2}
 		samtools sort {output.bam_paired2} -o {output.sorted_bam_paired2} -@ {threads}
 		samtools index {output.sorted_bam_paired2}
@@ -310,7 +311,7 @@ rule errorCorrectPilonPE:
 		# Index 3
 		bowtie2-build -f {output.scaffolds_pilon2} {params.db_name3} --threads {threads}
 		# paired 3
-		bowtie2 -x {params.db_name3} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired3} --threads {threads}
+		bowtie2 -X {params.max_insert_bp} -x {params.db_name3} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired3} --threads {threads}
 		samtools view -b -S {output.sam_paired3} > {output.bam_paired3}
 		samtools sort {output.bam_paired3} -o {output.sorted_bam_paired3} -@ {threads}
 		samtools index {output.sorted_bam_paired3}
@@ -327,7 +328,7 @@ rule errorCorrectPilonPE:
 		# Index 4
 		bowtie2-build -f {output.scaffolds_pilon3} {params.db_name4} --threads {threads}
 		# paired 4
-		bowtie2 -x {params.db_name4} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired4} --threads {threads}
+		bowtie2 -X {params.max_insert_bp} -x {params.db_name4} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired4} --threads {threads}
 		samtools view -b -S {output.sam_paired4} > {output.bam_paired4}
 		samtools sort {output.bam_paired4} -o {output.sorted_bam_paired4} -@ {threads}
 		samtools index {output.sorted_bam_paired4}

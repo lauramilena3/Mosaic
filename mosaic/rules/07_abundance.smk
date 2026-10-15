@@ -167,6 +167,7 @@ rule stat_mapReadsToAssembly:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs.{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		covstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_assembled_contigs.{sampling}_covstats.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_spades_filtered_scaffolds.{sampling}",
 		alignment_evidence="--include-secondary --exclude-supplementary" if ISOLATES else "",
@@ -180,7 +181,7 @@ rule stat_mapReadsToAssembly:
 	shell:
 		"""
 		if [ -s {input.fasta:q} ]; then
-			bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
+			bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
 		else
 			printf '@HD\tVN:1.6\tSO:coordinate\n' > {output.sam:q}
 		fi
@@ -242,6 +243,7 @@ rule stat_mapReadsToViral:
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_viral_contigs.{sampling}.txt",
 		covstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_viral_contigs.{sampling}_covstats.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["VIRAL_DIR"]+ "/{sample}_" + VIRAL_CONTIGS_BASE + ".{sampling}",
 	message:
@@ -253,7 +255,7 @@ rule stat_mapReadsToViral:
 	threads: 8
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -298,6 +300,7 @@ rule stat_mapReadsToDerreplicated:
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_derreplicated_contigs.{sampling}.txt",
 		covstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_derreplicated_contigs.{sampling}_covstats.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["vOUT_DIR"]+ "/combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq.{sampling}",
 	message:
@@ -309,7 +312,7 @@ rule stat_mapReadsToDerreplicated:
 	threads: 8
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -354,6 +357,7 @@ rule stat_mapReadsToUnfiltered:
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_flagstats_filtered_{sample}_unfiltered_contigs.{sampling}.txt",
 		covstats=dirs_dict["MAPPING_DIR"]+ "/STATS_FILES/bowtie2_{sample}_unfiltered_contigs.{sampling}_covstats.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["MAPPING_DIR"]+ "/" + REPRESENTATIVE_CONTIGS_BASE + ".{sampling}",
 	message:
@@ -365,7 +369,7 @@ rule stat_mapReadsToUnfiltered:
 	threads: 8
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -418,6 +422,7 @@ rule mapReadsToContigsPE:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/bowtie2_{sample}_{sampling}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["MAPPING_DIR"]+ "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot",
@@ -430,7 +435,7 @@ rule mapReadsToContigsPE:
 	threads: 8
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --all --very-sensitive
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -516,6 +521,7 @@ rule mapReads_contaminants:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/CONTAMINANTS/bowtie2_{sample}_{contaminant}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["CONTAMINANTS_DIR_POST"]+ "/{contaminant}",
@@ -528,7 +534,7 @@ rule mapReads_contaminants:
 	threads: 16
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -600,6 +606,7 @@ rule mapReads_RefSeq:
 		basecov=(REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(REFSEQ_MAPPING_DIR + "/bowtie2_RefSeqViral_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=REFSEQ_INDEX_PREFIX,
@@ -614,7 +621,7 @@ rule mapReads_RefSeq:
 	threads: 16
 	shell:
 		"""
-		bowtie2 -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.sam:q} --threads {threads} --no-unal --fast 2> {log.bowtie2:q}
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.sam:q} --threads {threads} --no-unal --fast 2> {log.bowtie2:q}
 		samtools view -@ {threads} -bS {output.sam:q} -o {output.bam:q}
 		samtools sort -@ {threads} {output.bam:q} -o {output.sorted_bam:q}
 		samtools index {output.sorted_bam:q}
@@ -695,6 +702,7 @@ rule mapReads_all_assembled:
 		basecov=(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(ALL_ASSEMBLED_MAPPING_DIR + "/bowtie2_{assembled_reference}_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=ALL_ASSEMBLED_INDEX_PREFIX,
@@ -713,7 +721,7 @@ rule mapReads_all_assembled:
 	shell:
 		"""
 		if [ -s {input.fasta:q} ]; then
-			bowtie2 -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} \
+			bowtie2 -X {params.max_insert_bp} -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} \
 				-S {output.sam:q} --threads {threads} --no-unal --very-sensitive 2> {log.bowtie2:q}
 		else
 			printf '@HD\tVN:1.6\tSO:coordinate\n' > {output.sam:q}
@@ -820,6 +828,7 @@ rule mapReads_reference:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_tot_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=REFERENCE_DIR+ "/" + REFERENCE + "",
@@ -832,7 +841,7 @@ rule mapReads_reference:
 	threads: 16
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -872,6 +881,7 @@ rule mapReads_raw_reference:
 		covstats=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_" + REFERENCE + "_{sample}_raw_covstats.txt",
 		basecov=(dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW/bowtie2_" + REFERENCE + "_{sample}_raw_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		prefix=REFERENCE_DIR + "/" + REFERENCE,
 		outdir=dirs_dict["MAPPING_DIR"] + "/REFERENCES/RAW",
 	message:
@@ -884,7 +894,7 @@ rule mapReads_raw_reference:
 	shell:
 		"""
 		mkdir -p {params.outdir}
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam} --threads {threads} --no-unal --fast
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam} --threads {threads} --no-unal --fast
 		samtools view -@ {threads} -bS {output.sam} > {output.bam}
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -913,6 +923,7 @@ rule gene_Abundance:
 		flagstats_filtered=dirs_dict["MAPPING_DIR"]+ "/GENES/bowtie2_flagstats_filtered_predicted_genes_NR_95_85_150bp_{sample}.tot.txt",
 		covstats=dirs_dict["MAPPING_DIR"]+ "/GENES/bowtie2_predicted_genes_NR_95_85_150bp_{sample}_tot_covstats.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["ANNOTATION"]+ "/predicted_genes_NR_95_85_150bp_tot",
 	message:
@@ -924,7 +935,7 @@ rule gene_Abundance:
 	threads: 16
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --very-sensitive
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --very-sensitive
 		samtools view -@ {threads} -h -F 0x900 -bS {output.sam} > {output.bam}
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}
@@ -959,6 +970,7 @@ rule mapReads_reference_sub:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/REFERENCES/bowtie2_" + REFERENCE + "_{sample}_sub_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unique_flags="-F 2308" if ISOLATES else "-f 0x2",
 		unpaired=mapping_orphan_option,
 		prefix=REFERENCE_DIR+ "/" + REFERENCE + "",
@@ -971,7 +983,7 @@ rule mapReads_reference_sub:
 	threads: 16
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} {params.unpaired} -S {output.sam} --threads {threads} --no-unal --fast
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}

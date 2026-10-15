@@ -78,6 +78,7 @@ rule mapReadsToContigs_microbial:
 		basecov=(dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		unique_basecov=(dirs_dict["MAPPING_DIR"]+ "/MICROBIAL/bowtie2_{sample}_{sampling}_unique_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		prefix=dirs_dict["ASSEMBLY_DIR"] + "/2K_combined_microbial.tot",
 	message:
 		"Mapping microbial reads to assembly"
@@ -88,7 +89,7 @@ rule mapReadsToContigs_microbial:
 	threads: 8
 	shell:
 		"""
-		bowtie2 -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam} --threads {threads} --no-unal --all
+		bowtie2 -X {params.max_insert_bp} -x {params.prefix} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam} --threads {threads} --no-unal --all
 		samtools view  -@ {threads} -bS {output.sam}  > {output.bam} 
 		samtools sort -@ {threads} {output.bam} -o {output.sorted_bam}
 		samtools index {output.sorted_bam}

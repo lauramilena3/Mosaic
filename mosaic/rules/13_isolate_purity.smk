@@ -222,6 +222,7 @@ rule isolate_read_accounting:
 		sample="|".join(re.escape(sample) for sample in SAMPLES) or "(?!)",
 	params:
 		expected_host=lambda wc: ISOLATE_HOST_ASSIGNMENTS.get(wc.sample, "not reported"),
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		assembly_bam=lambda wc, input: shlex.quote(input.assembly_bam[0] if input.assembly_bam else ""),
 		membership=lambda wc, input: shlex.quote(input.membership[0] if input.membership else ""),
 		previous=lambda wc, input: shlex.quote(input.previous[0] if input.previous else ""),
@@ -299,7 +300,8 @@ rule isolate_read_accounting:
 		    alignment = assembly_bam
 		    if not alignment and allowed and (nonempty(r1) or nonempty(orphan)):
 		        sam = os.path.join(workspace, "bowtie2.sam")
-		        command = ["bowtie2", "-x", fasta, "--threads", str(threads), "--very-sensitive", "--all", "-S", sam]
+		        command = ["bowtie2", "-x", fasta, "--threads", str(threads), "--very-sensitive", "--all",
+		                   "-X", "{params.max_insert_bp}", "-S", sam]
 		        if nonempty(r1):
 		            command += ["-1", r1, "-2", r2]
 		        if nonempty(orphan):

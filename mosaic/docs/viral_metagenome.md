@@ -132,6 +132,8 @@ The standard branch uses BBNorm-normalised cleaned-library inputs with target `m
 
 Identifiers use `sample_assembler_number_len_length`, for example `ViromeA_metaspades_00001_len_1000`. Numbering follows saved-record order with width `max(5, number of digits in the saved contig count)`; 200,000 saved contigs therefore start at `000001`. The neighbouring `.ids.tsv` preserves original headers/descriptions for provenance. Downstream tools use the named FASTA, not ID translation through that sidecar. See [contig identifiers](contig_identifiers.md).
 
+MOSAIC-written FASTAs use one header line and one complete sequence line per record, including saved DNA/RNA assemblies, candidate exports and selected cluster representatives. FASTA splits also disable wrapping. Sequence content and identifiers are unchanged; downloaded databases and third-party working files can retain their native formatting.
+
 ### RNA enrichment
 
 `RNA_enriched=True` adds RNAviralSPAdes (`--rnaviral`, not ordinary `--rna`), MEGAHIT and Trinity for every paired-end sample. There is no `rna_samples` list and no need to separate mixed RNA/DNA libraries. The DNA branch remains enabled. These RNA assemblers use full cleaned paired reads before BBNorm or mapping subsampling, not raw reads or orphans.
@@ -215,6 +217,8 @@ Final `tot` abundance maps full cleaned paired reads to the final filtered catal
 
 Bowtie2 mapping is deterministic; the abundance/diagnostic mappings use CoverM filtering at >=95% read identity and >=85% aligned read length. All passing-alignment and operationally unique subsets receive counts, depth, covered-base and RPKM summaries. In virome mode the unique heuristic selects proper pairs without `XS:i:`; it is not proof that every selected read has only one possible genomic origin. Counts are alignment/read measurements, not deduplicated molecule counts.
 
+`mapping_max_insert_bp` defaults to 1,000 bp and supplies Bowtie2 `-X` consistently to all paired-end mapping rules, including diagnostics, catalogue/RefSeq abundance, polishing, microbial and microdiversity mapping. This is the maximum concordant fragment span, not a hard read-length or identity filter; discordant/single-mate alignment behavior is otherwise unchanged. Override it using `--config mapping_max_insert_bp=1500`. Changing the value requires regenerating the affected mappings. Single-end and long-read rules are unaffected.
+
 `07_Normalise.tot.ipynb` preserves the existing ambiguity adjustment based on all/unique coverage and a 200 uniquely covered-base requirement. Adjusted RPKM uses its adjusted mapped-read denominator, not the number of all sequenced reads. `raw` in `RPKM_raw_tot.txt` means before abundance adjustment, not mapping raw FASTQs. Merged `.txt` matrices are **comma-separated**; per-sample CoverM `.txt` files are tab-separated.
 
 Filtered abundance matrices keep a sample/reference value only when:
@@ -295,7 +299,17 @@ Presence is nonzero **filtered normalised RPKM**. Relative abundance is each sam
 
 ### Main outputs
 
-Default names below refer to the shared `tot` catalogue. Most executed notebooks are saved in `NOTEBOOKS/`; figures, table exports and HTML reports are in `FIGURES_AND_TABLES/`.
+Default names below refer to the shared `tot` catalogue. Executed report notebooks are saved in `NOTEBOOKS/` with a matching HTML in the same folder, for example `01_QC.tot.ipynb` and `01_QC.tot.html`. The HTML includes the notebook's code, tables and displayed plots, with images embedded. Exporting does not execute the notebook again. Existing summary HTMLs, figures and table exports in `FIGURES_AND_TABLES/` remain unchanged. Optional notebook exports follow the same flags as their analyses; internal parser notebooks are not exported.
+
+To add HTMLs to an older completed run without rerunning analyses, run from `mosaic/`:
+
+```bash
+snakemake -p runNotebookHTML \
+  --config input_dir=/path/to/project/00_RAW_DATA \
+  --allowed-rules runNotebookHTML notebook_to_html -j 4
+```
+
+This target finds existing MOSAIC report notebooks. `--allowed-rules` restricts the run to conversion, even if upstream results or workflow code have changed. Add `map_to_RefSeq=True` when backfilling the conditional RefSeq detection notebook. The export uses Jupyter already installed in `Mosaic_workflow`; no additional environment or database is needed.
 
 | Output | What it tells you |
 | --- | --- |
@@ -342,6 +356,7 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 | `run_DRAM=True` / `--dram` | DRAM-v preparation, functional annotation/distillation and gene-catalogue outputs/mapping. Requires the additional database/resources. |
 | `microbial_spacers=/path/to/spacers.fa` | SpacePHARER viral/spacer matching using an existing microbial spacer FASTA. Optional `abundance_crispr_host_metadata` resolves source-contig taxonomy in the final report. |
 | `per_base_coverage=True` | Optional gzipped nonzero-position mapping exports. Default `False`; CoverM summaries and microdiversity remain available. |
+| `mapping_max_insert_bp=1000` | Shared maximum concordant fragment span for every paired-end Bowtie2 mapping; default 1,000 bp. |
 | `remove_euk=False` / `--no-remove-euk` | Retain the Kraken-classified eukaryotic read fraction; QC classification remains. Default is `True` for this mode. |
 
 ### RNA-enriched virome example

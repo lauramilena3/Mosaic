@@ -368,6 +368,7 @@ rule microdiversity_map:
 		bai=MICRO_DIR + "/{sample}/aligned.sorted.bam.bai",
 		flagstat=MICRO_DIR + "/{sample}/flagstat.txt",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		prefix=MICRO_DIR + "/reference/bowtie2/catalogue",
 	message:
 		"Mapping paired-end reads to the shared catalogue for microdiversity"
@@ -382,7 +383,7 @@ rule microdiversity_map:
 		MICRO_DIR + "/{sample}/bowtie2.log"
 	shell:
 		r"""
-		bowtie2 --very-sensitive --seed 1 -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} \
+		bowtie2 -X {params.max_insert_bp} --very-sensitive --seed 1 -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} \
 			-p {threads} 2> {log:q} | samtools sort -@ {threads} -m 256M -o {output.bam:q} -
 		samtools index {output.bam:q}
 		samtools flagstat {output.bam:q} > {output.flagstat:q}

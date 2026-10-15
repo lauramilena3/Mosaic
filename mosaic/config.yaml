@@ -189,6 +189,7 @@ isolate_max_host_mapping_percent: 10
 isolate_max_unexplained_percent: 10
 isolate_mapping_threads: 8
 isolate_mapping_mem_mb: 16000
+mapping_max_insert_bp: 1000 # maximum paired-end fragment span for every Bowtie2 mapping rule
 isolate_host_test_min_reads: 100 # minimum evidence for the optional comparison, not an automatic host assignment
 isolate_host_test_min_breadth_percent: 1
 isolate_plot_max_host_contigs: 100

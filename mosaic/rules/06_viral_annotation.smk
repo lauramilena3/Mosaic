@@ -1314,6 +1314,7 @@ rule mapReadstoContigsPE:
 		sorted_bam_unpaired=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam",
 		sorted_bam_unpaired_ix=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_unpaired_sorted.{sampling}_to_{contigs}.bam.bai",
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		db_name=dirs_dict["ASSEMBLY_DIR"] + "/{sample}_bowtieDB_{sampling}_to_{contigs}",
 	message:
 		"Mapping reads to contigs"
@@ -1326,7 +1327,7 @@ rule mapReadstoContigsPE:
 		"""
 		bowtie2-build -f {input.scaffolds} {params.db_name} --threads {threads}
 		#paired
-		bowtie2 -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired} --threads {threads}
+		bowtie2 -X {params.max_insert_bp} -x {params.db_name} -1 {input.forward_paired} -2 {input.reverse_paired} -S {output.sam_paired} --threads {threads}
 		samtools view -b -S {output.sam_paired} > {output.bam_paired}
 		samtools sort {output.bam_paired} -o {output.sorted_bam_paired}
 		samtools index {output.sorted_bam_paired}

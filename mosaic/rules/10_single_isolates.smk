@@ -656,6 +656,7 @@ rule map_to_host:
 		masked_basecov=(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_{sample}_vs_{host}_masked_prophages_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 		masked_basecov_filtered=(dirs_dict["MAPPING_DIR"] + "/HOST/bowtie2_filtered_{sample}_vs_{host}_masked_prophages_basecov.txt.gz") if PER_BASE_COVERAGE else [],
 	params:
+		max_insert_bp=MAPPING_MAX_INSERT_BP,
 		unpaired=mapping_orphan_option,
 		prefix=dirs_dict["HOST_DIR"]+ "/{host}",
 		masked_prefix=dirs_dict["HOST_DIR"] + "/host_masked_prophages/{host}_masked_prophages",
@@ -670,7 +671,7 @@ rule map_to_host:
 		"""
 		# Unmasked host
 		if [ -s {input.host_fasta:q} ]; then
-			bowtie2 -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.sam:q} --threads {threads} --no-unal --all --very-sensitive
+			bowtie2 -X {params.max_insert_bp} -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.sam:q} --threads {threads} --no-unal --all --very-sensitive
 		else
 			printf '@HD\\tVN:1.6\\tSO:coordinate\\n' > {output.sam:q}
 		fi
@@ -709,7 +710,7 @@ rule map_to_host:
 
 		# Prophage-masked host
 		if [ -s {input.masked_fasta:q} ]; then
-			bowtie2 -x {params.masked_prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.masked_sam:q} --threads {threads} --no-unal --all --very-sensitive
+			bowtie2 -X {params.max_insert_bp} -x {params.masked_prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} -S {output.masked_sam:q} --threads {threads} --no-unal --all --very-sensitive
 		else
 			printf '@HD\\tVN:1.6\\tSO:coordinate\\n' > {output.masked_sam:q}
 		fi
