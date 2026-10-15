@@ -235,7 +235,7 @@ def hosts(directory, cfg):
         f"Prophage mean depth ≥{number(cfg['host_prophage_activity_min_mean_depth'])}×; breadth ≥{number(cfg['host_prophage_activity_min_breadth_percent'])}% at depth ≥1×",
         f"Region length ≥{int(cfg['host_prophage_activity_min_length_bp']):,} bp; mask {int(cfg['host_prophage_activity_mask_bp'])} bp at scaffold ends"], PURPLE, size=23)
     d.arrow([(1490, 338), (1490, 395), (1195, 395), (1195, 425)], PURPLE)
-    d.band(720, "ACTIVITY BACKGROUND", "Whole parent scaffold, excluding all embedded prophages and masked ends; valid background required.", PURPLE)
+    d.band(720, "ACTIVITY BACKGROUND", "Pooled host bases, excluding viral regions, plasmid-positive contigs and masked ends; clean parent portions contribute.", PURPLE)
     d.note(844, f"Profiles show ±{int(cfg['host_prophage_activity_plot_flank_bp']):,} bp, clipped to the scaffold. The display window does not set the statistics.")
     d.note(886, "Coverage enrichment is compatible with replication, not confirmed induction; it does not change retention.")
     d.band(947, "OPTIONAL ALL-HOST IDENTIFICATION TEST", "Separate masked / unmasked comparison against every host; report evidence, never automatically relabel samples.", PURPLE)

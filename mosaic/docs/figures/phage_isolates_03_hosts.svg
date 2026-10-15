@@ -263,7 +263,7 @@ L 573.6 189.6
     <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="39.36" y="361.5534" transform="rotate(-0 39.36 361.5534)">ACTIVITY BACKGROUND</text>
    </g>
    <g id="text_25">
-    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="39.36" y="379.428675" transform="rotate(-0 39.36 379.428675)">Whole parent scaffold, excluding all embedded prophages and masked ends; valid background required.</text>
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="39.36" y="379.428675" transform="rotate(-0 39.36 379.428675)">Pooled host bases, excluding viral regions, plasmid-positive contigs and masked ends; clean parent portions contribute.</text>
    </g>
    <g id="text_26">
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="413.14395" transform="rotate(-0 28.8 413.14395)">Profiles show ±50,000 bp, clipped to the scaffold. The display window does not set the statistics.</text>

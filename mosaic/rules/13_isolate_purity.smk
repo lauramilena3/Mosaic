@@ -641,6 +641,7 @@ rule host_prophage_activity:
 		regions=dirs_dict["PLOTS_DIR"] + "/08_host_viral_regions.tot.tsv",
 		assignments=ALL_ASSEMBLED_DIR + "/phage_isolates.tot/sample_host_assignments.tsv",
 		host_fastas=expand(dirs_dict["HOST_DIR"] + "/{host}.fasta", host=HOSTS),
+		host_genomad=expand(dirs_dict["HOST_DIR"] + "/{host}_geNomad", host=HOSTS),
 		depth=lambda wc: [dirs_dict["MAPPING_DIR"] + "/HOST/ACTIVITY/" + sample + "_vs_" + ISOLATE_HOST_ASSIGNMENTS[sample] + ".basecov.tsv.gz"
 			for sample in SAMPLES if sample in ISOLATE_HOST_ASSIGNMENTS],
 	output:
@@ -677,6 +678,7 @@ rule host_enriched_regions:
 		regions=dirs_dict["PLOTS_DIR"] + "/08_host_viral_regions.tot.tsv",
 		assignments=ALL_ASSEMBLED_DIR + "/phage_isolates.tot/sample_host_assignments.tsv",
 		host_fastas=expand(dirs_dict["HOST_DIR"] + "/{host}.fasta", host=HOSTS),
+		host_genomad=expand(dirs_dict["HOST_DIR"] + "/{host}_geNomad", host=HOSTS),
 		depth=lambda wc: [dirs_dict["MAPPING_DIR"] + "/HOST/ACTIVITY/" + sample + "_vs_" + ISOLATE_HOST_ASSIGNMENTS[sample] + ".basecov.tsv.gz"
 			for sample in SAMPLES if sample in ISOLATE_HOST_ASSIGNMENTS],
 	output:
