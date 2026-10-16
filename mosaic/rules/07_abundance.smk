@@ -722,7 +722,7 @@ rule mapReads_all_assembled:
 		"""
 		if [ -s {input.fasta:q} ]; then
 			bowtie2 -X {params.max_insert_bp} -x {params.prefix:q} -1 {input.forward_paired:q} -2 {input.reverse_paired:q} {params.unpaired} \
-				-S {output.sam:q} --threads {threads} --no-unal --very-sensitive 2> {log.bowtie2:q}
+				-S {output.sam:q} --threads {threads} --no-unal --all --very-sensitive 2> {log.bowtie2:q}
 		else
 			printf '@HD\tVN:1.6\tSO:coordinate\n' > {output.sam:q}
 			printf 'Empty full catalogue; mapping skipped.\n' > {log.bowtie2:q}
