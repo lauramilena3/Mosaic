@@ -108,6 +108,8 @@ rule shortReadAsemblySpadesPE:
 		dirs_dict["ENVS_DIR"] + "/env3.yaml"
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/shortReadAsemblySpadesPE/sample={sample}__sampling={sampling}.tsv"
+	log:
+		dirs_dict["ASSEMBLY_DIR"] + "/LOGS/{sample}_spades.{sampling}.log"
 	threads: input_threads_assembler
 	resources:
 		mem_mb=ASSEMBLY_MEM_MB
@@ -116,9 +118,11 @@ rule shortReadAsemblySpadesPE:
 		sampling="tot|sub"  
 	shell:
 		"""
+		mkdir -p "$(dirname {log:q})"
 		rm -rf {params.assembly_dir}
 		spades.py  --pe1-1 {input.forward_paired} --pe1-2 {input.reverse_paired}  --pe1-s {input.unpaired} -o {params.assembly_dir} \
-		{params.metagenomic_flag} -t {threads} --memory {params.mem_gb} {params.error_correction}
+		{params.metagenomic_flag} -t {threads} --memory {params.mem_gb} {params.error_correction} 2>&1 | tee {log:q}
+		cp {params.assembly_dir:q}/spades.log {log:q}
 		grep "^>" {params.raw_scaffolds} | sed s"/_/ /"g | awk '{{ if ($4 >= {config[min_len]} && $6 >= {config[min_cov]}) print $0 }}' \
 		| sort -k 4 -n | sed s"/ /_/"g | sed 's/>//' > {params.filtered_list}
 		seqtk subseq {params.raw_scaffolds} {params.filtered_list} > {output.scaffolds}
