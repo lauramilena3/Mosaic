@@ -38,6 +38,7 @@ mosaic/db/phold/
 mosaic/db/RefSeqViral/
 mosaic/db/DRAM_db
 mosaic/db/DRAM_db/
+mosaic/db/DRAM_db.log
 mosaic/db/GTDB-Tk/
 mosaic/db/KRAKEN/
 mosaic/db/VirSorter/

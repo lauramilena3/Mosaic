@@ -291,9 +291,65 @@ rule downloadDRAMDB:
 		dirs_dict["ENVS_DIR"] + "/vir2.yaml"
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/downloadDRAMDB/tot.tsv"
+	log:
+		config['DRAM_db'].rstrip("/") + ".log"
 	shell:
-		"""
-		DRAM-setup.py prepare_databases --output_dir {output.DRAM_db}
+		r"""
+		mkdir -p "$(dirname {log:q})"
+		(
+		python - <<-'PYTHON'
+		import ast
+		import importlib
+		import importlib.util
+		from pathlib import Path
+		import re
+		import shutil
+		from urllib.request import Request, urlopen
+
+		# Patch the active environment, never a server-specific Conda path.
+		source=Path(importlib.util.find_spec("mag_annotator.database_processing").origin)
+		original=source.read_text()
+		base="https://pro.unl.edu/dbCAN2/download/Databases/"
+		old_base=r"https?://bcb\.unl\.edu/dbCAN2/download/"
+		updated=re.sub(old_base + r"(?:Databases/)?(?:V\{{version\}}/)?(?=dbCAN-HMMdb-V\{{version\}}\.txt)",
+		    base + "V{{version}}/", original)
+		updated=re.sub(old_base + "Databases/", base, updated)
+		functions=["download_dbcan", "download_dbcan_fam_activities", "download_dbcan_subfam_ec"]
+		tree=ast.parse(updated, filename=str(source))
+		available=[node.name for node in tree.body if isinstance(node, ast.FunctionDef)]
+		if re.search(old_base, updated) or base not in updated or not all(name in available for name in functions):
+		    raise RuntimeError("Unexpected DRAM dbCAN download code; no patch was written. Review the installed DRAM version.")
+		if updated != original:
+		    backup=source.with_name(source.name + ".before_dbcan_url_fix")
+		    if not backup.exists():
+		        shutil.copy2(source, backup)
+		    source.write_text(updated)
+		    print("Patched DRAM dbCAN URLs in " + str(source), flush=True)
+		else:
+		    print("DRAM dbCAN URLs are already patched.", flush=True)
+
+		# Exercise DRAM's three download functions, checking only a small prefix.
+		# The real setup below runs in a fresh Python process and downloads the files.
+		database_processing=importlib.import_module("mag_annotator.database_processing")
+		def check_download(url, output_file, logger, verbose=True):
+		    if not url.startswith(base):
+		        raise RuntimeError("Unexpected DRAM dbCAN URL: " + url)
+		    with urlopen(Request(url, headers={{"Range": "bytes=0-8191"}}), timeout=60) as response:
+		        prefix=response.read(8192).decode("utf-8", errors="replace").lstrip()
+		    if Path(output_file).name.startswith("dbCAN-HMMdb-"):
+		        valid=prefix.startswith("HMMER3/")
+		    else:
+		        rows=[line for line in prefix.splitlines() if line.strip() and not line.startswith("#")]
+		        valid=bool(rows) and not prefix.startswith("<") and all("\t" in line for line in rows[:3])
+		    if not valid:
+		        raise RuntimeError("DRAM dbCAN download is not the expected HMM/table (possibly HTML): " + url)
+		    print("Checked dbCAN download: " + url, flush=True)
+		database_processing.download_file=check_download
+		for name in functions:
+		    getattr(database_processing, name)()
+		PYTHON
+		DRAM-setup.py prepare_databases --output_dir {output.DRAM_db:q} --threads {threads}
+		) 2>&1 | tee {log:q}
 		"""
 
 rule downloadCheckvDB:

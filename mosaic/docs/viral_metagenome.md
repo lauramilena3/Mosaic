@@ -80,6 +80,10 @@ Database paths such as `db/RefSeqViral/RefSeq_viral.fasta` are relative to the w
 
 Download rules provide their declared default locations; setting an arbitrary nonexistent custom path does not create a new downloader for it. On another server, leave repository-relative defaults in place or point to existing compatible databases. In particular, Kraken needs the actual database directory, not its parent or an old server-specific path. Keep database versions and download manifests for reproducibility.
 
+For the pinned DRAM 1.4.6 installation, `downloadDRAMDB` repairs the three obsolete dbCAN download URLs in the active `vir2.yaml` environment before database preparation. It uses the `pro.unl.edu` mirror without changing dbCAN V11 or its annotation release. The patch keeps one `.before_dbcan_url_fix` source backup and safely accepts an already patched installation; unexpected source layouts stop with an explanatory error. Small HTTP range requests check the HMM/table headers before the large database downloads begin. This is a preflight format check, not verification of every byte in the full downloads. No additional environment or separate patch-marker rule is needed.
+
+DRAM setup uses the rule's allocated `{threads}`. Its console log is saved beside the configured database directory (`db/DRAM_db.log` by default), outside the directory Snakemake removes on a failed job. Rerun the original workflow after updating MOSAIC; no manual edit under a hashed Conda path is required. Files deleted during the earlier failed attempt cannot be recovered by this patch, and automatic reuse of partially prepared databases is not assumed.
+
 ## Workflow overview
 
 ![Viral metagenome workflow: cleaned libraries, shared catalogue and community reports](figures/viral_metagenome_overview.png)
