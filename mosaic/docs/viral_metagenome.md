@@ -74,15 +74,21 @@ Database paths such as `db/RefSeqViral/RefSeq_viral.fasta` are relative to the w
 | `downloadPharokkaDB`, `downloadPhyntenyDB` | Gene annotation and synteny evidence. |
 | `downloadPhaBOXDB`, `downloadTaxmyphageDB`, `downloadIphopDB` | PhaBOX 2 PhaGCN taxonomy, TaxMyPhage and potential host predictions. |
 | `downloadVcontact2Files`, `getClusterONE` | Optional vConTACT2 reference context and clustering. |
-| `downloadDRAMDB` | Optional DRAM-v annotation. |
+| `prepareDRAMcomponent`, `downloadDRAMDB` | Optional DRAM-v annotation; restartable component preparation and final description database. |
 | `downloadMetaVR` | Optional METAVR nucleotide BLAST database and reporting metadata. |
 | `downloadCenoteDB` | Optional Cenote-Taker3 annotation of abundance-selected all-assembled representatives. |
 
 Download rules provide their declared default locations; setting an arbitrary nonexistent custom path does not create a new downloader for it. On another server, leave repository-relative defaults in place or point to existing compatible databases. In particular, Kraken needs the actual database directory, not its parent or an old server-specific path. Keep database versions and download manifests for reproducibility.
 
-For the pinned DRAM 1.4.6 installation, `downloadDRAMDB` repairs the three obsolete dbCAN download URLs in the active `vir2.yaml` environment before database preparation. It uses the `pro.unl.edu` mirror without changing dbCAN V11 or its annotation release. The patch keeps one `.before_dbcan_url_fix` source backup and safely accepts an already patched installation; unexpected source layouts stop with an explanatory error. Small HTTP range requests check the HMM/table headers before the large database downloads begin. This is a preflight format check, not verification of every byte in the full downloads. No additional environment or separate patch-marker rule is needed.
+### Restartable DRAM setup
 
-DRAM setup uses the rule's allocated `{threads}`. Its console log is saved beside the configured database directory (`db/DRAM_db.log` by default), outside the directory Snakemake removes on a failed job. Rerun the original workflow after updating MOSAIC; no manual edit under a hashed Conda path is required. Files deleted during the earlier failed attempt cannot be recovered by this patch, and automatic reuse of partially prepared databases is not assumed.
+DRAM preparation reuses the pinned DRAM 1.4.6 download/processing functions and existing `vir2.yaml` environment. MOSAIC repairs the obsolete dbCAN URLs using the `pro.unl.edu` mirror, retaining dbCAN V11 and its annotation release. It also finds VOG HMM profiles recursively: newer VOG archives place them inside an `hmm/` directory, which the original top-level search misses. The environment source is backed up once as `.before_mosaic_database_fixes`; already patched installations are accepted. Small HTTP requests check the dbCAN/VOG input formats before their full downloads. These checks do not verify every byte of a full download.
+
+Each component is prepared separately, with a completion record in `db/DRAM_db/.mosaic_setup/`. New data/index files are stored under `components/<component>/`. Successful components survive later failures; only the failed component's MOSAIC-created working directory is removed. The database root is not declared as a disposable Snakemake output. Components run sequentially to avoid concurrent configuration writes, and tool processing uses the rule's allocated `{threads}`.
+
+The final `downloadDRAMDB` job builds the SQLite description database and writes `.mosaic_setup/complete.json`. DRAM annotation and distillation require that record and use the database-local `.mosaic_setup/CONFIG`, rather than changing the environment's global database paths. A description-building failure removes only the temporary SQLite file, not the prepared components. Per-component logs are saved beside the database (`db/DRAM_db.<component>.log`); finalization uses `db/DRAM_db.log`.
+
+After a failure, rerun the same workflow command with `--rerun-incomplete`. Completed components are skipped; if a component job is revisited, existing configured data/index files are checked before downloading again. On first migration, valid files registered in the active DRAM environment's configuration can be adopted in place, but only from the configured database directory. Files previously deleted by the old monolithic rule cannot be recovered. To request database preparation alone, use target `downloadDRAMDB` with the same input/config options, not the database directory itself.
 
 ## Workflow overview
 
