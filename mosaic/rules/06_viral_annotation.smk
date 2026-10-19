@@ -279,10 +279,11 @@ rule DRAMv_annotation:
 	input:
 		DRAM_tab=dirs_dict["ANNOTATION"] + "/VirSorter2_DRAM_{sampling}/for-dramv/viral-affi-contigs-for-dramv.tab",
 		DRAM_fasta=dirs_dict["ANNOTATION"] + "/VirSorter2_DRAM_{sampling}/for-dramv/final-viral-combined-for-dramv.fa",		
-		DRAM_db=config['DRAM_db'],
+		DRAM_ready=DRAM_SETUP_DIR + "/complete.json",
 	output:
 		DRAM_output=directory(dirs_dict["ANNOTATION"]+ "/vDRAM_annotate_results_{sampling}"),
 	params:
+		DRAM_config=DRAM_SETUP_DIR + "/CONFIG",
 		DRAM_annotations=dirs_dict["ANNOTATION"]+ "/vDRAM_annotate_results_{sampling}/annotations.tsv",
 		# trna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/trnas.tsv"),
 		# rrna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/rrnas.tsv"),
@@ -295,18 +296,19 @@ rule DRAMv_annotation:
 	threads: 64
 	shell:
 		"""
-		DRAM-v.py annotate -i {input.DRAM_fasta} -v {input.DRAM_tab} -o {output.DRAM_output} --threads {threads}
+		DRAM_CONFIG_LOCATION={params.DRAM_config:q} DRAM-v.py annotate -i {input.DRAM_fasta} -v {input.DRAM_tab} -o {output.DRAM_output} --threads {threads}
 		"""
 
 rule DRAMv_distill:
 	input:
 		DRAM_tab=dirs_dict["ANNOTATION"] + "/VirSorter2_DRAM_{sampling}/for-dramv/viral-affi-contigs-for-dramv.tab",
 		DRAM_fasta=dirs_dict["ANNOTATION"] + "/VirSorter2_DRAM_{sampling}/for-dramv/final-viral-combined-for-dramv.fa",		
-		DRAM_db=config['DRAM_db'],
+		DRAM_ready=DRAM_SETUP_DIR + "/complete.json",
 		DRAM_output=dirs_dict["ANNOTATION"]+ "/vDRAM_annotate_results_{sampling}",
 	output:
 		DRAM_summary=directory(dirs_dict["ANNOTATION"]+ "/vDRAM_distill_results_{sampling}"),
 	params:
+		DRAM_config=DRAM_SETUP_DIR + "/CONFIG",
 		DRAM_annotations=dirs_dict["ANNOTATION"]+ "/vDRAM_annotate_results_{sampling}/annotations.tsv",
 		# trna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/trnas.tsv"),
 		# rrna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/rrnas.tsv"),
@@ -319,7 +321,7 @@ rule DRAMv_distill:
 	threads: 64
 	shell:
 		"""
-		DRAM-v.py distill -i {params.DRAM_annotations} -o {output.DRAM_summary} 
+		DRAM_CONFIG_LOCATION={params.DRAM_config:q} DRAM-v.py distill -i {params.DRAM_annotations} -o {output.DRAM_summary}
 		"""
 
 rule DRAMv_extract_genes:

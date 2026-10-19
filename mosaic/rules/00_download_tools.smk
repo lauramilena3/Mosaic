@@ -281,30 +281,112 @@ rule downloadIphopDB:
 		iphop download --db_dir {output.iphop_db} --full_verify
 		"""
 
-rule downloadDRAMDB:
+# Serial component setup avoids concurrent writes to the database-local CONFIG.
+DRAM_COMPONENTS=["kofam_hmm", "kofam_ko_list", "uniref", "pfam", "pfam_hmm", "dbcan",
+	"dbcan_fam_activities", "dbcan_subfam_ec", "vogdb", "vog_annotations", "viral", "peptidase",
+	"genome_summary_form", "module_step_form", "function_heatmap_form", "amg_database", "etc_module_database"]
+DRAM_SETUP_DIR=config['DRAM_db'].rstrip("/") + "/.mosaic_setup"
+
+def input_previous_dram_component(wildcards):
+	index=DRAM_COMPONENTS.index(wildcards.dram_component)
+	return [DRAM_SETUP_DIR + "/" + DRAM_COMPONENTS[index - 1] + ".json"] if index else []
+
+rule prepareDRAMcomponent:
+	input:
+		input_previous_dram_component,
 	output:
-		DRAM_db=directory(config['DRAM_db']),
+		checkpoint=DRAM_SETUP_DIR + "/{dram_component}.json",
+	params:
+		db_dir=config['DRAM_db'].rstrip("/"),
+	wildcard_constraints:
+		dram_component="|".join(DRAM_COMPONENTS),
 	message:
-		"Downloading DRAM database"
+		"Preparing DRAM database component {wildcards.dram_component}"
 	threads: 4
 	conda:
 		dirs_dict["ENVS_DIR"] + "/vir2.yaml"
 	benchmark:
-		dirs_dict["BENCHMARKS"] + "/downloadDRAMDB/tot.tsv"
+		dirs_dict["BENCHMARKS"] + "/prepareDRAMcomponent/component={dram_component}.tsv"
 	log:
-		config['DRAM_db'].rstrip("/") + ".log"
+		config['DRAM_db'].rstrip("/") + ".{dram_component}.log"
 	shell:
 		r"""
 		mkdir -p "$(dirname {log:q})"
 		(
-		python - <<-'PYTHON'
+		python - {params.db_dir:q} {wildcards.dram_component:q} {output.checkpoint:q} {threads} <<-'PYTHON'
 		import ast
+		from datetime import datetime
+		import gzip
 		import importlib
 		import importlib.util
+		import json
+		import logging
+		import os
 		from pathlib import Path
 		import re
 		import shutil
+		import sys
+		import tarfile
 		from urllib.request import Request, urlopen
+
+		db_dir=Path(sys.argv[1]).resolve()
+		component=sys.argv[2]
+		checkpoint=Path(sys.argv[3])
+		state_dir=db_dir / ".mosaic_setup"
+		state_dir.mkdir(parents=True, exist_ok=True)
+		configuration=state_dir / "CONFIG"
+		package=Path(importlib.util.find_spec("mag_annotator").origin).parent
+		if configuration.exists():
+		    config=json.loads(configuration.read_text())
+		else:
+		    config=json.loads((package / "CONFIG").read_text())
+		    # Adopt only existing files from this database, not another installation.
+		    for section in ["search_databases", "database_descriptions", "dram_sheets"]:
+		        for name, value in config[section].items():
+		            candidate=Path(value).resolve() if value else None
+		            if not candidate or db_dir not in candidate.parents or not candidate.is_file() or not candidate.stat().st_size:
+		                config[section][name]=None
+		    description=Path(config["description_db"]).resolve() if config.get("description_db") else None
+		    if not description or db_dir not in description.parents or not description.is_file():
+		        config["description_db"]=None
+		    configuration.write_text(json.dumps(config, indent=2))
+		section=next((name for name in ["search_databases", "database_descriptions", "dram_sheets"]
+		    if component in config[name]), None)
+		if section is None:
+		    raise RuntimeError("Unknown DRAM configuration component: " + component)
+		value=config[section].get(component)
+		def component_artifacts(value):
+		    path=Path(value).resolve()
+		    files=[path]
+		    if component in ["kofam_hmm", "dbcan", "vogdb"]:
+		        files += [Path(str(path) + suffix) for suffix in [".h3f", ".h3i", ".h3m", ".h3p"]]
+		    if component in ["uniref", "pfam", "viral", "peptidase"]:
+		        files += [Path(str(path) + suffix) for suffix in [".dbtype", ".index", "_h", ".idx", ".idx.dbtype", ".idx.index"]]
+		    return files
+		def valid_artifacts(files):
+		    if not files or not all(db_dir in path.parents and path.is_file() and path.stat().st_size for path in files):
+		        return False
+		    path=files[0]
+		    try:
+		        opener=gzip.open if path.suffix == ".gz" else open
+		        with opener(path, "rb") as handle:
+		            prefix=handle.read(8192).lstrip()
+		        if component in ["kofam_hmm", "dbcan", "vogdb"]:
+		            return prefix.startswith(b"HMMER3/")
+		        if component in ["dbcan_fam_activities", "dbcan_subfam_ec"]:
+		            rows=[line for line in prefix.splitlines() if line.strip() and not line.startswith(b"#")]
+		            return bool(rows) and not prefix.startswith(b"<") and all(b"\t" in line for line in rows[:3])
+		        if component == "vog_annotations":
+		            return all(field in prefix.splitlines()[0].split(b"\t") for field in [b"FunctionalCategory", b"ConsensusFunctionalDescription"])
+		        return bool(prefix) and not prefix.lower().startswith((b"<!doctype html", b"<html"))
+		    except (OSError, EOFError, IndexError):
+		        return False
+		artifacts=component_artifacts(value) if value else []
+		if valid_artifacts(artifacts):
+		    checkpoint.write_text(json.dumps(dict(component=component, path=value, reused=True,
+		        artifacts=[str(path) for path in artifacts]), indent=2))
+		    print("Reusing completed DRAM component: " + component, flush=True)
+		    sys.exit(0)
 
 		# Patch the active environment, never a server-specific Conda path.
 		source=Path(importlib.util.find_spec("mag_annotator.database_processing").origin)
@@ -314,27 +396,44 @@ rule downloadDRAMDB:
 		updated=re.sub(old_base + r"(?:Databases/)?(?:V\{{version\}}/)?(?=dbCAN-HMMdb-V\{{version\}}\.txt)",
 		    base + "V{{version}}/", original)
 		updated=re.sub(old_base + "Databases/", base, updated)
+		updated=updated.replace("http://fileshare.csb.univie.ac.at/vog/", "https://fileshare.csb.univie.ac.at/vog/")
+		old_vog="merge_files(glob(path.join(hmm_dir, 'VOG*.hmm')), vog_hmms)"
+		new_vog="vog_files=sorted(glob(path.join(hmm_dir, '**', 'VOG*.hmm'), recursive=True))\n    if not vog_files:\n        raise ValueError('No VOG HMM profiles found in the downloaded archive')\n    merge_files(vog_files, vog_hmms)"
+		updated=updated.replace(old_vog, new_vog)
 		functions=["download_dbcan", "download_dbcan_fam_activities", "download_dbcan_subfam_ec"]
 		tree=ast.parse(updated, filename=str(source))
 		available=[node.name for node in tree.body if isinstance(node, ast.FunctionDef)]
-		if re.search(old_base, updated) or base not in updated or not all(name in available for name in functions):
-		    raise RuntimeError("Unexpected DRAM dbCAN download code; no patch was written. Review the installed DRAM version.")
+		if re.search(old_base, updated) or base not in updated or not all(name in available for name in functions) or new_vog not in updated:
+		    raise RuntimeError("Unexpected DRAM dbCAN/VOG download code; no patch was written. Review the installed DRAM version.")
 		if updated != original:
-		    backup=source.with_name(source.name + ".before_dbcan_url_fix")
+		    backup=source.with_name(source.name + ".before_mosaic_database_fixes")
 		    if not backup.exists():
 		        shutil.copy2(source, backup)
 		    source.write_text(updated)
-		    print("Patched DRAM dbCAN URLs in " + str(source), flush=True)
+		    print("Patched DRAM dbCAN URLs and nested VOG archive handling in " + str(source), flush=True)
 		else:
-		    print("DRAM dbCAN URLs are already patched.", flush=True)
+		    print("DRAM dbCAN/VOG fixes are already patched.", flush=True)
 
-		# Exercise DRAM's three download functions, checking only a small prefix.
-		# The real setup below runs in a fresh Python process and downloads the files.
+		# Check the selected dbCAN/VOG input before starting its real download.
 		database_processing=importlib.import_module("mag_annotator.database_processing")
 		def check_download(url, output_file, logger, verbose=True):
-		    if not url.startswith(base):
-		        raise RuntimeError("Unexpected DRAM dbCAN URL: " + url)
 		    with urlopen(Request(url, headers={{"Range": "bytes=0-8191"}}), timeout=60) as response:
+		        if component == "vogdb":
+		            with tarfile.open(fileobj=response, mode="r|gz") as archive:
+		                for member in archive:
+		                    if member.isfile() and Path(member.name).match("VOG*.hmm"):
+		                        if not archive.extractfile(member).read(16).startswith(b"HMMER3/"):
+		                            raise RuntimeError("Invalid VOG HMM profile in " + url)
+		                        print("Checked nested VOG archive: " + member.name, flush=True)
+		                        return
+		                raise RuntimeError("No VOG HMM profiles found in " + url)
+		        if component == "vog_annotations":
+		            with gzip.GzipFile(fileobj=response) as handle:
+		                prefix=handle.read(4096).decode("utf-8")
+		            if not all(field in prefix.splitlines()[0].split("\t") for field in ["FunctionalCategory", "ConsensusFunctionalDescription"]):
+		                raise RuntimeError("Unexpected VOG annotation columns: " + url)
+		            print("Checked VOG annotations: " + url, flush=True)
+		            return
 		        prefix=response.read(8192).decode("utf-8", errors="replace").lstrip()
 		    if Path(output_file).name.startswith("dbCAN-HMMdb-"):
 		        valid=prefix.startswith("HMMER3/")
@@ -344,12 +443,135 @@ rule downloadDRAMDB:
 		    if not valid:
 		        raise RuntimeError("DRAM dbCAN download is not the expected HMM/table (possibly HTML): " + url)
 		    print("Checked dbCAN download: " + url, flush=True)
-		database_processing.download_file=check_download
-		for name in functions:
-		    getattr(database_processing, name)()
+		download=getattr(database_processing, "download_" + component)
+		if component in ["dbcan", "dbcan_fam_activities", "dbcan_subfam_ec", "vogdb", "vog_annotations"]:
+		    real_download=database_processing.download_file
+		    database_processing.download_file=check_download
+		    try:
+		        download(".")
+		    finally:
+		        database_processing.download_file=real_download
+
+		component_dir=db_dir / "components" / component
+		saved_configuration=configuration.read_bytes()
+		if component_dir.exists():
+		    if not (component_dir / ".mosaic_owned").is_file():
+		        raise RuntimeError("Refusing to replace a component directory not created by MOSAIC: " + str(component_dir))
+		    shutil.rmtree(component_dir)
+		component_dir.mkdir(parents=True)
+		(component_dir / ".mosaic_owned").touch()
+		raw_dir=component_dir / "raw"
+		raw_dir.mkdir()
+		logger=logging.getLogger("mosaic_dram")
+		logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+		try:
+		    raw=download(str(raw_dir), logger)
+		    process=getattr(database_processing, "process_" + component, None)
+		    if process:
+		        paths=process(raw, str(component_dir), logger, threads=int(sys.argv[4]))
+		    else:
+		        final=component_dir / Path(raw).name
+		        shutil.move(raw, final)
+		        paths={{component: str(final)}}
+		    artifacts=component_artifacts(paths[component])
+		    if not valid_artifacts(artifacts):
+		        raise RuntimeError("DRAM component did not produce valid data/index files: " + component)
+		    if config.get("setup_info") is None:
+		        config["setup_info"]={{}}
+		    for name, value in paths.items():
+		        destination=next(key for key in ["search_databases", "database_descriptions", "dram_sheets"] if name in config[key])
+		        config[destination][name]=str(Path(value).resolve())
+		        config.setdefault("setup_info", {{}})[name]=dict(name=name,
+		            Origin="Downloaded and processed by MOSAIC using DRAM", **{{"Download time": datetime.now().isoformat()}})
+		    # Only paths from a completely successful component enter the shared CONFIG.
+		    config["description_db"]=None
+		    pending=configuration.with_suffix(".pending")
+		    pending.write_text(json.dumps(config, indent=2))
+		    os.replace(pending, configuration)
+		    for name in ["raw", "tmp", "kofam_profiles", "vogdb_hmms"]:
+		        scratch=component_dir / name
+		        if scratch.is_dir():
+		            shutil.rmtree(scratch)
+		    checkpoint.write_text(json.dumps(dict(component=component, paths=paths, reused=False), indent=2))
+		except BaseException:
+		    # Never remove the database root or another completed component.
+		    shutil.rmtree(component_dir)
+		    pending=configuration.with_suffix(".pending")
+		    pending.write_bytes(saved_configuration)
+		    os.replace(pending, configuration)
+		    raise
 		PYTHON
-		DRAM-setup.py prepare_databases --output_dir {output.DRAM_db:q} --threads {threads}
 		) 2>&1 | tee {log:q}
+		"""
+
+rule downloadDRAMDB:
+	input:
+		components=[DRAM_SETUP_DIR + "/" + name + ".json" for name in DRAM_COMPONENTS],
+	output:
+		ready=DRAM_SETUP_DIR + "/complete.json",
+	params:
+		db_dir=config['DRAM_db'].rstrip("/"),
+	conda:
+		dirs_dict["ENVS_DIR"] + "/vir2.yaml"
+	message:
+		"Finalizing the DRAM description database and readiness record"
+	benchmark:
+		dirs_dict["BENCHMARKS"] + "/downloadDRAMDB/tot.tsv"
+	log:
+		config['DRAM_db'].rstrip("/") + ".log"
+	threads: 4
+	shell:
+		r"""
+		mkdir -p "$(dirname {log:q})"
+		python - {params.db_dir:q} {output.ready:q} <<-'PYTHON' 2>&1 | tee {log:q}
+		import json
+		import logging
+		import os
+		from pathlib import Path
+		import sqlite3
+		import sys
+		from mag_annotator.database_handler import DatabaseHandler
+
+		db_dir=Path(sys.argv[1]).resolve()
+		configuration=db_dir / ".mosaic_setup" / "CONFIG"
+		config=json.loads(configuration.read_text())
+		logger=logging.getLogger("mosaic_dram")
+		logging.basicConfig(level=logging.INFO)
+		previous=Path(config["description_db"]) if config.get("description_db") else None
+		valid=False
+		if previous and previous.is_file():
+		    try:
+		        with sqlite3.connect(previous.as_uri() + "?mode=ro", uri=True) as database:
+		            tables={{row[0] for row in database.execute("SELECT name FROM sqlite_master WHERE type='table'")}}
+		            valid=database.execute("PRAGMA quick_check").fetchone()[0] == "ok" and all(
+		                name + "_description" in tables and database.execute(
+		                    "SELECT 1 FROM " + name + "_description LIMIT 1").fetchone() is not None
+		                for name in ["uniref", "pfam", "dbcan", "vogdb", "viral", "peptidase"])
+		    except sqlite3.DatabaseError:
+		        valid=False
+		if not valid:
+		    pending=db_dir / ".mosaic_setup" / "description_db.sqlite.pending"
+		    if pending.exists():
+		        pending.unlink()
+		    handler=DatabaseHandler(logger, config_loc=str(configuration))
+		    try:
+		        handler.populate_description_db(str(pending), update_config=False)
+		        handler.session.close()
+		        handler.session.bind.dispose()
+		        final=db_dir / "description_db.sqlite"
+		        os.replace(pending, final)
+		        handler.config["description_db"]=str(final)
+		        config=handler.config
+		    except BaseException:
+		        if pending.exists():
+		            pending.unlink()
+		        raise
+		    temporary=configuration.with_suffix(".pending")
+		    temporary.write_text(json.dumps(config, indent=2))
+		    os.replace(temporary, configuration)
+		Path(sys.argv[2]).write_text(json.dumps(dict(configuration=str(configuration), description_db=config["description_db"]), indent=2))
+		print("DRAM database ready: " + str(db_dir))
+		PYTHON
 		"""
 
 rule downloadCheckvDB:

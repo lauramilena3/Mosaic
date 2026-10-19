@@ -238,11 +238,12 @@ rule taxonomy_binning_assembly:
 rule DRAM_microbial_annotation:
 	input:
 		vamb_bins=(dirs_dict["ASSEMBLY_DIR"] + "/vamb_binning_results/all_bins/"),
-		DRAM_db=config['DRAM_db'],
+		DRAM_ready=DRAM_SETUP_DIR + "/complete.json",
 	output:
 		DRAM_output=directory(dirs_dict["ANNOTATION"]+ "/DRAM_annotate_results_{sampling}"),
 		DRAM_summary=directory(dirs_dict["ANNOTATION"]+ "/DRAM_distill_results_{sampling}"),
 	params:
+		DRAM_config=DRAM_SETUP_DIR + "/CONFIG",
 		DRAM_annotations=dirs_dict["ANNOTATION"]+ "/DRAM_annotate_results_{sampling}/annotations.tsv",
 		# trna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/trnas.tsv"),
 		# rrna=directory(dirs_dict["vOUT_DIR"]+ "/DRAM_combined_" + VIRAL_CONTIGS_BASE + "_derreplicated_rep_seq_{sampling}/rrnas.tsv"),
@@ -255,8 +256,8 @@ rule DRAM_microbial_annotation:
 	threads: 32
 	shell:
 		"""
-		DRAM.py annotate -i '{input.DAS_Tool_bins}/*fna' -o {output.DRAM_output} --threads {threads}
-		DRAM.py distill -i {params.DRAM_annotations} -o {output.DRAM_summary} 
+		DRAM_CONFIG_LOCATION={params.DRAM_config:q} DRAM.py annotate -i '{input.vamb_bins}/*fna' -o {output.DRAM_output} --threads {threads}
+		DRAM_CONFIG_LOCATION={params.DRAM_config:q} DRAM.py distill -i {params.DRAM_annotations} -o {output.DRAM_summary}
 		"""
 
 def input_taxonomy_gtdbtk_bacteria_all(wildcards):
