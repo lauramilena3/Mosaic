@@ -111,6 +111,7 @@ ISOLATE_VIRIDIC=config_bool('isolate_viridic', True) and ISOLATES
 # Isolate purity is assessed before biological read removal, on DNA libraries.
 REMOVE_EUK=config_bool('remove_euk', True) and not ISOLATES
 RNA_MODE=config_bool('RNA_enriched', False) and not ISOLATES
+GENOMAD_ONLY=config_bool('genomad_only', False)
 HOST_IDENTIFICATION_TEST=config_bool('host_identification_test', False)
 HOST_PROPHAGE_ACTIVITY=config_bool('host_prophage_activity', True) and ISOLATES
 RUN_MICRODIVERSITY=config_bool('microdiversity', False)
@@ -561,9 +562,8 @@ def inputMicrodiversity(wildcards):
 def inputRNA(wildcards):
 	inputs=inputRNAAssembly(wildcards)
 	inputs.extend(expand(dirs_dict["VIRAL_DIR"] + "/{sample}_{assembler}_circularity.tot.tsv", sample=SAMPLES, assembler=RNA_ASSEMBLERS))
-	inputs.append(dirs_dict["vOUT_DIR"] + "/filtered_" + REPRESENTATIVE_CONTIGS_BASE + ".tot.fasta")
-	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_representative.tot.html")
-	inputs.append(dirs_dict["NOTEBOOKS_DIR"] + "/05_vOTU_filtering.tot.html")
+	# RNA candidate classification is exploratory and never feeds the main catalogue.
+	inputs.extend(expand(RNA_DIR + "/{sample}/checkv/quality_summary.tsv", sample=SAMPLES))
 	if RUN_MICRODIVERSITY:
 		inputs.extend(inputMicrodiversity(wildcards))
 	return inputs
@@ -998,8 +998,9 @@ if workflow.mode == Mode.default:
 		print_startup_value("Isolate catalogue", ALL_ASSEMBLED_DIR + "/phage_isolates.tot")
 	elif not ISOLATES:
 		print_startup_value("vOTU prefix", os.path.join(REPRESENTATIVE_CONTIGS_DIR, REPRESENTATIVE_CONTIGS_BASE))
+		print_startup_value("vOTU selection", "Default geNomad calls only" if GENOMAD_ONLY else "Three-tool agreement or conservative geNomad")
 	enabled_options=[label for label, enabled in [
-		("RNA enrichment", RNA_MODE), ("Microdiversity", RUN_MICRODIVERSITY),
+		("Beta RNA exploration", RNA_MODE), ("Microdiversity", RUN_MICRODIVERSITY),
 		("RefSeq mapping", MAP_TO_REFSEQ), ("All-assembled mapping", MAP_TO_ALL_ASSEMBLED),
 		("METAVR BLAST", METAVR_blast), ("Assembly statistics", ASSEMLY_STATS),
 		("Subassembly", SUBASSEMBLY), ("Subsampling", SUBSAMPLING), ("Cross-assembly", CROSS_ASSEMBLY),

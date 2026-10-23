@@ -1,4 +1,4 @@
-# Optional RNA assembly and microdiversity
+# Beta RNA exploration and optional microdiversity
 
 These are independent, opt-in flags in `mosaic/config.yaml`:
 
@@ -10,14 +10,17 @@ microdiversity: True
 | RNA_enriched | microdiversity | Additional work in `all` / `runWorkflow` |
 | --- | --- | --- |
 | False | False | None; existing workflow |
-| True | False | RNA assembly and candidates added to the existing vOTU clustering/filtering |
+| True | False | Beta RNA assemblies, reports and exploratory classification, separate from the main catalogue |
 | False | True | Per-sample variation against the existing final filtered vOTU catalogue |
-| True | True | RNA-enriched shared catalogue, then per-sample variation against it |
+| True | True | Independent beta RNA exploration plus variation against the main filtered catalogue |
 
 Both branches use every paired-end sample discovered in `input_dir` (normally
 `00_RAW_DATA`), following the existing filename/tag conventions. There is no
-`rna_samples` list. They use full **cleaned paired reads**, before subsampling or
-BBnorm, not raw reads or orphan reads. Neither branch currently profiles long reads.
+`rna_samples` list. Beta RNA assembly reuses the existing **BBNorm-normalized
+cleaned paired reads** (`*_paired_norm.tot.fastq.gz`), with the same `max_norm`
+target and `min_norm` settings as DNA assembly. It does not use the 2M mapping
+subset or orphans. Microdiversity still maps full **cleaned paired reads**, before
+BBNorm or subsampling. Neither branch currently profiles long reads.
 
 ## Running
 
@@ -43,21 +46,28 @@ when requesting `runWorkflow`, or use the dedicated targets `runRNAAssembly`,
 `runRNA` and `runMicrodiversity`. Explicitly requesting `runMicrodiversity` runs it
 even when the automatic `microdiversity` flag is off. `runQC` keeps its existing
 scope. With `RNA_enriched=True`, `runAssembly` also requests the RNA assemblies
-and their assembly report. Any target that needs to build the final catalogue
-also includes its RNA prerequisites when `RNA_enriched=True`.
+and their assembly report. Building the main catalogue does not require RNA
+assemblies, even when `RNA_enriched=True`.
 
 There is only one final catalogue path, with or without RNA enrichment:
 `05_vOTUs/filtered_95-85_positive_viral_contigs.tot.fasta` by default
 (`filtered_<REPRESENTATIVE_CONTIGS_BASE>.tot.fasta` for customized catalogue names).
-Changing the RNA flag can rebuild that file and its downstream results. Use separate
-results directories if you want to preserve both versions for comparison.
+The beta RNA flag does not add sequences to that catalogue. It can change the
+independent all-assembled catalogue when `map_to_all_assembled=True`; use separate
+results directories to preserve different exploratory catalogues for comparison.
 The former `microdiversity_reference` override is no longer supported.
 
-## RNA branch
+## Beta RNA branch
 
 `rna_assemblers` defaults to `"rnaviralspades megahit trinity"`. All three run
 independently on each sample. SPAdes uses **`--rnaviral`**, not ordinary `--rna`.
-These assemblies are additional to the standard MOSAIC assembly.
+All three reuse the normalized paired FASTQs produced by `normalizeReads_PE`;
+there is no separate RNA normalization job. Existing normalized files are marked
+temporary and remain until their scheduled DNA/RNA consumers finish. Missing
+normalized inputs are regenerated when an RNA assembly needs them. These assemblies
+are additional to the standard MOSAIC assembly and are used for
+exploration, not main-catalogue acceptance. With `map_to_all_assembled=True`, they
+remain available for independent mapping, abundance selection and annotation.
 Each assembler has its own explicit rule in `rules/12_rna_microdiversity.smk`,
 with its own command, log and benchmark. DNA SPAdes, RNAviralSPAdes, hybrid SPAdes
 and SPAdes assembly-depth tests share `env3.yaml` (SPAdes 4.3.0 and seqtk 1.5).
@@ -92,16 +102,14 @@ duplicates/reverse complements are collapsed. VirSorter2
 selects RNA-virus candidates using `rna_viral_groups: "RNA"`. Identification
 is a candidate screen, not confirmation that every retained sequence is viral.
 
-RNA candidates enter the existing `tot` catalogue workflow **before clustering**,
-alongside the standard viral contigs. The existing MMseqs exact dereplication,
-BLAST, `anicalc_checkv.py`, CheckV's original `aniclust`, and representative selection are
-reused. Clustering arguments stay `--min_ani 95 --min_tcov 85 --min_qcov 0`.
-ANI must independently reach 95% and aligned coverage of the shorter sequence
-must reach 85%. The modified product-based helper is not used. There is no CD-HIT catalogue
-branch and no additional RNA-specific final vOTU FASTA.
+RNA candidates do not enter the main `tot` candidate pool, clustering or final
+filter. Standard catalogue clustering is unchanged (`--min_ani 95 --min_tcov 85
+--min_qcov 0`); the modified product-based helper is not used. The separate
+all-assembled branch can still include RNA sequences and cluster its
+abundance-selected candidates using the existing shared rules.
 
-RNA candidates receive CheckV assessments, merged into the existing quality summary
-for representative selection. DNA and RNA assemblies use the shared
+RNA candidates receive exploratory CheckV assessments, kept separate from the
+main quality summary and representative selection. DNA and RNA assemblies use the shared
 `sample_assembler_number_len_length` identifiers. `<sample>_assembly_provenance.tsv`
 records the renamed member and representative IDs. Original assembler headers
 remain in the optional-lookup `.ids.tsv` sidecars; downstream rules do not read
@@ -113,8 +121,8 @@ separate under `03_CONTIGS/RNA/<sample>/`. VirSorter2-positive sequences are in
 `<sample>/virsorter/final-viral-combined.fa`, not `<sample>_combined_derreplicated.fasta`.
 The helper rule `rna_viral_positive_fasta` exposes that result as a relative symlink
 `03_CONTIGS/RNA/<sample>_virsorter2_RNA_viral_positive.fasta`, without duplicating
-sequence data or rerunning VirSorter2 just to create the link. CheckV and the shared
-vOTU combination use this symlink.
+sequence data or rerunning VirSorter2 just to create the link. Exploratory CheckV
+uses this symlink; main vOTU combination does not.
 The RNA branch also writes `final-viral-score.tsv` there, but no separate ID-only
 positive list.
 After a successful RNA VirSorter2 job, only the final FASTA, score table and
@@ -122,39 +130,27 @@ boundary table (when produced) remain in its working directory. Intermediate
 files, internal logs and `<sample>/virsorter.log` are removed. Failed jobs retain
 their diagnostics. CheckV and the viral-positive symlink still use the same
 final outputs.
-The existing clustering tables track membership in the shared catalogue.
+The all-assembled membership tables track exploratory cluster membership when
+that branch is enabled.
 
 Existing FASTAs in the former `RNA/<sample>/<assembler>.fasta` layout are not
 moved or filtered automatically. They need an explicit migration to reuse them
 under the new filenames; otherwise the missing flat outputs can trigger assembly
 jobs again. geNomad outputs also need refreshing for the new input basename.
 
-### Final acceptance routes
+### Main catalogue is independent
 
-Standard acceptance is unchanged: all three identification tools agree **or**
-conservative geNomad support is present, together with the existing length/quality
-gate (default length >=5,000 nt or the existing high-quality condition).
+There is no RNA-specific acceptance route. `rna_min_contig_length` controls saved
+RNA assemblies, not main-vOTU acceptance. The main filter uses three-tool agreement
+or conservative geNomad by default; `genomad_only=True` instead uses default
+geNomad viral calls alone. Both modes preserve the existing length/CheckV-quality
+and mapping gates. VirSorter2 and VIBRANT still provide representative metadata.
+See [final acceptance](viral_metagenome.md#final-acceptance).
 
-When RNA enrichment is enabled, a second route accepts a selected representative
-if it is in the final representative-level VirSorter2 positive list, its
-`max_score_group` is `RNA`, and its actual FASTA length is at least
-`rna_min_contig_length` (default 500 nt). It does not require three-tool agreement
-or a high CheckV quality estimate. Evidence on a different cluster member, or an
-RNA assembler name alone, is insufficient. A standard-assembly contig can qualify
-if the representative itself has this RNA evidence.
-
-**Both routes still require the same mapping support:** filtered read count >1
-in at least one of the configured key samples. These are the existing
-unfiltered-catalogue mapping statistics, not the stricter microdiversity callability
-thresholds. The RNA exception does not apply to subsampled catalogues.
-
-The existing `vOTU_clustering_summary.tot.csv` now records `sequence_length`,
-`VirSorter2_RNA_positive`, `mapping_support`, and `acceptance_route`
-(`standard`, `RNA`, or `standard+RNA`) for retained representatives.
-
-Abundance, annotation and optional microdiversity all use the same final
-`filtered_...tot.fasta`. Phage-specific annotations are not thereby made applicable
-to every RNA virus; their biological interpretation still needs care.
+Main-catalogue abundance, annotation and optional microdiversity all use the same
+final `filtered_...tot.fasta`, without contributions from the beta RNA assemblies.
+The all-assembled review labels RNA-origin sequences as exploratory, rather than
+claiming they failed the main filter.
 
 RNAviralSPAdes and MEGAHIT use `rna_assembly_threads` (16 by default), with
 separate tool allowances of 32 and 16 GiB and reservations of 40 and 20 GiB.
@@ -167,7 +163,8 @@ Use `--resources mem_mb=<available RAM in MiB>` to limit concurrent declared
 reservations. Tool limits and reservations can be overridden independently;
 raising only the reservation does not change the tool allowance.
 Trinity runs without
-read normalization and uses `--no_salmon` to skip its final Salmon expression filter.
+its own read normalization (`--no_normalize_reads`), because BBNorm has already
+normalized the input. It uses `--no_salmon` to skip its final Salmon expression filter.
 
 Keep 8 Trinity workers as the starting point; the other RNA assemblers use their
 separate 16-thread default. See [memory allowances and scheduling](memory_resources.md)
@@ -175,7 +172,7 @@ for `complexity=low|medium|high|extreme`, individual memory overrides and comman
 examples. Profiles scale DNA SPAdes/BBtools, while RNA allowances have their own
 defaults. Python abundance normalisation is unchanged.
 
-The assembled transcripts continue through the existing viral-candidate and vOTU filters.
+The beta assemblies remain available for exploratory classification and abundance.
 Trinity uses `--full_cleanup` to remove its working directory
 (`03_CONTIGS/RNA/<sample>/trinity_out`) after successful assembly. The rule copies
 Trinity's sibling output

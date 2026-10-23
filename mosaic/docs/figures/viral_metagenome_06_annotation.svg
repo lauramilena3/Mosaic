@@ -151,7 +151,7 @@ L 602.4 313.92
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Final filtered catalogue</text>
    </g>
    <g id="text_4">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">Shared DNA/RNA representatives</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">Main-catalogue representatives</text>
    </g>
    <g id="text_5">
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">The input to core annotation</text>

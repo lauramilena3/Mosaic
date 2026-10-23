@@ -104,7 +104,7 @@ MODES: Dict[str, Dict[str, str]] = {
         "target": "runRNA",
         "preset": "rna_viruses",
         "reads": "illumina",
-        "description": "RNA assembly, viral candidates, and optional microdiversity",
+        "description": "Beta RNA assembly and exploratory classification; optional main-catalogue microdiversity",
     },
     "rna_assembly": {
         "target": "runRNAAssembly",
@@ -675,7 +675,7 @@ def unlock(snakefile: Path, workflow_dir: Path, print_only: bool) -> None:
 @click.option("--metavr-blast/--no-metavr-blast", default=None, help="Override config metavr_blast.")
 @click.option("--map-to-refseq/--no-map-to-refseq", default=None, help="Also map cleaned paired-end reads to RefSeqViral_db.")
 @click.option("--extract-mapped/--no-extract-mapped", default=None, help="Override config extract_mapped.")
-@click.option("--rna-enriched/--no-rna-enriched", default=None, help="Run additional RNA assemblers for all paired-end samples.")
+@click.option("--rna-enriched/--no-rna-enriched", default=None, help="Run beta RNA exploration for all paired-end samples, outside the main vOTU catalogue.")
 @click.option("--microdiversity/--no-microdiversity", default=None, help="Calculate within-sample nucleotide variation against the final vOTU catalogue.")
 @click.option(
     "--visualization-tool",

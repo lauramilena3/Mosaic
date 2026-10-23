@@ -242,16 +242,16 @@ L 715.2 460.8
 " clip-path="url(#p3b6740645f)" style="fill: none; stroke: #3a72ed; stroke-width: 1.4; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">04 / SHARED vOTU CATALOGUE AND FINAL ACCEPTANCE</text>
+    <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">04 / MAIN vOTU CATALOGUE AND FINAL ACCEPTANCE</text>
    </g>
    <g id="text_2">
-    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Independent ANI and coverage thresholds; one final catalogue with or without RNA</text>
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Independent ANI and coverage thresholds; beta RNA assemblies stay separate</text>
    </g>
    <g id="text_3">
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Pool viral candidates</text>
    </g>
    <g id="text_4">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">DNA + optional RNA / subassemblies</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="114.10395" transform="rotate(-0 44.16 114.10395)">DNA + optional subassemblies</text>
    </g>
    <g id="text_5">
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">Optional user reference sequences</text>
@@ -299,22 +299,22 @@ L 715.2 460.8
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="417.94395" transform="rotate(-0 44.16 417.94395)">CheckV MIUViG High-quality</text>
    </g>
    <g id="text_20">
-    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="327.36" y="354.487575" transform="rotate(-0 327.36 354.487575)">RNA-specific acceptance</text>
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="327.36" y="354.487575" transform="rotate(-0 327.36 354.487575)">genomad_only=True</text>
    </g>
    <g id="text_21">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="373.30395" transform="rotate(-0 327.36 373.30395)">RNA_enriched=True only</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="373.30395" transform="rotate(-0 327.36 373.30395)">Default geNomad viral call</text>
    </g>
    <g id="text_22">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="388.18395" transform="rotate(-0 327.36 388.18395)">Selected rep: VirSorter2 RNA-positive</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="388.18395" transform="rotate(-0 327.36 388.18395)">Other tools: metadata only</text>
    </g>
    <g id="text_23">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="403.06395" transform="rotate(-0 327.36 403.06395)">Length ≥500 nt</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="403.06395" transform="rotate(-0 327.36 403.06395)">Length ≥5,000 nt OR</text>
    </g>
    <g id="text_24">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="417.94395" transform="rotate(-0 327.36 417.94395)">Assembler origin is insufficient</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="417.94395" transform="rotate(-0 327.36 417.94395)">CheckV MIUViG High-quality</text>
    </g>
    <g id="text_25">
-    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="610.56" y="354.487575" transform="rotate(-0 610.56 354.487575)">Both routes need mapping</text>
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="610.56" y="354.487575" transform="rotate(-0 610.56 354.487575)">Both modes need mapping</text>
    </g>
    <g id="text_26">
     <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="372.939225" transform="rotate(-0 610.56 372.939225)">&gt;1 passing mapped read</text>
@@ -329,7 +329,7 @@ L 715.2 460.8
     <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="417.579225" transform="rotate(-0 610.56 417.579225)">Record the acceptance route</text>
    </g>
    <g id="text_30">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="485.62395" transform="rotate(-0 28.8 485.62395)">The modified product-based helper is not used. No extra RNA final catalogue and no CD-HIT branch.</text>
+    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="485.62395" transform="rotate(-0 28.8 485.62395)">No RNA acceptance shortcut. The modified product-based helper is not used; clustering stays unchanged.</text>
    </g>
    <g id="text_31">
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="505.30395" transform="rotate(-0 28.8 505.30395)">MOSAIC / viral_metagenome · conceptual methods diagram · config.yaml defaults</text>

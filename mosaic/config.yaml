@@ -11,7 +11,7 @@ hybrid_assembly_mem_mb: null
 quast_mem_mb: 8192
 quast_depth_mem_mb: 12288
 metagenome: True
-# Optional RNA discovery feeding the existing filtered vOTU catalogue (all/runWorkflow).
+# Optional beta RNA exploration; these assemblies do not enter the main vOTU catalogue.
 RNA_enriched: False # add RNA assembly for every paired-end sample in input_dir
 rna_assemblers: "rnaviralspades megahit trinity"
 rna_min_contig_length: 500
@@ -26,8 +26,7 @@ rna_assembly_mem_mb: null # optional legacy shared tool allowance, in MiB; per-t
 rna_trinity_threads: 8 # concurrent partitions; separate from SPAdes/MEGAHIT
 rna_trinity_bfly_heap_gb: 20 # Java heap per Butterfly process; leave RAM for concurrent jobs and overhead
 rna_trinity_strandedness: "" # empty (unstranded), RF, or FR; check library preparation
-# RNA-positive representatives have a separate acceptance route in the shared final filter.
-rna_viral_groups: "RNA" # optionally dsDNAphage,NCLDV,RNA,ssDNA,lavidaviridae
+rna_viral_groups: "RNA" # exploratory RNA VirSorter2 screen; not a main-catalogue acceptance route
 circularity_min_repeat_bp: 30 # minimum exact terminal repeat reported as evidence
 circularity_max_repeat_bp: 5000 # maximum sequence examined at each contig end
 microdiversity: False # independent of RNA_enriched; map every sample to the final catalogue
@@ -86,6 +85,7 @@ nanopore_pooled: False
 nanopore_pooled_name: "raw"
 long_assembler: "flye"
 genomad_filter: "relaxed" # "default", "relaxed", or "conservative"
+genomad_only: False # final vOTU viral evidence: default geNomad calls only; keep length/quality and mapping gates
 
 pacbio: False
 long_assembler_pacbio: hifiasm

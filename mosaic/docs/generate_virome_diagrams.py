@@ -26,13 +26,13 @@ def overview(directory, cfg):
     assembly = d.card(645, 160, 510, "02 / Assembly", [
         "BBnorm → metaSPAdes", "Optional RNA: three extra assemblers"], TEAL, size=22)
     discovery = d.card(1230, 160, 510, "03 / Viral discovery", [
-        "DNA: geNomad-positive sequences", "RNA: VirSorter2-screened candidates"], TEAL, size=22)
+        "DNA: geNomad-positive sequences", "Beta RNA stays outside main catalogue"], TEAL, size=21)
     d.across(qc, assembly, BLUE)
     d.across(assembly, discovery, TEAL)
     cluster = d.card(1230, 415, 510, "04 / Shared catalogue", [
         "MMseqs exact dereplication → 95/85 ANI", "CheckV-guided representatives"], TEAL, size=21)
     final = d.card(645, 415, 510, "Viral + mapping support", [
-        "Standard route; optional RNA route", "One final filtered FASTA, not two"], TEAL, size=22)
+        "Standard or default geNomad-only calls", "One main filtered FASTA"], TEAL, size=21)
     mapping = d.card(60, 415, 510, "05 / Map + normalise", [
         "Full cleaned pairs → final catalogue", "Counts / RPKM / breadth / depth"], BLUE, size=22)
     d.down(discovery, cluster, TEAL)
@@ -43,7 +43,7 @@ def overview(directory, cfg):
     annotation = d.card(645, 690, 510, "06 / Annotation", [
         "Genes / taxonomy / host / lifestyle", "RefSeq similarity; optional METAVR"], PURPLE, size=22)
     branches = d.card(1230, 690, 510, "Independent optional branches", [
-        "RefSeq detection / microdiversity", "All-assembled abundance + annotation"], AMBER, size=21)
+        "RefSeq detection / microdiversity", "All-assembled / beta RNA exploration"], AMBER, size=21)
     d.down(mapping, reports, BLUE)
     d.down(final, annotation, PURPLE)
     d.arrow([(645, 761), (570, 761)], PURPLE)
@@ -78,47 +78,47 @@ def assembly(directory, cfg):
     dna = d.card(60, 160, 500, "Standard DNA branch", [
         f"BBnorm target {number(cfg['max_norm'])}× → metaSPAdes",
         f"Save scaffolds ≥{int(cfg['min_len']):,} bp", "QUAST + DNA assembly notebook"], TEAL, size=22)
-    spades = d.card(650, 160, 500, "RNAviralSPAdes", ["Full cleaned paired reads", "SPAdes --rnaviral, not --rna"], TEAL, size=22)
-    megahit = d.card(1240, 160, 500, "MEGAHIT", ["Full cleaned paired reads", "Independent assembler output"], TEAL, size=22)
+    spades = d.card(650, 160, 500, "RNAviralSPAdes", ["BBNorm-normalized paired reads", "SPAdes --rnaviral, not --rna"], TEAL, size=21)
+    megahit = d.card(1240, 160, 500, "MEGAHIT", ["BBNorm-normalized paired reads", "Independent assembler output"], TEAL, size=21)
     trinity = d.card(650, 420, 500, "Trinity", [
-        "Full cleaned paired reads", "--no_salmon; --full_cleanup", f"Default workers: {int(cfg['rna_trinity_threads'])}"], TEAL, size=22)
+        "BBNorm-normalized paired reads", "--no_salmon; --full_cleanup", f"Default workers: {int(cfg['rna_trinity_threads'])}"], TEAL, size=21)
     saved = d.card(1240, 420, 500, "Each saved RNA FASTA", [
         f"Filter length ≥{int(cfg['rna_min_contig_length']):,} nt", "Then rename / geNomad / repeats", "Flat files in 03_CONTIGS/RNA/"], TEAL, size=22)
     d.arrow([(900, spades[1] + spades[3]), (900, 375), (1390, 375), (1390, 420)], TEAL)
     d.down(megahit, saved, TEAL)
     d.across(trinity, saved, TEAL)
-    d.text(650, 126, "RNA_enriched=True: all samples, no RNA sample list", size=23, color=AMBER)
+    d.text(650, 126, "RNA_enriched=True: beta exploration for all samples", size=23, color=AMBER)
     combined = d.card(650, 710, 1090, "Per-sample combined_derreplicated FASTA", [
         "Pool selected RNA assemblers; collapse exact duplicates / reverse complements",
         "Not yet viral-positive and not the final vOTU catalogue"], TEAL, size=22)
     d.down(saved, combined, TEAL)
     d.card(60, 710, 500, "Persistent names + provenance", [
         "sample_assembler_00001_len_length", ".ids.tsv = provenance only"], TEAL, size=21)
-    d.note(930, "RNA classification/CheckV work stays under RNA/<sample>/; the standard DNA branch remains enabled.")
+    d.note(930, "Beta RNA feeds optional all-assembled analysis, not the main catalogue; DNA assembly remains enabled.")
     d.save(directory, "viral_metagenome_02_assembly")
 
 
 def discovery(directory, cfg):
-    d = diagram("03 / VIRAL DISCOVERY AND TERMINAL REPEATS", "Viral candidate extraction is distinct from whole-assembly evidence", 860)
+    d = diagram("03 / VIRAL DISCOVERY AND TERMINAL REPEATS", "Main DNA candidate extraction is separate from beta RNA exploration", 860)
     dna = d.card(60, 160, 500, "Saved DNA scaffolds", ["geNomad relaxed end-to-end", "Extract virus / provirus candidates"], TEAL, size=22)
-    rna = d.card(650, 160, 500, "RNA combined_derreplicated", [
+    rna = d.card(650, 160, 500, "Beta RNA exploration", [
         f"VirSorter2 groups: {cfg['rna_viral_groups']}", "Keep original candidate sequences"], TEAL, size=22)
-    candidates = d.card(1240, 160, 500, "CheckV evidence", [
-        "Candidate quality / completeness", "Contamination / provirus evidence"], PURPLE, size=22)
+    candidates = d.card(1240, 160, 500, "Exploratory RNA CheckV", [
+        "Candidate quality / completeness", "Kept outside main quality summary"], PURPLE, size=21)
     d.across(rna, candidates, PURPLE)
     repeats = d.card(60, 435, 1090, "Every saved DNA/RNA assembly: terminal-repeat table", [
         f"Exact DTR / ITR threshold: ≥{int(cfg['circularity_min_repeat_bp'])} bp",
         "One row per contig; sequence, length and end coordinates",
         "Non-overlapping ends; geNomad topology shown alongside"], TEAL, size=22)
     individual = d.card(1240, 435, 500, "Each RNA assembler: geNomad", [
-        "RNAviralSPAdes / MEGAHIT / Trinity", "Evidence before combining", "Does not replace the RNA screen"], PURPLE, size=21)
+        "RNAviralSPAdes / MEGAHIT / Trinity", "Evidence before combining", "Exploratory annotation only"], PURPLE, size=21)
     d.band(690, "INTERPRETATION", "Terminal repeats are sequence-end evidence, not proof of a circular molecule or a complete genome.", MUTED)
     d.save(directory, "viral_metagenome_03_discovery")
 
 
 def catalogue(directory, cfg):
-    d = diagram("04 / SHARED vOTU CATALOGUE AND FINAL ACCEPTANCE", "Independent ANI and coverage thresholds; one final catalogue with or without RNA", 1070)
-    pool = d.card(60, 160, 500, "Pool viral candidates", ["DNA + optional RNA / subassemblies", "Optional user reference sequences"], TEAL, size=22)
+    d = diagram("04 / MAIN vOTU CATALOGUE AND FINAL ACCEPTANCE", "Independent ANI and coverage thresholds; beta RNA assemblies stay separate", 1070)
+    pool = d.card(60, 160, 500, "Pool viral candidates", ["DNA + optional subassemblies", "Optional user reference sequences"], TEAL, size=22)
     exact = d.card(650, 160, 500, "MMseqs dereplication", ["100% identity", "100% target coverage"], TEAL, size=22)
     cluster = d.card(1240, 160, 500, "CheckV ANI clustering", ["ANI ≥95% AND target coverage ≥85%", "Original aniclust; min_qcov=0"], TEAL, size=21)
     d.across(pool, exact, TEAL)
@@ -129,17 +129,17 @@ def catalogue(directory, cfg):
     d.down(cluster, rep, PURPLE)
     standard = d.card(60, 700, 500, "Standard acceptance", [
         "Three-tool agreement OR", "conservative geNomad support", f"Length ≥{int(cfg['min_votu_length']):,} nt OR", "CheckV MIUViG High-quality"], TEAL, size=22)
-    rna = d.card(650, 700, 500, "RNA-specific acceptance", [
-        "RNA_enriched=True only", "Selected rep: VirSorter2 RNA-positive", f"Length ≥{int(cfg['rna_min_contig_length']):,} nt",
-        "Assembler origin is insufficient"], TEAL, size=22)
-    final = d.card(1240, 700, 500, "Both routes need mapping", [
+    genomad = d.card(650, 700, 500, "genomad_only=True", [
+        "Default geNomad viral call", "Other tools: metadata only", f"Length ≥{int(cfg['min_votu_length']):,} nt OR",
+        "CheckV MIUViG High-quality"], TEAL, size=22)
+    final = d.card(1240, 700, 500, "Both modes need mapping", [
         ">1 passing mapped read", "In ≥1 configured key sample", "Save filtered_95-85_...tot.fasta", "Record the acceptance route"], BLUE, size=21)
     d.arrow([(1195, 565), (1195, 640), (310, 640), (310, 700)], TEAL)
     d.arrow([(1195, 640), (900, 640), (900, 700)], TEAL)
-    d.across(rna, final, BLUE)
+    d.across(genomad, final, BLUE)
     d.arrow([(310, standard[1] + standard[3]), (310, 960),
              (1490, 960), (1490, final[1] + final[3])], BLUE)
-    d.note(995, "The modified product-based helper is not used. No extra RNA final catalogue and no CD-HIT branch.")
+    d.note(995, "No RNA acceptance shortcut. The modified product-based helper is not used; clustering stays unchanged.")
     d.save(directory, "viral_metagenome_04_catalogue")
 
 
@@ -170,7 +170,7 @@ def mapping(directory, cfg):
 
 def annotation(directory, cfg):
     d = diagram("06 / ANNOTATION AND OPTIONAL COMPARISONS", "Annotations add evidence; independent reference mapping does not replace the catalogue", 990)
-    final = d.card(60, 160, 500, "Final filtered catalogue", ["Shared DNA/RNA representatives", "The input to core annotation"], TEAL, size=22)
+    final = d.card(60, 160, 500, "Final filtered catalogue", ["Main-catalogue representatives", "The input to core annotation"], TEAL, size=22)
     core = d.card(650, 160, 1090, "Core evidence", [
         "Pharokka / Phynteny / gene and nucleotide composition",
         "PhaGCN / TaxMyPhage / RefSeq BLAST / DIAMOND / AAI",

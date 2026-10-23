@@ -16,8 +16,6 @@ def input_vOTU_clustering(wildcards):
 	if ISOLATES:
 		input_list.extend(expand(dirs_dict["HOST_DIR"] + "/prophages/{host}_prophages.fasta", host=HOSTS))
 		input_list.extend(expand(dirs_dict["ASSEMBLY_DIR"]+ "/{sample}_spades_filtered_scaffolds.tot.fasta",sample=SAMPLES))
-	if RNA_MODE and wildcards.sampling == "tot":
-		input_list.extend(expand(RNA_DIR + "/{sample}_virsorter2_RNA_viral_positive.fasta", sample=SAMPLES))
 	return input_list
 
 # if len(config['additional_reference_contigs'])==0:
@@ -35,7 +33,6 @@ rule derreplicate_assembly:
 		rep_name_full=dirs_dict["vOUT_DIR"]+ "/combined_" + VIRAL_CONTIGS_BASE + ".{sampling}_derreplicated_rep_seq.fasta",
 		rep_temp="combined_" + VIRAL_CONTIGS_BASE + ".{sampling}_derreplicated_tmp",
 		dir_votu=dirs_dict["vOUT_DIR"],
-		rna_enabled=lambda wc: RNA_MODE and wc.sampling == "tot",
 	message:
 		"Derreplicating assembled contigs with mmseqs"
 	conda:
@@ -59,6 +56,8 @@ rule combine_all_assembled_contigs:
 	output:
 		fasta=ALL_ASSEMBLED_DIR + "/{catalogue}_contigs.tot.fasta",
 		provenance=ALL_ASSEMBLED_DIR + "/{catalogue}_contigs_provenance.tot.tsv",
+	params:
+		include_rna=lambda wc: RNA_MODE and wc.catalogue == "all_assembled",
 	wildcard_constraints:
 		catalogue="all_assembled|phage_isolates" if RNA_MODE else "all_assembled",
 	message:
@@ -271,8 +270,6 @@ def input_getHighQuality(wildcards):
 	if ISOLATES:
 		input_list.extend(expand(dirs_dict["HOST_DIR"] + "/prophages/{host}_checkV/quality_summary.tsv", host=HOSTS))
 		input_list.extend(expand(dirs_dict["ASSEMBLY_DIR"] + "/checkV_isolates_{sample}_tot/quality_summary.tsv",sample=SAMPLES)),
-	if RNA_MODE and wildcards.sampling == "tot":
-		input_list.extend(expand(RNA_DIR + "/{sample}/checkv/quality_summary.tsv", sample=SAMPLES))
 	return input_list
 
 rule getHighQuality:
@@ -281,8 +278,6 @@ rule getHighQuality:
 	output:
 		quality_summary_concat=dirs_dict["vOUT_DIR"] + "/checkV_merged_quality_summary.{sampling}.txt",
 		high_qualty_list=dirs_dict["vOUT_DIR"] + "/checkV_high_quality.{sampling}.txt",
-	params:
-		rna_enabled=lambda wc: RNA_MODE and wc.sampling == "tot",
 	message:
 		"Getting list high-quality vOTUs"
 	conda:
@@ -450,8 +445,7 @@ rule get_list_filtered_vOTUs:
 		cross_assembly=CROSS_ASSEMBLY,
 		min_votu_len=config['min_votu_length'],
 		key_samples=SAMPLES_key,
-		rna_enabled=lambda wc: RNA_MODE and wc.sampling == "tot",
-		rna_min_length=int(config.get("rna_min_contig_length", 500)),
+		genomad_only=GENOMAD_ONLY,
 	benchmark:
 		dirs_dict["BENCHMARKS"] + "/get_list_filtered_vOTUs/sampling={sampling}.tsv"
 	log:

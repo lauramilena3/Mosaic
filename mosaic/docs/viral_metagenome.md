@@ -101,7 +101,7 @@ The diagrams describe biological steps, not individual Snakemake jobs. Blue is r
 | Step | What happens |
 | --- | --- |
 | [1. Read QC and biological cleaning](#1-read-qc-and-biological-cleaning) | fastp trims technical/low-quality sequence. Kraken classifies reads; configured eukaryotic/contaminant removal produces cleaned paired and orphan FASTQs. |
-| [2. DNA and optional RNA assembly](#2-dna-and-optional-rna-assembly) | BBNorm supplies DNA assembly inputs for metaSPAdes. Optional RNAviralSPAdes, MEGAHIT and Trinity run independently on full cleaned paired reads. Saved assemblies receive persistent names and QUAST summaries. |
+| [2. DNA and optional RNA assembly](#2-dna-and-optional-rna-assembly) | BBNorm supplies DNA assembly inputs for metaSPAdes. Optional RNAviralSPAdes, MEGAHIT and Trinity reuse its normalized paired reads. Saved assemblies receive persistent names and QUAST summaries. |
 | [3. Viral discovery and terminal repeats](#3-viral-discovery-and-terminal-repeats) | geNomad extracts DNA viral candidates; optional combined RNA assemblies undergo a VirSorter2 screen. CheckV and per-assembly terminal-repeat/geNomad evidence remain available. |
 | [4. Shared vOTU catalogue and final acceptance](#4-shared-votu-catalogue-and-final-acceptance) | Pool candidates, exactly dereplicate, cluster at independent 95% ANI / 85% target coverage, select representatives and apply viral plus mapping-support criteria. |
 | [5. Mapping and abundance normalisation](#5-mapping-and-abundance-normalisation) | Full cleaned pairs map to the final catalogue. Save all/unique summaries, raw/adjusted abundance and length-dependent coverage-filtered matrices. Diagnostic mappings use a separate small subset. |
@@ -146,9 +146,9 @@ Identifiers use `sample_assembler_number_len_length`, for example `ViromeA_metas
 
 MOSAIC-written FASTAs use one header line and one complete sequence line per record, including saved DNA/RNA assemblies, candidate exports and selected cluster representatives. FASTA splits also disable wrapping. Sequence content and identifiers are unchanged; downloaded databases and third-party working files can retain their native formatting.
 
-### RNA enrichment
+### Beta RNA exploration
 
-`RNA_enriched=True` adds RNAviralSPAdes (`--rnaviral`, not ordinary `--rna`), MEGAHIT and Trinity for every paired-end sample. There is no `rna_samples` list and no need to separate mixed RNA/DNA libraries. The DNA branch remains enabled. These RNA assemblers use full cleaned paired reads before BBNorm or mapping subsampling, not raw reads or orphans.
+`RNA_enriched=True` adds beta, exploratory RNAviralSPAdes (`--rnaviral`, not ordinary `--rna`), MEGAHIT and Trinity assemblies for every paired-end sample. There is no `rna_samples` list and no need to separate mixed RNA/DNA libraries. The DNA branch remains enabled. These RNA assemblers reuse the BBNorm-normalized `tot` paired reads from `normalizeReads_PE`, with the existing `max_norm`/`min_norm` settings. They do not use raw reads, orphans or the 2M mapping subset. They do not contribute candidates or CheckV assessments to the main vOTU catalogue. With `map_to_all_assembled=True`, their contigs can still enter the independent all-assembled/top-abundance analysis.
 
 Each saved RNA assembler FASTA is filtered at `rna_min_contig_length` (default 500 nt, inclusive) before naming, geNomad, terminal-repeat testing or combination. FASTAs and `.ids.tsv` files are directly under `03_CONTIGS/RNA/`; per-tool classification, CheckV and working outputs remain under `RNA/{sample}/`.
 
@@ -164,7 +164,7 @@ Trinity uses `--no_salmon`, `--full_cleanup` and a separate Butterfly heap setti
 
 Initial short-read DNA discovery runs geNomad with its relaxed preset on saved scaffolds and extracts virus/provirus candidates to `04_VIRAL_ID/{sample}_positive_viral_contigs.tot.fasta`. This candidate FASTA is different from the whole assembly. CheckV assesses candidate quality, completeness, contamination and provirus evidence; these assessments later inform representative selection.
 
-When RNA enrichment is enabled, VirSorter2 screens each combined RNA assembly with `rna_viral_groups` (default `RNA`). Its final candidate FASTA is exposed through the relative symlink `03_CONTIGS/RNA/{sample}_virsorter2_RNA_viral_positive.fasta`. CheckV processes this positive FASTA, not the unscreened `combined_derreplicated` assembly. RNA candidates enter the shared `tot` catalogue before clustering.
+When beta RNA exploration is enabled, VirSorter2 screens each combined RNA assembly with `rna_viral_groups` (default `RNA`). Its final candidate FASTA is exposed through the relative symlink `03_CONTIGS/RNA/{sample}_virsorter2_RNA_viral_positive.fasta`. CheckV processes this positive FASTA, not the unscreened `combined_derreplicated` assembly. These results remain exploratory: neither these candidates nor their CheckV summaries enter main-catalogue construction or representative selection.
 
 The circularity rule produces one row for every saved DNA/RNA contig, including ones without a geNomad viral call. It reports exact DTR/ITR sequence-end overlaps, repeat sequences, lengths, 1-based inclusive end coordinates and available geNomad topology/scores. The default reporting threshold is 30 bp. End windows are bounded by half the contig length, preventing the same contig positions from serving as both ends; geNomad DTR evidence can extend the usual 5 kb search window without removing that bound. Repeats are evidence for genome-end structure, not proof of physical circularity, completeness or replication.
 
@@ -174,7 +174,7 @@ The circularity rule produces one row for every saved DNA/RNA contig, including 
 
 [Zoomable catalogue diagram (SVG)](figures/viral_metagenome_04_catalogue.svg)
 
-DNA candidates and optional RNA/subassembly/coassembly/user-reference candidates are pooled. MMseqs exact dereplication uses `--min-seq-id 1 -c 1 --cov-mode 1`. Representative sequences and membership tables are preserved; redundant `all_seqs.fasta` exports are removed after success. These are the existing exact settings, not a guarantee that every grouped member has the same full length.
+Standard-assembly candidates and optional subassembly/coassembly/user-reference candidates are pooled. Beta RNA assemblies are excluded from this pool. MMseqs exact dereplication uses `--min-seq-id 1 -c 1 --cov-mode 1`. Representative sequences and membership tables are preserved; redundant `all_seqs.fasta` exports are removed after success. These are the existing exact settings, not a guarantee that every grouped member has the same full length.
 
 The shared `vOUTclustering` rule calculates BLAST-based ANI through `anicalc_checkv.py`, then invokes CheckV's original installed clustering command:
 
@@ -185,9 +185,9 @@ aniclust --fna ... --ani ... --out ... \
 
 ANI and target coverage must pass independently. The modified product-based `scripts/aniclust_checkv.py` is not used or edited. Representative selection then uses the existing CheckV completeness, quality and warning logic; the final representative is not necessarily the longest member. Selection and original membership remain inspectable in the intermediate tables/notebook.
 
-### Final acceptance routes
+### Final acceptance
 
-The selected representative undergoes geNomad, VIBRANT and VirSorter2 assessment. Standard acceptance requires:
+The selected representative undergoes geNomad, VIBRANT and VirSorter2 assessment. With `genomad_only=False` (default), acceptance requires:
 
 ```text
 (all three viral tools support the representative OR conservative geNomad support)
@@ -197,9 +197,17 @@ AND mapping support
 
 `min_votu_length` defaults to 5,000 nt. The quality exception uses the existing `checkV_miuvig_quality` field, not an independently invented completeness cutoff.
 
-With RNA enrichment enabled, an additional route requires the selected representative itself to be in the final representative-level VirSorter2 positive list, have `max_score_group=RNA`, meet `rna_min_contig_length` and have mapping support. It does not require three-tool agreement or a high CheckV assessment. An RNA assembler name, or RNA evidence only on another cluster member, does not qualify it.
+With `genomad_only=True`, only the viral-evidence requirement changes:
 
-For both routes, mapping support is **filtered read count >1 in at least one configured key sample**, using the unfiltered-representative catalogue mapping. This small support requirement is separate from the stricter per-sample abundance coverage filter and microdiversity callability thresholds.
+```text
+default geNomad viral-positive call for the representative
+AND (CheckV-recorded length >= min_votu_length OR CheckV MIUViG quality = High-quality)
+AND mapping support
+```
+
+This uses the saved default geNomad positive list, not merely a score or presence in the relaxed summary. VirSorter2 and VIBRANT still run and remain in the metadata, but neither can admit or reject a representative in this mode. The flag does not relax the length/quality or mapping gates, change clustering or affect isolate retention.
+
+For either selection mode, mapping support is **filtered read count >1 in at least one configured key sample**, using the unfiltered-representative catalogue mapping. This small support requirement is separate from the stricter per-sample abundance coverage filter and microdiversity callability thresholds.
 
 There is only one final catalogue:
 
@@ -207,7 +215,7 @@ There is only one final catalogue:
 05_vOTUs/filtered_95-85_positive_viral_contigs.tot.fasta
 ```
 
-RNA enrichment does not create a second RNA final vOTU FASTA or use CD-HIT for catalogue clustering. `vOTU_clustering_summary.tot.csv` records retained-representative evidence and `acceptance_route` (`standard`, `RNA` or `standard+RNA`). `vOTU_filtering_audit.tot.tsv` also saves every assessed representative, actual pass/fail flags and exclusion reasons; the accepted-only summary and filtering criteria are unchanged. Custom catalogue names change the prefix, not this shared-catalogue design.
+There is no special RNA acceptance route or 500 nt RNA exception. `rna_min_contig_length` controls saved beta RNA assemblies only. `vOTU_clustering_summary.tot.csv` records retained-representative evidence, `selection_mode`, `genomad_only` and `acceptance_route` (`standard` or `genomad_only`). `vOTU_filtering_audit.tot.tsv` also saves every assessed representative, actual pass/fail flags and mode-specific exclusion reasons. Custom catalogue names change the prefix, not this main-catalogue design.
 
 ## 5. Mapping and abundance normalisation
 
@@ -220,7 +228,7 @@ Final `tot` abundance maps full cleaned paired reads to the final filtered catal
 | Analysis | Virome read input |
 | --- | --- |
 | Standard DNA assembly | BBNorm-normalised cleaned pairs and orphans. |
-| Optional RNA assembly | Full cleaned `tot` pairs, before BBNorm/subsampling. |
+| Optional RNA assembly | BBNorm-normalised cleaned `tot` pairs, reusing the DNA normalization rule; no orphans. |
 | Final catalogue `tot` abundance | Full cleaned `tot` pairs. |
 | Assembly/viral/unfiltered-catalogue diagnostic mapping | `2M_...` paired FASTQs made by `reformat.sh reads=2000000 sampleseed=1`; a smaller library can yield fewer reads. This is a separate sampling command, not the optional `subsampling` branch. |
 | Optional all-assembled mapping | The same `2M_...` diagnostic subset. |
@@ -351,7 +359,8 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 
 | Config / wrapper option | Additional work or input |
 | --- | --- |
-| `RNA_enriched=True` / `--rna-enriched` | Additional RNA assemblies for every sample, individual evidence, reconciliation, RNA screen and RNA acceptance within the one final catalogue. |
+| `RNA_enriched=True` / `--rna-enriched` | Beta RNA assemblies for every sample, individual evidence, reconciliation and exploratory classification. Excluded from the main catalogue; available to independent all-assembled/top-abundance analysis. |
+| `genomad_only=True` | Default geNomad calls alone supply final viral evidence. VirSorter2/VIBRANT remain metadata; existing length/quality and mapping requirements still apply. Use wrapper `--config genomad_only=True`. |
 | `sourmash_clean_reads=True` / `--sourmash-clean-reads` | Shared per-sample and pooled final-clean-read bacterial/archaeal report, including paired and orphan reads; uses full libraries, not the 2M subset. |
 | `sourmash_contig_catalogue=True` / `--sourmash-contig-catalogue` | GTDB screening evidence in final-vOTU and selected all-assembled metadata. The inclusive `sourmash_contig_catalogue_min_length` cutoff defaults to 5,000 bp; no sequences are removed. |
 | `microdiversity=True` / `--microdiversity` | Separate full-cleaned-pair mapping to the final catalogue and `11_microdiversity_summary.tot.ipynb`/HTML. Independent of RNA enrichment. Defaults include callable depth 100x, base/MAPQ 30, alternate frequency 3%, alternate count 5 and maximum depth 100,000. Low-callability values are not zero biological diversity. |
@@ -371,7 +380,7 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 | `mapping_max_insert_bp=1000` | Shared maximum concordant fragment span for every paired-end Bowtie2 mapping; default 1,000 bp. |
 | `remove_euk=False` / `--no-remove-euk` | Retain the Kraken-classified eukaryotic read fraction; QC classification remains. Default is `True` for this mode. |
 
-### RNA-enriched virome example
+### Virome with additional beta RNA exploration
 
 ```bash
 python mosaic.py run viral_metagenome \
@@ -417,7 +426,7 @@ Request `runBenchmarkSummary` separately after processing to aggregate benchmark
 | `min_cov` | 0 | Initial SPAdes scaffold-header coverage filter. |
 | `max_norm` | 100 | BBNorm assembly target coverage; not a downstream read-depth requirement. |
 | `min_votu_length` | 5000 nt | Standard final-acceptance length gate, with the existing CheckV MIUViG high-quality exception. |
-| `rna_min_contig_length` | 500 nt | Inclusive saved RNA assembly and RNA acceptance length threshold. |
+| `rna_min_contig_length` | 500 nt | Inclusive saved beta RNA assembly length threshold; not a main-catalogue acceptance threshold. |
 | `rna_viral_groups` | `RNA` | Per-sample combined-RNA VirSorter2 candidate-screen groups. |
 | `circularity_min_repeat_bp` | 30 bp | Exact terminal-repeat reporting threshold. |
 | `all_assembled_top_per_sample` | 100 | Nonzero top-ranked sequences per non-NC sample for the exploratory union. |
@@ -447,7 +456,9 @@ Successful Trinity assembly uses full cleanup and preserves its exported FASTA; 
 
 These settings do not automatically clean every historical intermediate. Before manual cleanup, check for active jobs and verify completed downstream results; do not delete declared final outputs or shared databases to save space. Old filenames, RNA layouts and plain coverage may need an explicit migration to be reused under current rules.
 
-Snakemake tracks code, input, environment and parameter changes. Changing RNA enrichment, biological filters, references or memory settings can legitimately schedule downstream jobs again. `--rerun-incomplete` resumes failed/incomplete work; it does not force every completed job. Inspect `--dry-run` before executing an updated checkout, and preserve separate results directories when comparing differently filtered catalogues. Do not touch biological outputs merely to suppress meaningful rerun reasons.
+Snakemake tracks code, input, environment and parameter changes. Changing biological filters, `genomad_only`, references or memory settings can legitimately schedule downstream jobs again. Changing `RNA_enriched` affects the beta RNA reports and, when requested, all-assembled selection/mapping, not the main candidate pool. Existing catalogues built before RNA separation must be rebuilt from candidate pooling onward, including dependent mappings and annotations; changing the final filter alone cannot remove old RNA cluster members. `--rerun-incomplete` resumes failed/incomplete work; it does not force every completed job. Inspect `--dry-run` before executing an updated checkout, and preserve separate results directories when comparing differently filtered catalogues. Do not touch biological outputs merely to suppress meaningful rerun reasons.
+
+When turning beta RNA off, an existing `03_CONTIGS/ALL_ASSEMBLED/` may still contain RNA-derived representatives, selections and annotations. Rebuild that branch from `combine_all_assembled_contigs`, not just its review table. Archive the old catalogue and dependent mapping/report outputs if they are needed for comparison or manual work. A write-protected selection can stop the dry-run with `ProtectedOutputException`; resolve that explicitly by archiving the old outputs or making only the intended generated files writable. RNA assembly reports can remain as historical files; they are not current outputs of an RNA-disabled run. Use the actual config key `RNA_enriched=False`, not `RNA=False`.
 
 ## Interpretation limits
 

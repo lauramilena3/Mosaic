@@ -145,7 +145,7 @@ L 602.4 282.24
     <text style="font-weight: 700; font-size: 16.32px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="28.8" y="29.20065" transform="rotate(-0 28.8 29.20065)">03 / VIRAL DISCOVERY AND TERMINAL REPEATS</text>
    </g>
    <g id="text_2">
-    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Viral candidate extraction is distinct from whole-assembly evidence</text>
+    <text style="font-size: 11.04px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="28.8" y="50.628675" transform="rotate(-0 28.8 50.628675)">Main DNA candidate extraction is separate from beta RNA exploration</text>
    </g>
    <g id="text_3">
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="95.287575" transform="rotate(-0 44.16 95.287575)">Saved DNA scaffolds</text>
@@ -157,7 +157,7 @@ L 602.4 282.24
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="44.16" y="128.98395" transform="rotate(-0 44.16 128.98395)">Extract virus / provirus candidates</text>
    </g>
    <g id="text_6">
-    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="327.36" y="95.287575" transform="rotate(-0 327.36 95.287575)">RNA combined_derreplicated</text>
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="327.36" y="95.287575" transform="rotate(-0 327.36 95.287575)">Beta RNA exploration</text>
    </g>
    <g id="text_7">
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="114.10395" transform="rotate(-0 327.36 114.10395)">VirSorter2 groups: RNA</text>
@@ -166,13 +166,13 @@ L 602.4 282.24
     <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="327.36" y="128.98395" transform="rotate(-0 327.36 128.98395)">Keep original candidate sequences</text>
    </g>
    <g id="text_9">
-    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="610.56" y="95.287575" transform="rotate(-0 610.56 95.287575)">CheckV evidence</text>
+    <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7c3aed" x="610.56" y="95.287575" transform="rotate(-0 610.56 95.287575)">Exploratory RNA CheckV</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="114.10395" transform="rotate(-0 610.56 114.10395)">Candidate quality / completeness</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="113.739225" transform="rotate(-0 610.56 113.739225)">Candidate quality / completeness</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="128.98395" transform="rotate(-0 610.56 128.98395)">Contamination / provirus evidence</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="128.619225" transform="rotate(-0 610.56 128.619225)">Kept outside main quality summary</text>
    </g>
    <g id="text_12">
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="44.16" y="227.287575" transform="rotate(-0 44.16 227.287575)">Every saved DNA/RNA assembly: terminal-repeat table</text>
@@ -196,7 +196,7 @@ L 602.4 282.24
     <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="260.619225" transform="rotate(-0 610.56 260.619225)">Evidence before combining</text>
    </g>
    <g id="text_19">
-    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="275.499225" transform="rotate(-0 610.56 275.499225)">Does not replace the RNA screen</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="610.56" y="275.499225" transform="rotate(-0 610.56 275.499225)">Exploratory annotation only</text>
    </g>
    <g id="text_20">
     <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #526277" x="39.36" y="347.1534" transform="rotate(-0 39.36 347.1534)">INTERPRETATION</text>

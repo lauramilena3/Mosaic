@@ -1,9 +1,9 @@
-# Additional RNA discovery and per-sample variation against the shared filtered vOTU catalogue.
+# Beta RNA exploration on BBNorm-normalized pairs; variation against the main filtered catalogue.
 
 rule rna_assemble_spades:
 	input:
-		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq.gz",
-		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq.gz",
+		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.tot.fastq.gz",
+		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.tot.fastq.gz",
 	output:
 		fasta=temp(RNA_DIR + "/{sample}_rnaviralspades.unrenamed.fasta"),
 	params:
@@ -33,8 +33,8 @@ rule rna_assemble_spades:
 
 rule rna_assemble_megahit:
 	input:
-		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq.gz",
-		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq.gz",
+		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.tot.fastq.gz",
+		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.tot.fastq.gz",
 	output:
 		fasta=temp(RNA_DIR + "/{sample}_megahit.unrenamed.fasta"),
 	params:
@@ -65,8 +65,8 @@ rule rna_assemble_megahit:
 
 rule rna_assemble_trinity:
 	input:
-		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_clean.tot.fastq.gz",
-		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_clean.tot.fastq.gz",
+		forward_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_forward_paired_norm.tot.fastq.gz",
+		reverse_paired=dirs_dict["CLEAN_DATA_DIR"] + "/{sample}_reverse_paired_norm.tot.fastq.gz",
 	output:
 		fasta=temp(RNA_DIR + "/{sample}_trinity.unrenamed.fasta"),
 	params:

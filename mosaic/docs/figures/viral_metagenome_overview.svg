@@ -311,10 +311,10 @@ L 597.6 389.76
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="605.76" y="95.287575" transform="rotate(-0 605.76 95.287575)">03 / Viral discovery</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="114.10395" transform="rotate(-0 605.76 114.10395)">DNA: geNomad-positive sequences</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="113.739225" transform="rotate(-0 605.76 113.739225)">DNA: geNomad-positive sequences</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="128.98395" transform="rotate(-0 605.76 128.98395)">RNA: VirSorter2-screened candidates</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="128.619225" transform="rotate(-0 605.76 128.619225)">Beta RNA stays outside main catalogue</text>
    </g>
    <g id="text_12">
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="605.76" y="217.687575" transform="rotate(-0 605.76 217.687575)">04 / Shared catalogue</text>
@@ -329,10 +329,10 @@ L 597.6 389.76
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #0f766e" x="324.96" y="217.687575" transform="rotate(-0 324.96 217.687575)">Viral + mapping support</text>
    </g>
    <g id="text_16">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="324.96" y="236.50395" transform="rotate(-0 324.96 236.50395)">Standard route; optional RNA route</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="324.96" y="236.139225" transform="rotate(-0 324.96 236.139225)">Standard or default geNomad-only calls</text>
    </g>
    <g id="text_17">
-    <text style="font-size: 10.56px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="324.96" y="251.38395" transform="rotate(-0 324.96 251.38395)">One final filtered FASTA, not two</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="324.96" y="251.019225" transform="rotate(-0 324.96 251.019225)">One main filtered FASTA</text>
    </g>
    <g id="text_18">
     <text style="font-weight: 700; font-size: 12.96px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="44.16" y="217.687575" transform="rotate(-0 44.16 217.687575)">05 / Map + normalise</text>
@@ -368,7 +368,7 @@ L 597.6 389.76
     <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="368.139225" transform="rotate(-0 605.76 368.139225)">RefSeq detection / microdiversity</text>
    </g>
    <g id="text_29">
-    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="383.019225" transform="rotate(-0 605.76 383.019225)">All-assembled abundance + annotation</text>
+    <text style="font-size: 10.08px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #172b4d" x="605.76" y="383.019225" transform="rotate(-0 605.76 383.019225)">All-assembled / beta RNA exploration</text>
    </g>
    <g id="text_30">
     <text style="font-weight: 700; font-size: 11.52px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3a72ed" x="39.36" y="447.9534" transform="rotate(-0 39.36 447.9534)">READ SUBSETS ARE NOT INTERCHANGEABLE</text>

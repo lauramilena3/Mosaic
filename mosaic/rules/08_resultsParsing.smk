@@ -1372,8 +1372,6 @@ rule all_assembled_contig_review:
 		audit=[dirs_dict["vOUT_DIR"] + "/vOTU_filtering_audit.tot.tsv"] if not ISOLATES else [],
 		votu_members=[dirs_dict["vOUT_DIR"] + "/new_references_clusters.tot.csv"] if not ISOLATES else [],
 		initial_dna=expand(dirs_dict["VIRAL_DIR"] + "/{sample}_" + VIRAL_CONTIGS_BASE + ".tot.fasta", sample=SAMPLES) if not ISOLATES else [],
-		initial_rna=expand(RNA_DIR + "/{sample}_virsorter2_RNA_viral_positive.fasta", sample=SAMPLES) if RNA_MODE and not ISOLATES else [],
-		rna_provenance=expand(RNA_DIR + "/{sample}_assembly_provenance.tsv", sample=SAMPLES) if RNA_MODE and not ISOLATES else [],
 	output:
 		tsv=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.tsv",
 		csv=ALL_ASSEMBLED_DIR + "/all_assembled_top_contigs_review_tot.csv",
@@ -1381,7 +1379,6 @@ rule all_assembled_contig_review:
 		samples=SAMPLES,
 		negative_control=str(config.get("negative_control", "")).strip(),
 		min_repeat=int(config.get("circularity_min_repeat_bp", 30)),
-		rna_groups=config.get("rna_viral_groups", "RNA"),
 		isolates=ISOLATES,
 		vibrant_proteins=dirs_dict["vOUT_DIR"] + "/VIBRANT_" + ALL_ASSEMBLED_TOP_NAME + ".tot/VIBRANT_*/" + ALL_ASSEMBLED_TOP_NAME + "_tot.prodigal.faa",
 	message:
@@ -1424,14 +1421,8 @@ rule all_assembled_contig_review:
 		def original_id(name):
 			return name.split("|provirus_", 1)[0].split("_provirus_", 1)[0]
 
-		aliases={}
-		for path in input.rna_provenance:
-			with open(path) as handle:
-				for row in csv.DictReader(handle, delimiter="\t"):
-					if row.get("representative"):
-						aliases[row["contig_id"]]=row["representative"]
 		initial=set()
-		for path in list(input.initial_dna) + list(input.initial_rna):
+		for path in input.initial_dna:
 			with open(path) as handle:
 				initial.update(original_id(record.id) for record in SeqIO.parse(handle, "fasta"))
 		audit=pd.read_csv(input.audit[0], sep="\t", low_memory=False).set_index("vOTU_name") if input.audit else pd.DataFrame()
@@ -1445,15 +1436,13 @@ rule all_assembled_contig_review:
 					votu_links[original_id(name)].add((row["rep"], scope))
 
 		def links(name):
-			result=set(votu_links.get(name, set()))
-			alias=aliases.get(name)
-			if alias and alias != name:
-				result.update((rep, scope + " (RNA exact duplicate)") for rep, scope in votu_links.get(alias, set()))
-			return result
+			return set(votu_links.get(name, set()))
 
 		def catalogue(name, assembler):
 			if params.isolates:
 				return "not applicable (isolate mode)", "not reported", "not reported", "virome filtering not requested"
+			if assembler in ["rnaviralspades", "megahit", "trinity"]:
+				return "not_in_main_catalogue", "not reported", "not reported", "beta RNA assembly: exploratory only; not submitted to main vOTU selection"
 			own=links(name)
 			assessed={(rep, scope) for rep, scope in own if rep in audit.index}
 			retained={(rep, scope) for rep, scope in assessed if audit.loc[rep, "filter_decision"] == "retained"}
@@ -1463,13 +1452,12 @@ rule all_assembled_contig_review:
 			if assessed:
 				reasons=sorted({str(audit.loc[rep, "filter_reason"]) for rep, _ in assessed})
 				return "excluded_final_filter", " | ".join(sorted({rep for rep, _ in assessed})), " | ".join(sorted({scope for _, scope in assessed})), " | ".join(reasons)
-			if own or name in initial or aliases.get(name) in initial:
+			if own or name in initial:
 				return "not_resolved", " | ".join(sorted({rep for rep, _ in own})) or "not reported", "not reported", "candidate entered the viral branch, but a filtering-audit link is unavailable"
 			related=set()
 			for member in cluster_members.get(name, set()):
 				related.update((rep, scope) for rep, scope in links(member) if rep in audit.index and audit.loc[rep, "filter_decision"] == "retained")
-			reason=("not admitted by the initial DNA geNomad screen" if assembler in ["spades", "metaspades"] else
-				"not admitted by the initial RNA VirSorter2 screen (groups: " + str(params.rna_groups) + ")")
+			reason="not admitted by the initial geNomad screen"
 			if related:
 				reason+="; another selected-cluster member is retained, not this representative"
 			return "excluded_initial_screen", " | ".join(sorted({rep for rep, _ in related})) or "not reported", "other selected-cluster member" if related else "not reported", reason

@@ -125,7 +125,7 @@ viral selection gate.
 
 The [viral metagenome manual](mosaic/docs/viral_metagenome.md) follows the same
 step-by-step format, with a colour-coded overview and seven step diagrams. It
-covers strict viral selection, the shared DNA/RNA catalogue, read subsets,
+covers viral selection, the main catalogue, optional beta RNA exploration, read subsets,
 abundance and annotation outputs, optional branches, databases, memory and storage.
 
 PhaGCN taxonomy now uses PhaBOX 2's taxonomy-only task, a dedicated Conda

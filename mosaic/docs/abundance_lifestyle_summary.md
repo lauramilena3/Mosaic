@@ -15,7 +15,7 @@ Snakemake writes the executed notebook to `NOTEBOOKS/` and the HTML report to
 `vOTU_metadata_polished.csv` uses consistent capitalization and topic
 ordering: viral identification, CheckV, seqtk composition, BACPHLIP, viral taxonomy,
 ViralRefSeq/METAVR similarity, resolved hosts, iPHoP and CRISPR evidence, then
-abundance. Additional workflow fields (including RNA acceptance routes and
+abundance. Additional workflow fields (including the vOTU selection mode and
 TaxMyPhage taxonomy) precede the final abundance columns. Original vOTU IDs and
 all catalogue rows are retained, including undetected and unknown-quality vOTUs.
 
