@@ -262,6 +262,10 @@ Optional per-base exports are off by default. `per_base_coverage=True` saves `*_
 
 Core annotation includes Pharokka/Phynteny, predicted genes and coding/nucleotide composition, PhaGCN and TaxMyPhage taxonomy, RefSeq nucleotide BLAST, viral-protein DIAMOND searches, AAI comparisons, iPHoP host predictions and BACPHLIP lifestyle evidence. Genome-organisation visualisation uses `lovis4u` by default, or `clinker`, only when the final catalogue has fewer than `visualization_max_contigs` sequences (default 50). Larger catalogues still receive the core annotation/reporting outputs.
 
+DIAMOND-to-AAI parsing uses GNU awk (`gawk`) from the existing
+`env1_mapping.yaml` environment, including the legacy isolate parsing rule.
+It does not depend on the server's default `awk` implementation.
+
 PhaGCN taxonomy now runs through PhaBOX 2's `--task phagcn`, using a dedicated
 CPU-only environment and automatically downloaded v2.2 database. The existing
 2,000 bp classification cutoff, report filename and family/score labels are
