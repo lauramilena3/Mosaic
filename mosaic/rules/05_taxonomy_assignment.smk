@@ -299,13 +299,23 @@ rule match_spacers:
 	threads: 1
 	shell:
 		"""
-		ulimit -S -s unlimited
-		rm -rf {params.spacers_mincedSetDB}* {params.viralTargetDB}* {params.viralTargetDB_rev}* {params.tmpFolder}*
-		spacepharer createsetdb {params.filtered_representatives_dir}/*fasta {params.viralTargetDB} {params.tmpFolder}
-		spacepharer createsetdb {params.filtered_representatives_dir}/*fasta {params.viralTargetDB_rev} {params.tmpFolder} --reverse-fragments 1
-		spacepharer createsetdb {input.spacers} {params.spacers_mincedSetDB} {params.tmpFolder} --extractorf-spacer 1
-		spacepharer predictmatch {params.spacers_mincedSetDB} {params.viralTargetDB} {params.viralTargetDB_rev} {output.spacer_match} {params.tmpFolder} -s 7.5 
-		rm -rf {params.spacers_mincedSetDB}* {params.viralTargetDB}* {params.viralTargetDB_rev}* {params.tmpFolder}*
+		case {input.spacers:q} in
+			*.gz) spacer_count=$(gzip -cd {input.spacers:q} | awk '/^>/ {{n++}} END {{print n+0}}') ;;
+			*.bz2) spacer_count=$(bzip2 -cd {input.spacers:q} | awk '/^>/ {{n++}} END {{print n+0}}') ;;
+			*) spacer_count=$(awk '/^>/ {{n++}} END {{print n+0}}' {input.spacers:q}) ;;
+		esac
+		if [ "$spacer_count" -eq 0 ]; then
+			echo "No spacers available; skipping SpacePHARER."
+			: > {output.spacer_match:q}
+		else
+			ulimit -S -s unlimited
+			rm -rf {params.spacers_mincedSetDB:q}* {params.viralTargetDB:q}* {params.viralTargetDB_rev:q}* {params.tmpFolder:q}*
+			spacepharer createsetdb {params.filtered_representatives_dir:q}/*fasta {params.viralTargetDB:q} {params.tmpFolder:q}
+			spacepharer createsetdb {params.filtered_representatives_dir:q}/*fasta {params.viralTargetDB_rev:q} {params.tmpFolder:q} --reverse-fragments 1
+			spacepharer createsetdb {input.spacers:q} {params.spacers_mincedSetDB:q} {params.tmpFolder:q} --extractorf-spacer 1
+			spacepharer predictmatch {params.spacers_mincedSetDB:q} {params.viralTargetDB:q} {params.viralTargetDB_rev:q} {output.spacer_match:q} {params.tmpFolder:q} -s 7.5
+			rm -rf {params.spacers_mincedSetDB:q}* {params.viralTargetDB:q}* {params.viralTargetDB_rev:q}* {params.tmpFolder:q}*
+		fi
 	 	"""
 
 rule match_spacers_dion:

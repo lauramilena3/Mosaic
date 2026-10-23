@@ -130,6 +130,9 @@ Methods: [Jaccard](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sp
 ## Optional CRISPR host metadata
 
 When `microbial_spacers` enables SpacePHARER, raw match counts are reported.
+If the supplied FASTA contains no spacer records, matching is skipped and an
+empty match TSV is written. The report records zero CRISPR matches; iPHoP
+evidence remains available independently.
 To additionally resolve hosts, set `abundance_crispr_host_metadata` to a CSV with
 `microbial_contig`, `microbial_contig_length_bp`, and `genus`; optional higher-rank
 columns are `domain`, `phylum`, `class`, `order`, `family`. IDs must match spacer
