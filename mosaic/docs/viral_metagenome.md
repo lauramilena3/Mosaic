@@ -315,7 +315,7 @@ geNomad evidence is reused from individual assembly results. Selected whole repr
 
 Start with `10_abundance_lifestyle_summary.tot.ipynb` or its HTML report. It integrates the final catalogue, filtered normalised abundance and existing annotations without rerunning those tools or changing selection. `vOTU_metadata_polished.csv` follows the established metadata topic order: viral identification, CheckV, composition, lifestyle, taxonomy, reference similarity, host predictions/CRISPR evidence, then abundance.
 
-Presence is nonzero **filtered normalised RPKM**. Relative abundance is each sample's share of catalogue RPKM, not the fraction of all library reads. Every final catalogue row and workflow sample remains visible, including unclassified sequences and zero-detection libraries. All-zero samples have undefined relative abundance, not an invented distribution. Sample accumulation uses random sample order, not additional-read rarefaction or automatic significance testing. See [abundance/lifestyle reporting](abundance_lifestyle_summary.md).
+Presence is nonzero **filtered normalised RPKM**. Relative abundance is each sample's share of catalogue RPKM, not the fraction of all library reads. Every final catalogue row and workflow sample remains in abundance exports, including unclassified sequences and zero-detection libraries. The configured NC is excluded from prevalence, group comparisons, sample accumulation and community distances. Without usable grouping metadata, prevalence runs on all non-NC samples together. All-zero biological samples remain in prevalence denominators but have undefined composition and are omitted from both distance matrices. Jaccard and Hellinger each have a clustermap, with a sample-label Mantel test comparing the matrices. Sample accumulation uses random sample order, not additional-read rarefaction. See [abundance/lifestyle reporting](abundance_lifestyle_summary.md).
 
 ### Main outputs
 
@@ -347,7 +347,7 @@ This target finds existing MOSAIC report notebooks. `--allowed-rules` restricts 
 | `NOTEBOOKS/07_Normalise.tot.ipynb` | Existing all/unique abundance adjustment and its diagnostic plots. |
 | `NOTEBOOKS/07_mapping_statistics_tot.ipynb` | Additional recruitment comparisons when requested by assembly statistics or all-assembled mapping. |
 | `07_ANNOTATION/` and filtered-catalogue annotation directories under `05_vOTUs/` | Raw gene, taxonomy, reference-hit, lifestyle and host-prediction outputs. |
-| `FIGURES_AND_TABLES/10_abundance_lifestyle_summary.tot/` | `vOTU_metadata_polished.csv`, `sample_summary.csv`, `relative_abundance.csv`, presence/prevalence, genome/category/group summaries and figures. |
+| `FIGURES_AND_TABLES/10_abundance_lifestyle_summary.tot/` | `vOTU_metadata_polished.csv`, `sample_summary.csv`, `relative_abundance.csv`, overall/group prevalence, genome/category summaries, Jaccard/Hellinger matrices, Mantel comparison and figures. |
 | `NOTEBOOKS/10_abundance_lifestyle_summary.tot.ipynb`, matching HTML | Main integrated community report; the HTML is in `FIGURES_AND_TABLES/`. |
 | `BENCHMARK/{rule}/...tsv` | Per-job runtime and measured memory/resource use; the optional benchmark summary aggregates these. |
 
@@ -365,7 +365,7 @@ All flags below default to off unless noted. With the wrapper, use its named opt
 | `sourmash_contig_catalogue=True` / `--sourmash-contig-catalogue` | GTDB screening evidence in final-vOTU and selected all-assembled metadata. The inclusive `sourmash_contig_catalogue_min_length` cutoff defaults to 5,000 bp; no sequences are removed. |
 | `microdiversity=True` / `--microdiversity` | Separate full-cleaned-pair mapping to the final catalogue and `11_microdiversity_summary.tot.ipynb`/HTML. Independent of RNA enrichment. Defaults include callable depth 100x, base/MAPQ 30, alternate frequency 3%, alternate count 5 and maximum depth 100,000. Low-callability values are not zero biological diversity. |
 | `map_to_RefSeq=True` / `--map-to-refseq` | Independent known-reference abundance/detection report under `06_MAPPING/REFSEQ_VIRAL/`. No assembly is required by the standalone RefSeq target. |
-| `negative_control=SampleID` | RefSeq NC comparison and exclusion from all-assembled ranking. The NC remains in assembly, the main abundance matrices and overall prevalence denominators. This parameter does not decontaminate every branch. |
+| `negative_control=SampleID` | RefSeq NC comparison and exclusion from all-assembled ranking, final-report prevalence, sample accumulation and community distances. The NC remains in assembly and the main abundance matrices. This parameter does not decontaminate every branch. |
 | `metavr_blast=True` / `--metavr-blast` | METAVR BLAST plus reference environment, viral taxonomy and recorded-host metadata in `08_METAVR_analysis.tot.ipynb`/HTML. No legacy `imgvr_blast` flag. |
 | `map_to_all_assembled=True` | Independent unfiltered-assembly abundance exploration, selected clustering and annotation; also requests mapping statistics. |
 | `run_cenote=True` | Additional selected-representative annotation; automatic scheduling also requires `map_to_all_assembled=True`. |

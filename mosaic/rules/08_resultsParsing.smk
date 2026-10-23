@@ -128,12 +128,19 @@ rule abundance_lifestyle_summary:
 		accumulation=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/sample_accumulation.csv",
 		groups=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/group_summary.csv",
 		group_presence=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/group_ubiquitous_vOTUs.csv",
+		group_prevalence=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/group_vOTU_prevalence.csv",
+		jaccard=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/sample_jaccard_distances.csv",
+		hellinger=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/sample_hellinger_distances.csv",
+		mantel=dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/jaccard_hellinger_mantel.csv",
 		figures=directory(dirs_dict["PLOTS_DIR"] + "/10_abundance_lifestyle_summary.tot/figures"),
 	params:
 		samples=SAMPLES,
+		negative_control=str(config.get("negative_control", "")).strip(),
 		group_column=config.get("abundance_group_column", ""),
 		common_prevalence=float(config.get("abundance_common_prevalence", 0.2)),
 		core_prevalence=float(config.get("abundance_core_prevalence", 0.5)),
+		mantel_permutations=int(config.get("abundance_mantel_permutations", 9999)),
+		mantel_seed=int(config.get("abundance_mantel_seed", 42)),
 	message:
 		"Summarizing final vOTU abundance, quality, lifestyle, hosts and prevalence"
 	benchmark:

@@ -199,7 +199,7 @@ def reports(directory, cfg):
     optional = d.card(60, 475, 500, "Optional reports", [
         "03 RNA assembly / 08 METAVR", "07 RefSeq detection", "11 microdiversity (separate)"], AMBER, size=22)
     data = d.card(650, 475, 500, "Interpret abundance correctly", [
-        "Presence: filtered normalised RPKM >0", "Relative abundance: catalogue share", "NC not automatically removed"], BLUE, size=21)
+        "Presence: filtered normalised RPKM >0", "Relative abundance: catalogue share", "NC excluded: prevalence / distances"], BLUE, size=21)
     evidence = d.card(1240, 475, 500, "Keep uncertainty visible", [
         "Similarity ≠ confirmed species", "Terminal repeats ≠ circular proof", "Read-level diversity ≠ activity"], PURPLE, size=22)
     d.band(740, "FILES", "NOTEBOOKS: executed analysis · FIGURES_AND_TABLES: reports/tables/plots · BENCHMARK: per-job measurements", MUTED)

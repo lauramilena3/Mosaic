@@ -72,10 +72,12 @@ sourmash_clean_min_reference_fraction: 0.10 # K-mer containment, not measured re
 key_samples: "key_samples_list.csv"
 # Optional final abundance report metadata; sample IDs must match the read libraries.
 abundance_sample_metadata: "" # CSV with a sample column and optional grouping columns
-abundance_group_column: "" # e.g. treatment; empty means no grouped comparisons
+abundance_group_column: "" # e.g. treatment; unavailable groups fall back to all samples except negative_control
 abundance_crispr_host_metadata: "" # CSV: microbial_contig, microbial_contig_length_bp, genus; optional higher ranks
 abundance_common_prevalence: 0.2
 abundance_core_prevalence: 0.5
+abundance_mantel_permutations: 9999
+abundance_mantel_seed: 42
 operating_system: "linux"
 forward_tag: "R1"
 reverse_tag: "R2"
